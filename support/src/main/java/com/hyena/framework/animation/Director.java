@@ -180,6 +180,9 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
      * 重启场景
      */
     public synchronized void resumeScene() {
+        if (isPaused())
+            return;
+
         if (mCurrentScene != null) {
             mCurrentScene.onSceneResume();
         }
