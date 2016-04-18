@@ -1,5 +1,6 @@
 package com.hyena.framework.animation.texture;
 
+import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;
 
 import android.graphics.Matrix;
@@ -25,7 +26,8 @@ public class CBaseTexture extends CNode {
 //	int mX = 0;
 //	int mY = 0;
 	
-	public CBaseTexture(){
+	public CBaseTexture(Director director){
+		super(director);
 		initTexture();
 	}
 	

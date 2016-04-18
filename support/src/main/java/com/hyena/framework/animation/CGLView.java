@@ -18,7 +18,6 @@ import android.view.View;
 public class CGLView extends View implements RenderView {
 
 	private static final int MSG_REFRESH_VIEW = 0x00000001;
-	private int mRefreshDelay = EngineConfig.MIN_REFRESH_SPAN;
 	private Handler mHandler;
 	
 	public CGLView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -44,13 +43,15 @@ public class CGLView extends View implements RenderView {
 				int what = msg.what;
 				switch (what) {
 				case MSG_REFRESH_VIEW:
-					Director director = Director.getSharedDirector();
-					if(director.isViewVisible()){
-//						postInvalidate();
+					if(mDirector != null && mDirector.isViewVisible()){
 						invalidate();
 					}
-					
-					sendEmptyMessageDelayed(MSG_REFRESH_VIEW, mRefreshDelay);
+
+					int delay = EngineConfig.MIN_REFRESH_DELAY;
+					if (mDirector != null) {
+						delay = mDirector.getRefreshDelay();
+					}
+					sendEmptyMessageDelayed(MSG_REFRESH_VIEW, delay);
 					break;
 				default:
 					break;
@@ -79,22 +80,17 @@ public class CGLView extends View implements RenderView {
 	 * @param canvas
 	 */
 	protected void drawEngine(Canvas canvas){
-		CScene scene = Director.getSharedDirector().getActiveScene();
+		if (mDirector == null)
+			return;
+
+		CScene scene = mDirector.getActiveScene();
 		if(scene != null){
 //			long start = System.currentTimeMillis();
 			scene.render(canvas);
 //			DebugUtils.debug("yangzc", "cost: " + (System.currentTimeMillis() - start));
 		}
 	}
-	
-	/**
-	 * 设置刷新延迟
-	 * @param delay
-	 */
-	public void setRefreshDelay(int delay){
-		this.mRefreshDelay = delay;
-	}
-	
+
 	/**
 	 * 开始刷新
 	 */
@@ -133,5 +129,10 @@ public class CGLView extends View implements RenderView {
 			}
 		}
 	}
-	
+
+	private Director mDirector;
+	@Override
+	public void setDirector(Director director) {
+		this.mDirector = director;
+	}
 }

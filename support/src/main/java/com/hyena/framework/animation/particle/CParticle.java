@@ -3,6 +3,7 @@ package com.hyena.framework.animation.particle;
 import java.util.List;
 import java.util.Random;
 
+import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;
 import com.hyena.framework.animation.texture.CTexture;
 
@@ -38,7 +39,8 @@ public class CParticle extends CNode {
 	private volatile boolean mIsOld = false;//是否已经衰老
 	private volatile boolean mIsKilled = false;//是否已经被杀死
 	
-	protected CParticle(int duration){
+	protected CParticle(Director director, int duration){
+		super(director);
 		this.mDuration = duration;
 	}
 	
@@ -59,8 +61,8 @@ public class CParticle extends CNode {
 	 * 创建粒子
 	 * @return
 	 */
-	public static CParticle create(CTexture texture, Point position, List<Point> paths, int duration){
-		return create(null, texture, position, paths, duration);
+	public static CParticle create(Director director, CTexture texture, Point position, List<Point> paths, int duration){
+		return create(director, null, texture, position, paths, duration);
 	}
 	
 	/**
@@ -72,10 +74,11 @@ public class CParticle extends CNode {
 	 * @param duration
 	 * @return
 	 */
-	public static CParticle create(CParticle particle, CTexture texture, Point position, List<Point> paths, int duration){
+	public static CParticle create(Director director, CParticle particle, CTexture texture
+			, Point position, List<Point> paths, int duration){
 		CParticle sprite = particle;
 		if(sprite == null)
-			sprite = new CParticle(duration);
+			sprite = new CParticle(director, duration);
 		
 		sprite.reset();
 		if(!sprite.initTexture(texture)){

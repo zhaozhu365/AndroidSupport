@@ -15,6 +15,8 @@ import android.view.View.OnTouchListener;
  */
 public interface RenderView {
 
+	public void setDirector(Director director);
+
 	/**
 	 * 开始刷新
 	 */

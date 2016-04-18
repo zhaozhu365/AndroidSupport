@@ -1,5 +1,6 @@
 package com.hyena.framework.animation.nodes;
 
+import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;
 
 import android.graphics.Canvas;
@@ -19,13 +20,13 @@ public class CTextNode extends CNode {
 	private Paint mPaint;
 	private Drawable mBackground;
 	
-	protected CTextNode(){
-		super();
+	protected CTextNode(Director director){
+		super(director);
 		init();
 	}
 	
-	public static CTextNode create(){
-		return new CTextNode();
+	public static CTextNode create(Director director){
+		return new CTextNode(director);
 	}
 	
 	private void init(){

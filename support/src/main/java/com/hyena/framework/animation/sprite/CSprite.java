@@ -1,5 +1,6 @@
 package com.hyena.framework.animation.sprite;
 
+import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.texture.CTexture;
 
 import android.graphics.Canvas;
@@ -14,8 +15,8 @@ public class CSprite extends CActionNode {
 	//纹理
 	private CTexture mTexture;
 	
-	private CSprite(CTexture texture){
-		super();
+	private CSprite(Director director, CTexture texture){
+		super(director);
 		this.mTexture = texture;
 	}
 	
@@ -24,10 +25,10 @@ public class CSprite extends CActionNode {
 	 * @param texture
 	 * @return
 	 */
-	public static CSprite create(CTexture texture){
+	public static CSprite create(Director director, CTexture texture){
 		if(texture == null)
-			texture = CTexture.create(null);
-		CSprite sprite = new CSprite(texture);
+			texture = CTexture.create(director, null);
+		CSprite sprite = new CSprite(director, texture);
 		return sprite;
 	}
 	
@@ -35,8 +36,8 @@ public class CSprite extends CActionNode {
 	 * 创建精灵
 	 * @return
 	 */
-	public static CSprite create(){
-		return create(null);
+	public static CSprite create(Director director){
+		return create(director, null);
 	}
 	
 	@Override

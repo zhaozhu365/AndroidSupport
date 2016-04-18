@@ -4,6 +4,8 @@ package com.hyena.framework.animation.texture;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
+import com.hyena.framework.animation.Director;
+
 /**
  * 默认纹理
  * 处理图片展现
@@ -13,8 +15,8 @@ public class CTexture extends CBaseTexture {
 
 	private Bitmap mBitmap;
 	
-	private CTexture(Bitmap bitmap){
-		super();
+	private CTexture(Director director, Bitmap bitmap){
+		super(director);
 		this.mBitmap = bitmap;
 	}
 	
@@ -23,8 +25,8 @@ public class CTexture extends CBaseTexture {
 	 * @param bitmap 纹理
 	 * @return
 	 */
-	public static CTexture create(Bitmap bitmap){
-		CTexture texture = new CTexture(bitmap);
+	public static CTexture create(Director director, Bitmap bitmap){
+		CTexture texture = new CTexture(director, bitmap);
 		return texture;
 	}
 	

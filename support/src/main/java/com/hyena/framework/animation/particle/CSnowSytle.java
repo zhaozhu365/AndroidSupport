@@ -3,6 +3,7 @@ package com.hyena.framework.animation.particle;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.texture.CTexture;
 
 import android.graphics.Point;
@@ -16,8 +17,8 @@ public class CSnowSytle extends CParticleSystem {
 	private List<CTexture> mTextures;
 	private static int SNOW_SIZE = 58;
 	
-	protected CSnowSytle(CTexture ...textures){
-		super(SNOW_SIZE);
+	protected CSnowSytle(Director director, CTexture ...textures){
+		super(director, SNOW_SIZE);
 		mTextures = new ArrayList<CTexture>();
 		if(textures != null){
 			for(int i=0; i< textures.length; i++){
@@ -26,18 +27,18 @@ public class CSnowSytle extends CParticleSystem {
 		}
 	}
 	
-	public static CSnowSytle create(CTexture ...textures){
-		return new CSnowSytle(textures);
+	public static CSnowSytle create(Director director, CTexture ...textures){
+		return new CSnowSytle(director, textures);
 	}
 	
-	public void snow(){
+	public void snow(Director director){
 		if(mTextures == null || mTextures.isEmpty())
 			return;
 		CTexture texture = mTextures.get(0);
 		
 		for(int i=0; i< SNOW_SIZE; i++){
 			Point startPoint = new Point(getStartX(), getPosition().y -i);
-			CParticle particle = CParticle.create(getRecycleParticle(), texture, startPoint, schedulePaths(startPoint, 100), getDuration());
+			CParticle particle = CParticle.create(director, getRecycleParticle(), texture, startPoint, schedulePaths(startPoint, 100), getDuration());
 			if(particle != null)
 				addParticle(particle);
 		}

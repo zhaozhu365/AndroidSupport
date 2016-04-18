@@ -1,5 +1,6 @@
 package com.hyena.framework.animation.nodes;
 
+import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;
 
 import android.graphics.Bitmap;
@@ -25,7 +26,8 @@ public class CScoreNode extends CNode {
 	private int mScore = 0;
 	private int mDuration = 0;
 	
-	protected CScoreNode(int score, int d, Bitmap ...bitmaps){
+	protected CScoreNode(Director director, int score, int d, Bitmap ...bitmaps){
+		super(director);
 		this.mDuration = d;
 		showScore(score);
 		
@@ -45,8 +47,8 @@ public class CScoreNode extends CNode {
 		}
 	}
 	
-	public static CScoreNode create(int score, int d, Bitmap ...bitmaps){
-		return new CScoreNode(score, d, bitmaps);
+	public static CScoreNode create(Director director, int score, int d, Bitmap ...bitmaps){
+		return new CScoreNode(director, score, d, bitmaps);
 	}
 	
 	@Override

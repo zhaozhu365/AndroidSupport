@@ -49,7 +49,7 @@ public class CAction {
 
     /**
      * 更新动作
-     * @param time
+     * @param dt 更新间隔
      */
     public void update(float dt) {
 //    	LogUtil.v(LOG_TAG, "update");

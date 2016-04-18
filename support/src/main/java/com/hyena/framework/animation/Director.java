@@ -28,7 +28,7 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
 
     private Handler mLooperHandler;
 
-    private Director() {
+    public Director() {
         mScenes = new Stack<CScene>();
 
         HandlerThread thread = new HandlerThread("io_framework_handler_anim");
@@ -43,19 +43,6 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
             }
 
         };
-    }
-
-    public static Director getSharedDirector() {
-        if (_instance == null)
-            _instance = new Director();
-        return _instance;
-    }
-
-    /**
-     * 释放实例
-     */
-    public void releaseInstance() {
-        _instance = null;
     }
 
     /**
@@ -283,10 +270,23 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
 
                 mLooperHandler.removeMessages(MSG_LOOPER);
                 Message next = mLooperHandler.obtainMessage(MSG_LOOPER);
-                mLooperHandler.sendMessageDelayed(next, EngineConfig.MIN_REFRESH_SPAN);
+                mLooperHandler.sendMessageDelayed(next, getRefreshDelay());
                 break;
             }
         }
     }
 
+    private int mRefreshSpan;
+
+    public void setRefreshDelay(int refreshSpan) {
+        this.mRefreshSpan = refreshSpan;
+    }
+
+    public int getRefreshDelay() {
+        int delay = EngineConfig.MIN_REFRESH_DELAY;
+        if (mRefreshSpan > 0) {
+            delay = mRefreshSpan;
+        }
+        return delay;
+    }
 }

@@ -3,6 +3,7 @@ package com.hyena.framework.animation.particle;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.texture.CTexture;
 
 import android.graphics.Point;
@@ -19,8 +20,8 @@ public class CMelodyStyle extends CParticleSystem {
 
 	private List<CTexture> mTextures;
 	
-	protected CMelodyStyle(CTexture ...textures){
-		super(120);
+	protected CMelodyStyle(Director director, CTexture ...textures){
+		super(director, 120);
 		mTextures = new ArrayList<CTexture>();
 		if(textures != null){
 			for(int i=0; i< textures.length; i++){
@@ -29,8 +30,8 @@ public class CMelodyStyle extends CParticleSystem {
 		}
 	}
 
-	public static CMelodyStyle create(CTexture ...textures){
-		return new CMelodyStyle(textures);
+	public static CMelodyStyle create(Director director, CTexture ...textures){
+		return new CMelodyStyle(director, textures);
 	}
 	
 	@Override
@@ -42,7 +43,7 @@ public class CMelodyStyle extends CParticleSystem {
 	 * 反馈精灵刷新
 	 * @param level
 	 */
-	public void updateStars(int level){
+	public void updateStars(Director director, int level){
 		if(mTextures == null || mTextures.size() == 0)
 			return;
 		
@@ -60,7 +61,7 @@ public class CMelodyStyle extends CParticleSystem {
 				}else{
 					duration = (int) (1000 + Math.random() * 4000);
 				}
-				CParticle sprite = CParticle.create(getRecycleParticle(), texture, position, paths, duration);
+				CParticle sprite = CParticle.create(director, getRecycleParticle(), texture, position, paths, duration);
 				if(sprite != null)
 					addParticle(sprite);
 			}

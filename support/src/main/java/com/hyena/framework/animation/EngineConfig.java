@@ -15,5 +15,5 @@ public class EngineConfig {
 	/**
 	 * 数据刷新间隔
 	 */
-	public static int MIN_REFRESH_SPAN = 50;
+	public static int MIN_REFRESH_DELAY = 50;
 }

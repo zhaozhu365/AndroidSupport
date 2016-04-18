@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hyena.framework.animation.CLayer;
+import com.hyena.framework.animation.Director;
 
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -19,20 +20,22 @@ public class CParticleSystem extends CLayer {
 	protected ArrayList<CParticle> mRecycleParticles;
 	private int mMaxParticleCnt = 1000;
 	
-	protected CParticleSystem(int maxParticleCnt){
+	protected CParticleSystem(Director director, int maxParticleCnt){
+		super(director);
 		this.mMaxParticleCnt = maxParticleCnt;
 		
 		mRenderParticles = new ArrayList<CParticle>(mMaxParticleCnt);
 		mRecycleParticles = new ArrayList<CParticle>(mMaxParticleCnt);
 	}
 	
-	protected CParticleSystem(){
+	protected CParticleSystem(Director director){
+		super(director);
 		mRenderParticles = new ArrayList<CParticle>(mMaxParticleCnt);
 		mRecycleParticles = new ArrayList<CParticle>(mMaxParticleCnt);
 	}
 	
-	public static CParticleSystem create(){
-		return new CParticleSystem();
+	public static CParticleSystem create(Director director){
+		return new CParticleSystem(director);
 	}
 	
 	@Override

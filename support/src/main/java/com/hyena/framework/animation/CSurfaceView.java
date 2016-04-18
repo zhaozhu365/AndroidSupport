@@ -26,7 +26,6 @@ import android.view.SurfaceView;
 public class CSurfaceView extends SurfaceView implements SurfaceHolder.Callback, RenderView {
 
 	private static final int MSG_REFRESH_VIEW = 0x00000001;
-	private int mRefreshDelay = EngineConfig.MIN_REFRESH_SPAN;
 	private Handler mHandler;
 	private SurfaceHolder mSurfaceHolder;
 	
@@ -68,18 +67,12 @@ public class CSurfaceView extends SurfaceView implements SurfaceHolder.Callback,
 	 * @param canvas
 	 */
 	protected void drawEngine(Canvas canvas){
-		CScene scene = Director.getSharedDirector().getActiveScene();
+		if (mDirector == null)
+			return;
+		CScene scene = mDirector.getActiveScene();
 		if(scene != null){
 			scene.render(canvas);
 		}
-	}
-	
-	/**
-	 * 设置刷新延迟
-	 * @param delay
-	 */
-	public void setRefreshDelay(int delay){
-		this.mRefreshDelay = delay;
 	}
 	
 	/**
@@ -123,8 +116,7 @@ public class CSurfaceView extends SurfaceView implements SurfaceHolder.Callback,
 				int what = msg.what;
 				switch (what) {
 				case MSG_REFRESH_VIEW:
-					Director director = Director.getSharedDirector();
-					if(director.isViewVisible()){
+					if(mDirector != null && mDirector.isViewVisible()){
 						try {
 							Canvas canvas = mSurfaceHolder.lockCanvas(null);
 							doDraw(canvas);
@@ -132,7 +124,11 @@ public class CSurfaceView extends SurfaceView implements SurfaceHolder.Callback,
 						} catch (Exception e) {
 						}
 					}
-					sendEmptyMessageDelayed(MSG_REFRESH_VIEW, mRefreshDelay);
+					int delay = EngineConfig.MIN_REFRESH_DELAY;
+					if (mDirector != null) {
+						delay = mDirector.getRefreshDelay();
+					}
+					sendEmptyMessageDelayed(MSG_REFRESH_VIEW, delay);
 					break;
 				default:
 					break;
@@ -154,5 +150,11 @@ public class CSurfaceView extends SurfaceView implements SurfaceHolder.Callback,
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		stopRefresh();
+	}
+
+	private Director mDirector;
+	@Override
+	public void setDirector(Director director) {
+		this.mDirector = director;
 	}
 }

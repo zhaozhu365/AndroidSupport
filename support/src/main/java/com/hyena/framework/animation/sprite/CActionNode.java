@@ -3,6 +3,7 @@ package com.hyena.framework.animation.sprite;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.action.base.CAction;
 
 /**
@@ -25,7 +26,11 @@ public abstract class CActionNode extends CNode {
 
 	//动作列表
 	private List<CAction> mActions;
-	
+
+	public CActionNode(Director director) {
+		super(director);
+	}
+
 	/**
 	 * 执行动作
 	 * @param action
