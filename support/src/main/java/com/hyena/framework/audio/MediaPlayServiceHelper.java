@@ -80,6 +80,7 @@ class MediaServiceHelper {
 	 */
 	private Intent buildCommonMsgIntent(Song song, int type){
 		Intent intent = new Intent(MediaService.SERVICE_PLAY_EVENT_ACTION);
+		intent.setExtrasClassLoader(getClass().getClassLoader());
 		intent.putExtra("song", song);
 		intent.putExtra("type", type);
 		return intent;
