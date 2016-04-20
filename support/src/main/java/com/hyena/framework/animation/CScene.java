@@ -4,6 +4,7 @@ import com.hyena.framework.animation.nodes.CTextNode;
 
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.view.MotionEvent;
 
 /**
  * 场景
@@ -58,13 +59,7 @@ public class CScene extends CLayer {
         if (director == null || !director.isViewVisible())
             return;
 
-        if (mTextNode != null)
-            mTextNode.setPosition(new Point(0, getHeight() - dip2px(20)));
-
-//		DebugUtils.debug("yangzc", "scene: update");
-//		long start = System.currentTimeMillis();
         super.update(dt);
-//		DebugUtils.debug("yangzc", "cost: " + (System.currentTimeMillis() - start));
     }
 
     public void onSceneStart() {
@@ -79,13 +74,16 @@ public class CScene extends CLayer {
     public void onScenePause() {
     }
 
-    /**
-     * View大小改变
-     *
-     * @param view
-     * @param rect
-     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
     public void onSizeChange(RenderView view, Rect rect) {
+        super.onSizeChange(view, rect);
+        if (mTextNode != null)
+            mTextNode.setPosition(new Point(0, getHeight() - dip2px(20)));
     }
 
     @Override

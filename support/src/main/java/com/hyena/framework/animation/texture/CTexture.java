@@ -51,7 +51,7 @@ public class CTexture extends CBaseTexture {
 	@Override
 	public int getWidth(){
 		if(mBitmap != null){
-			return mBitmap.getWidth();
+			return (int) (mBitmap.getWidth() * mScaleX);
 		}
 		return 0;
 	}
@@ -59,7 +59,7 @@ public class CTexture extends CBaseTexture {
 	@Override
 	public int getHeight(){
 		if(mBitmap != null){
-			return mBitmap.getHeight();
+			return (int) (mBitmap.getHeight() * mScaleY);
 		}
 		return 0;
 	}

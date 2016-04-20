@@ -272,6 +272,10 @@ public class CParticle extends CNode {
 	@Override
 	public void render(Canvas canvas){
 		super.render(canvas);
+		if (!isValid() || !isVisible()) {
+			return;
+		}
+
 		//有效验证
 		if(mTexture == null || mPaths == null || mPaths.size() == 0
 				|| mPosition == null){

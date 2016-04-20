@@ -33,7 +33,7 @@ public class GameFragment<T extends BaseUIFragmentHelper> extends
     @Override
     public void onCreateImpl(Bundle savedInstanceState) {
         super.onCreateImpl(savedInstanceState);
-        mDirector = new Director();
+        mDirector = new Director(getActivity());
     }
 
     @Override

@@ -42,7 +42,7 @@ public class GameScene extends CScene {
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        return super.onTouch(v, event);
+    public boolean onTouch(MotionEvent event) {
+        return super.onTouch(event);
     }
 }

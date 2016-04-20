@@ -56,6 +56,10 @@ public class CParticleSystem extends CLayer {
 	@Override
 	public synchronized void render(Canvas canvas) {
 		super.render(canvas);
+		if (!isValid() || !isVisible()) {
+			return;
+		}
+
 		if(mRenderParticles == null)
 			return;
 		

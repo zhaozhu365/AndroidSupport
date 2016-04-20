@@ -11,6 +11,8 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.hyena.framework.clientlog.LogUtil;
+
 /**
  * 视图基类
  * @author yangzc
@@ -43,7 +45,9 @@ public class CGLView extends View implements RenderView {
 				int what = msg.what;
 				switch (what) {
 				case MSG_REFRESH_VIEW:
-					if(mDirector != null && mDirector.isViewVisible()){
+				{
+//					LogUtil.v("CGLView", "refresh");
+					if (mDirector != null && mDirector.isViewVisible()) {
 						invalidate();
 					}
 
@@ -53,6 +57,7 @@ public class CGLView extends View implements RenderView {
 					}
 					sendEmptyMessageDelayed(MSG_REFRESH_VIEW, delay);
 					break;
+				}
 				default:
 					break;
 				}
@@ -128,6 +133,19 @@ public class CGLView extends View implements RenderView {
 				mSizeChangeListener.onSizeChange(rect);
 			}
 		}
+	}
+
+	@Override
+	public void computeScroll() {
+		super.computeScroll();
+		if (mDirector != null) {
+
+		}
+	}
+
+	@Override
+	public void forceRefresh() {
+		postInvalidate();
 	}
 
 	private Director mDirector;

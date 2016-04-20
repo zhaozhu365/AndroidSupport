@@ -26,6 +26,8 @@ public interface RenderView {
 	 * 停止刷新
 	 */
 	void stopRefresh();
+
+	void forceRefresh();
 	
 	/**
 	 * 获得View上下文

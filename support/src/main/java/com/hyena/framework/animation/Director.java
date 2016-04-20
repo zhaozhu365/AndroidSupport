@@ -1,9 +1,6 @@
 package com.hyena.framework.animation;
 
-import java.util.Stack;
-
-import com.hyena.framework.animation.utils.UIUtils;
-
+import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -12,6 +9,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
+import com.hyena.framework.animation.utils.UIUtils;
+
+import java.util.Stack;
+
 /**
  * 导演
  *
@@ -19,16 +20,16 @@ import android.view.View.OnTouchListener;
  */
 public class Director implements RenderView.SizeChangeListener, OnTouchListener {
 
-    private static Director _instance = null;
-
     private volatile boolean mPaused = true;
     protected RenderView mRenderView = null;
-    private Rect mRect = null;
+    private Rect mRect = new Rect();
     private Stack<CScene> mScenes;
 
     private Handler mLooperHandler;
+    private Context mContext;
 
-    public Director() {
+    public Director(Context context) {
+        this.mContext = context;
         mScenes = new Stack<CScene>();
 
         HandlerThread thread = new HandlerThread("io_framework_handler_anim");
@@ -45,6 +46,10 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
         };
     }
 
+    public Context getContext(){
+        return mContext;
+    }
+
     /**
      * 设置关联的View
      *
@@ -55,6 +60,7 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
         if (view == null)
             return;
 
+        mRenderView.setDirector(this);
         mRenderView.setSizeChangeListener(this);
         mRenderView.setOnTouchListener(this);
     }
@@ -225,9 +231,9 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
      * @param rect
      */
     public void setViewSize(Rect rect) {
-        this.mRect = rect;
+        mRect.set(rect);
         if (mCurrentScene != null) {
-            mCurrentScene.onSizeChange(mRenderView, rect);
+            mCurrentScene.onSizeChange(mRenderView, mRect);
         }
     }
 
@@ -247,7 +253,7 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
         stop();
         CScene scene = getActiveScene();
         if (scene != null) {
-            scene.refresh();
+            start();
         }
     }
 
@@ -255,7 +261,7 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
     public boolean onTouch(View v, MotionEvent event) {
         CScene scene = getActiveScene();
         if (scene != null) {
-            return scene.onTouch(v, event);
+            return scene.dispatchTouchEvent(event);
         }
         return false;
     }
@@ -266,6 +272,7 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
         int what = msg.what;
         switch (what) {
             case MSG_LOOPER: {
+//                LogUtil.v("Director", "refresh");
                 CScene scene = getActiveScene();
                 if (scene != null) {
                     scene.refresh();

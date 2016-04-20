@@ -51,6 +51,11 @@ public class CSprite extends CActionNode {
 	@Override
 	public synchronized void render(Canvas canvas) {
 		super.render(canvas);
+
+		if (!isValid() || !isVisible()) {
+			return;
+		}
+
 		if(mTexture == null)
 			return;
 

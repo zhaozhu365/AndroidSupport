@@ -157,4 +157,9 @@ public class CSurfaceView extends SurfaceView implements SurfaceHolder.Callback,
 	public void setDirector(Director director) {
 		this.mDirector = director;
 	}
+
+	@Override
+	public void forceRefresh() {
+
+	}
 }

@@ -3,6 +3,7 @@ package com.hyena.framework.animation.sprite;
 import java.util.Random;
 
 import com.hyena.framework.animation.Director;
+import com.hyena.framework.animation.RenderView;
 import com.hyena.framework.utils.UIUtils;
 
 import android.graphics.Canvas;
@@ -18,7 +19,7 @@ import android.view.View.OnTouchListener;
  *
  * @author yangzc
  */
-public abstract class CNode implements OnTouchListener {
+public abstract class CNode {
 
 //	private static final String LOG_TAG = CNode.class.getSimpleName();
 
@@ -38,6 +39,7 @@ public abstract class CNode implements OnTouchListener {
     private boolean isVisible = true;
     private Paint mPaint;
 
+    private Point mPosition = new Point();
     private static Random mRandom = new Random();
 
     private Director mDirector;
@@ -56,6 +58,9 @@ public abstract class CNode implements OnTouchListener {
      * @param canvas
      */
     public void render(Canvas canvas) {
+        if (!isValid() || !isVisible()) {
+            return;
+        }
         if (mPaint != null) {
             canvas.drawRect(new Rect(getPosition().x, getPosition().y,
                     getPosition().x + getWidth(), getPosition().y + getHeight()), mPaint);
@@ -96,10 +101,10 @@ public abstract class CNode implements OnTouchListener {
     }
 
     /**
-     * @param isVisable the isVisible to set
+     * @param isVisible the isVisible to set
      */
-    public void setVisible(boolean isVisable) {
-        this.isVisible = isVisable;
+    public void setVisible(boolean isVisible) {
+        this.isVisible = isVisible;
     }
 
     /**
@@ -162,7 +167,7 @@ public abstract class CNode implements OnTouchListener {
     /**
      * 设置对齐方式
      *
-     * @param align
+     * @param align`
      */
     public void setAlign(CAlign align) {
         if (align == null)
@@ -188,10 +193,10 @@ public abstract class CNode implements OnTouchListener {
     /**
      * 设置z轴索引
      *
-     * @param zindex
+     * @param zIndex
      */
-    public void setZIndex(int zindex) {
-        this.mZIndex = zindex;
+    public void setZIndex(int zIndex) {
+        this.mZIndex = zIndex;
     }
 
     /**
@@ -203,8 +208,11 @@ public abstract class CNode implements OnTouchListener {
         return mZIndex;
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return onTouch(ev);
+    }
+
+    public boolean onTouch(MotionEvent event) {
         return false;
     }
 
@@ -232,8 +240,10 @@ public abstract class CNode implements OnTouchListener {
      * @return
      */
     public Point getPosition() {
-        if (mDirector == null || mDirector.getViewSize() == null)
-            return new Point(mX, mY);
+        if (mDirector == null || mDirector.getViewSize() == null) {
+            mPosition.set(mX, mY);
+            return mPosition;
+        }
 
         int pLeft = 0, pTop = 0;
         int pWidth = mDirector.getViewSize().width();
@@ -250,31 +260,51 @@ public abstract class CNode implements OnTouchListener {
             }
 
             switch (mAlign) {
-                case TOP_LEFT:
-                    return new Point(pLeft, pTop);
-                case TOP_CENTER:
-                    return new Point(pLeft + (pWidth - getWidth()) / 2, pTop + 0);
-                case TOP_RIGHT:
-                    return new Point(pLeft + pWidth - getWidth(), pTop + 0);
-
-                case CENTER_LEFT:
-                    return new Point(pLeft, pTop + (pHeight - getHeight()) / 2);
-                case CENTER_CENTER:
-                    return new Point(pLeft + (pWidth - getWidth()) / 2, pTop + (pHeight - getHeight()) / 2);
-                case CENTER_RIGHT:
-                    return new Point(pLeft + pWidth - getWidth(), pTop + (pHeight - getHeight()) / 2);
-
-                case BOTTOM_LEFT:
-                    return new Point(pLeft + 0, pTop + pHeight - getHeight());
-                case BOTTOM_CENTER:
-                    return new Point(pLeft + (pWidth - getWidth()) / 2, pTop + pHeight - getHeight());
-                case BOTTOM_RIGHT:
-                    return new Point(pLeft + pWidth - getWidth(), pTop + pHeight - getHeight());
-                default:
+                case TOP_LEFT: {
+                    mPosition.set(pLeft, pTop);
                     break;
+                }
+                case TOP_CENTER: {
+                    mPosition.set(pLeft + (pWidth - getWidth()) / 2, pTop + 0);
+                    break;
+                }
+                case TOP_RIGHT: {
+                    mPosition.set(pLeft + pWidth - getWidth(), pTop + 0);
+                    break;
+                }
+                case CENTER_LEFT: {
+                    mPosition.set(pLeft, pTop + (pHeight - getHeight()) / 2);
+                    break;
+                }
+                case CENTER_CENTER: {
+                    mPosition.set(pLeft + (pWidth - getWidth()) / 2, pTop + (pHeight - getHeight()) / 2);
+                    break;
+                }
+                case CENTER_RIGHT: {
+                    mPosition.set(pLeft + pWidth - getWidth(), pTop + (pHeight - getHeight()) / 2);
+                    break;
+                }
+                case BOTTOM_LEFT: {
+                    mPosition.set(pLeft + 0, pTop + pHeight - getHeight());
+                    break;
+                }
+                case BOTTOM_CENTER: {
+                    mPosition.set(pLeft + (pWidth - getWidth()) / 2, pTop + pHeight - getHeight());
+                    break;
+                }
+                case BOTTOM_RIGHT: {
+                    mPosition.set(pLeft + pWidth - getWidth(), pTop + pHeight - getHeight());
+                    break;
+                }
+                default: {
+                    mPosition.set(pLeft + mX, pTop + mY);
+                    break;
+                }
             }
+        } else {
+            mPosition.set(pLeft + mX, pTop + mY);
         }
-        return new Point(pLeft + mX, pTop + mY);
+        return mPosition;
     }
 
     /**
@@ -294,6 +324,24 @@ public abstract class CNode implements OnTouchListener {
      * @return
      */
     public boolean isActive() {
+        return true;
+    }
+
+    /**
+     * 窗口大小变化
+     *
+     * @param view
+     * @param rect
+     */
+    public void onSizeChange(RenderView view, Rect rect) {
+    }
+
+    /**
+     * 是否合法
+     *
+     * @return 是否需要绘制
+     */
+    public boolean isValid() {
         return true;
     }
 

@@ -8,17 +8,24 @@ import java.util.List;
 import com.hyena.framework.animation.sprite.CNode;
 
 import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewConfiguration;
+import android.widget.ScrollView;
+import android.widget.Scroller;
 
 /**
  * 展现层
  *
  * @author yangzc
  */
-public class CLayer extends CNode implements OnTouchListener {
+public class CLayer extends CNode {
 
+    private int mScrollX, mScrollY;
     private List<CNode> mNodes;
 
     protected CLayer(Director director) {
@@ -31,6 +38,12 @@ public class CLayer extends CNode implements OnTouchListener {
 
     @Override
     public synchronized void render(Canvas canvas) {
+        if (!isValid() || !isVisible()) {
+            return;
+        }
+
+        canvas.save();
+        canvas.translate(mScrollX, mScrollY);
         super.render(canvas);
         if (mNodes == null)
             return;
@@ -42,7 +55,7 @@ public class CLayer extends CNode implements OnTouchListener {
             }
         } catch (Exception e) {
         }
-
+        canvas.restore();
     }
 
     @Override
@@ -56,6 +69,24 @@ public class CLayer extends CNode implements OnTouchListener {
             }
         } catch (Exception e) {
         }
+    }
+
+    public void scrollTo(int x, int y) {
+        this.mScrollX = x;
+        this.mScrollY = y;
+    }
+
+    public void scrollBy(int dx, int dy) {
+        this.mScrollX += dx;
+        this.mScrollY += dy;
+    }
+
+    public int getScrollX() {
+        return mScrollX;
+    }
+
+    public int getScrollY() {
+        return mScrollY;
     }
 
     /**
@@ -85,19 +116,62 @@ public class CLayer extends CNode implements OnTouchListener {
         }
     }
 
+    private CNode mTargetNode = null;
+
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if (mNodes == null)
-            return false;
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (mNodes == null || mNodes.isEmpty()) {
+            return super.dispatchTouchEvent(ev);
+        }
+
+        boolean isIntercept = onInterceptTouchEvent(ev);
+        if (isIntercept) {
+            return super.dispatchTouchEvent(ev);
+        }
+
+        int action = ev.getAction();
+        if (action == MotionEvent.ACTION_DOWN) {
+            mTargetNode = null;
+        }
+        for (int i = 0; i < mNodes.size(); i++) {
+            CNode node = mNodes.get(i);
+            if (node.dispatchTouchEvent(ev)) {
+                mTargetNode = node;
+                return true;
+            }
+        }
+        if (mTargetNode == null)
+            return super.dispatchTouchEvent(ev);
+
+        return mTargetNode.dispatchTouchEvent(ev);
+    }
+
+    /**
+     * 判断是否需要拦截事件
+     *
+     * @param ev
+     * @return
+     */
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return false;
+    }
+
+    /**
+     * 窗口大小变化
+     * @param view
+     * @param rect
+     */
+    @Override
+    public void onSizeChange(RenderView view, Rect rect) {
         try {
-            for (CNode node : mNodes) {
-                if (node.onTouch(v, event)) {
-                    return true;
+            if (mNodes != null && mNodes.size() > 0) {
+                for (int i = 0; i < mNodes.size(); i++) {
+                    CNode node = mNodes.get(i);
+                    node.onSizeChange(view, rect);
                 }
             }
         } catch (Exception e) {
         }
-        return false;
     }
 
     @Override

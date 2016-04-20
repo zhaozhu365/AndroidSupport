@@ -77,4 +77,10 @@ public class CTextNode extends CNode {
 	public synchronized void setText(String text){
 		this.mText = text;
 	}
+
+	@Override
+	public boolean isValid() {
+		return super.isValid();
+	}
+
 }
