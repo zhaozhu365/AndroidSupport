@@ -39,6 +39,9 @@ public class CScrollLayer extends CLayer {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (getHeight() < getDirector().getViewSize().height()) {
+            return super.onInterceptTouchEvent(ev);
+        }
         int action = ev.getAction();
         if (action == MotionEvent.ACTION_MOVE && mDragging) {
             return true;
@@ -67,6 +70,9 @@ public class CScrollLayer extends CLayer {
 
     @Override
     public boolean onTouch(MotionEvent event) {
+        if (getHeight() < getDirector().getViewSize().height()) {
+            return super.onInterceptTouchEvent(event);
+        }
         int action = event.getAction();
         float x = event.getX();
         float y = event.getY();
@@ -155,9 +161,5 @@ public class CScrollLayer extends CLayer {
             mVelocityTracker.recycle();
             mVelocityTracker = null;
         }
-    }
-
-    public int getHeight() {
-        return 0;
     }
 }

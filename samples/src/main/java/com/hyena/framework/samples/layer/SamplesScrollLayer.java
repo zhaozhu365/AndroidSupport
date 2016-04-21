@@ -8,6 +8,7 @@ import com.hyena.framework.animation.CScrollLayer;
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.nodes.CTextNode;
 import com.hyena.framework.animation.sprite.CSprite;
+import com.hyena.framework.animation.texture.BitmapManager;
 import com.hyena.framework.animation.texture.CTexture;
 import com.hyena.framework.samples.R;
 
@@ -28,9 +29,11 @@ public class SamplesScrollLayer extends CScrollLayer {
     int height;
 
     private void initLayer() {
-        Bitmap bitmap = BitmapFactory.decodeResource(getDirector().getContext().getResources(), R.drawable.pic);
+        Bitmap bitmap = BitmapManager.getInstance().getBitmap(getDirector()
+                .getContext().getResources(), R.drawable.pic);
+
         int y = 0;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             CTexture texture = CTexture.create(getDirector(), bitmap);
             texture.setScale(0.25f, 0.25f);
             CSprite sprite = CSprite.create(getDirector(), texture);
