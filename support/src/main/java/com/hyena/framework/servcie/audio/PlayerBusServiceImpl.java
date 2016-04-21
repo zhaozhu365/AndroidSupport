@@ -39,7 +39,7 @@ public class PlayerBusServiceImpl implements PlayerBusService, IBusServiceStatus
 		Message msg = new Message();
 		msg.what = MediaService.CMD_PLAY;
 		Bundle bundle = new Bundle();
-		bundle.putParcelable("song", song);
+		bundle.putSerializable("song", song);
 		msg.setData(bundle);
 		mServiceMessenger.send(msg);
 	}

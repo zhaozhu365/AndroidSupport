@@ -97,7 +97,7 @@ public class MediaService extends Service {
 		case CMD_PLAY://播放歌曲
 		{
 			msg.getData().setClassLoader(getClassLoader());
-			Song song = msg.getData().getParcelable("song");
+			Song song = (Song) msg.getData().getSerializable("song");
 			playImpl(song);
 			break;
 		}

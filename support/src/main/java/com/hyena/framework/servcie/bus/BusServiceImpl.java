@@ -96,7 +96,7 @@ public class BusServiceImpl implements BusService {
 		public void onReceive(Context context, Intent intent) {
 			intent.setExtrasClassLoader(getClass().getClassLoader());
 			String action = intent.getAction();
-			Song song = intent.getParcelableExtra("song");
+			Song song = (Song) intent.getSerializableExtra("song");
 			if(MediaService.SERVICE_PLAY_EVENT_ACTION.equals(action)){
 				notifyOnReceiveServiceAction(intent.getIntExtra("type", -1), song, intent);
 			}
