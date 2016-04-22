@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map version="1" title="">
+	<!--src可能是图片或者颜色-->
+	<background src="#ffffff"/>
+	<!--zindex:层次关系  depth:景深-->
+	<layer id="background" zindex="0" depth="0.5">
+	</layer>
+
+	<layer id="" zindex="1" depth="1">
+		<!--节点-->
+		<node id="id1" x="screenWidth-10" y="screenHeight-10+3-2" tag="" width="" height="" pic="res:ss.png">
+			<action type="scale" repeat="-1"/>
+			<action type="translate"/>
+			<action type="alpha"/>
+			<action type="frame">
+				<frame pic="res:map1/pic.jpg" duration="200"/>
+			</action>
+
+			<action type="sequence" repeat="-1">
+				<action type="scale"/>
+				<action type="translate"/>
+				<action type="alpha"/>
+				<action type="frame">
+					<frame pic="res:ss.png"/>
+					<frame pic="res:ss.png"/>
+					<frame pic="res:ss.png"/>
+					<frame pic="res:ss.png"/>
+				</action>
+			</action>
+		</node>
+
+		<!--节点-->
+		<node id="id2" x="20" y="20" tag="" width="" height="" pic="http://www.baidu.com"/>
+		<text id="id2_title" color="" fontSize="" x="10" y="10" />
+		<text id="id2_subtitle1" color="" fontSize="" x="10" y="" text="default"/>
+		<text id="id2_subtitle2" color="" fontSize="" x="" y="" text="default" background=""/>
+		<node id="id2_subtitle3" x="20" y="20" tag="" width="" height="" pic="http://www.baidu.com"/>
+
+		<node type="pic" id="id2" x="20" y="20" tag="" width="" height="" pic="http://www.baidu.com"/>
+
+		<line from="id1" style="normal|dot" to="id2" tag="" pic=""/>
+
+	</layer>
+</map>
