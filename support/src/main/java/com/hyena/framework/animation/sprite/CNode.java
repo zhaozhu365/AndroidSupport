@@ -39,6 +39,8 @@ public abstract class CNode {
     private boolean isVisible = true;
     private Paint mPaint;
 
+    private String mTag;
+
     private Point mPosition = new Point();
     private static Random mRandom = new Random();
 
@@ -347,5 +349,20 @@ public abstract class CNode {
 
     public Director getDirector() {
         return mDirector;
+    }
+
+    public void setTag(String tag) {
+        this.mTag = tag;
+    }
+
+    public String getTag() {
+        return mTag;
+    }
+
+    public CNode findNodeByTag(String tag) {
+        if (tag != null && tag.equals(getTag())) {
+            return this;
+        }
+        return null;
     }
 }

@@ -5,6 +5,6 @@ package com.hyena.framework.samples.parser;
  */
 public interface MapParser {
 
-    CMap parse(String xml);
+    CMap parse(String xml, int screenWidth, int screenHeight);
 
 }

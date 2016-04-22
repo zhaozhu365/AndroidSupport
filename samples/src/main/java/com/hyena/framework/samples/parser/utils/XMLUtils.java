@@ -1,10 +1,10 @@
 package com.hyena.framework.samples.parser.utils;
 
-import com.hyena.framework.samples.parser.line.MapLine;
-import com.hyena.framework.samples.parser.node.MapLayer;
+import com.hyena.framework.samples.parser.node.MapNodeLine;
+import com.hyena.framework.samples.parser.node.MapNodeLayer;
 import com.hyena.framework.samples.parser.node.MapNode;
-import com.hyena.framework.samples.parser.node.MapSprite;
-import com.hyena.framework.samples.parser.node.MapText;
+import com.hyena.framework.samples.parser.node.MapNodeSprite;
+import com.hyena.framework.samples.parser.node.MapNodeText;
 import com.hyena.framework.utils.MathUtils;
 
 import org.apache.http.protocol.HTTP;
@@ -51,8 +51,8 @@ public class XMLUtils {
         }
     }
 
-    private static MapLayer parseLayer(Node layer) {
-        MapLayer mapLayer = new MapLayer();
+    private static MapNodeLayer parseLayer(Node layer) {
+        MapNodeLayer mapLayer = new MapNodeLayer();
         mapLayer.setZIndex(MathUtils.valueOfInt(getAttributeValue(layer, "zindex")));
         NodeList elementNode = layer.getChildNodes();
         for (int i = 0; i < elementNode.getLength(); i++) {
@@ -73,15 +73,15 @@ public class XMLUtils {
         return mapLayer;
     }
 
-    private static MapSprite parseSprite(Node node) {
+    private static MapNodeSprite parseSprite(Node node) {
         return null;
     }
 
-    private static MapText parseText(Node node) {
+    private static MapNodeText parseText(Node node) {
         return null;
     }
 
-    private static MapLine parseLine(Node node) {
+    private static MapNodeLine parseLine(Node node) {
         return null;
     }
 

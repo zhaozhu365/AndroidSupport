@@ -8,9 +8,10 @@ import java.util.List;
 /**
  * Created by yangzc on 16/4/21.
  */
-public class MapLayer {
+public class MapNodeLayer {
 
     private int mZIndex;
+    private float mDepth;
     private List<MapNode> mNodes;
 
     public void setZIndex(int zIndex) {
@@ -19,6 +20,14 @@ public class MapLayer {
 
     public int getZIndex() {
         return mZIndex;
+    }
+
+    public void setDepth(float depth) {
+        this.mDepth = depth;
+    }
+
+    public float getDepth() {
+        return mDepth;
     }
 
     public void addNode(MapNode node) {
@@ -32,12 +41,12 @@ public class MapLayer {
         return mNodes;
     }
 
-    private void sort(){
+    private void sort() {
         if (mNodes != null) {
             Collections.sort(mNodes, new Comparator<MapNode>() {
                 @Override
                 public int compare(MapNode lhs, MapNode rhs) {
-                    return 0;
+                    return lhs.getZIndex() - rhs.getZIndex();
                 }
             });
         }

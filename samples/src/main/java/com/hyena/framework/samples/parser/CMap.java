@@ -1,7 +1,11 @@
 package com.hyena.framework.samples.parser;
 
-import com.hyena.framework.samples.parser.node.MapLayer;
+import com.hyena.framework.samples.parser.node.MapNode;
+import com.hyena.framework.samples.parser.node.MapNodeLayer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -10,6 +14,28 @@ import java.util.List;
 public class CMap {
 
     public String mBackGround;
-    public List<MapLayer> mLayers;
 
+    private List<MapNodeLayer> mLayers;
+
+    public void addLayer(MapNodeLayer layer) {
+        if (mLayers == null)
+            mLayers = new ArrayList<MapNodeLayer>();
+        mLayers.add(layer);
+        sort();
+    }
+
+    public List<MapNodeLayer> getLayers() {
+        return mLayers;
+    }
+
+    private void sort() {
+        if (mLayers != null) {
+            Collections.sort(mLayers, new Comparator<MapNodeLayer>() {
+                @Override
+                public int compare(MapNodeLayer lhs, MapNodeLayer rhs) {
+                    return lhs.getZIndex() - rhs.getZIndex();
+                }
+            });
+        }
+    }
 }

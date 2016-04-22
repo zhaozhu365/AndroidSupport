@@ -2,6 +2,7 @@ package com.hyena.framework.samples.parser.node;
 
 import com.hyena.framework.samples.parser.action.MapAction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,8 +11,9 @@ import java.util.List;
 public class MapNode {
 
     private String mId;
-    private int mX, mY;
     private int mWidth, mHeight;
+    private int mX, mY;
+    private int mZIndex;
     private String mTag;
 
     public List<MapAction> mActions;
@@ -20,6 +22,26 @@ public class MapNode {
         this.mId = id;
         this.mWidth = width;
         this.mHeight = height;
+    }
+
+    public void addAction(MapAction action) {
+        if (mActions != null) {
+            mActions = new ArrayList<MapAction>();
+        }
+        mActions.add(action);
+    }
+
+    public List<MapAction> getActions() {
+        return mActions;
+    }
+
+
+    public void setZIndex(int zIndex) {
+        this.mZIndex = zIndex;
+    }
+
+    public int getZIndex() {
+        return mZIndex;
     }
 
     public void setTag(String tag) {
@@ -34,7 +56,6 @@ public class MapNode {
         return mId;
     }
 
-
     public int getWidth() {
         return mWidth;
     }
@@ -43,5 +64,19 @@ public class MapNode {
         return mHeight;
     }
 
+    public void setX(int x) {
+        this.mX = x;
+    }
 
+    public int getX() {
+        return mX;
+    }
+
+    public void setY(int y) {
+        this.mY = y;
+    }
+
+    public int getY() {
+        return mY;
+    }
 }

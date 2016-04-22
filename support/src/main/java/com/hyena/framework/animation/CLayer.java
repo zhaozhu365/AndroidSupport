@@ -158,6 +158,7 @@ public class CLayer extends CNode {
 
     /**
      * 窗口大小变化
+     *
      * @param view
      * @param rect
      */
@@ -220,5 +221,19 @@ public class CLayer extends CNode {
             }
         }
         return height;
+    }
+
+    @Override
+    public CNode findNodeByTag(String tag) {
+        if (mNodes != null && mNodes.size() > 0) {
+            for (int i = 0; i < mNodes.size(); i++) {
+                CNode node = mNodes.get(i);
+                CNode result = node.findNodeByTag(tag);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
     }
 }

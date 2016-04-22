@@ -3,11 +3,11 @@ package com.hyena.framework.samples.parser.action;
 /**
  * Created by yangzc on 16/4/21.
  */
-public class MapTranslateAction extends MapAction {
+public class MapActionAlpha extends MapAction {
     public int mFrom;
     public int mTo;
 
-    public MapTranslateAction(int duration, int repeate) {
+    public MapActionAlpha(int duration, int repeate) {
         super(duration, repeate);
     }
 }

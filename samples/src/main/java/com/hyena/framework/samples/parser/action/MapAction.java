@@ -5,16 +5,20 @@ package com.hyena.framework.samples.parser.action;
  */
 public class MapAction {
 
-    private int mRepeate;
+    private int mRepeat;
     private int mDuration;
 
-    public MapAction(int duration, int repeate) {
+    public MapAction(int duration, int repeat) {
         this.mDuration = duration;
-        this.mRepeate = repeate;
+        this.mRepeat = repeat;
     }
 
     public int getDuration() {
         return mDuration;
+    }
+
+    public int getRepeat() {
+        return mRepeat;
     }
 
 }
