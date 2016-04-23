@@ -6,9 +6,9 @@
 	<layer id="background" zindex="0" depth="0.5">
 		<!--线-->
 		<line id="" from="" to="" style="normal|dot" tag=""/>
-		<!--文本-->I
+		<!--文本-->
 		<text id="" x="" y="" width="" height="" color="" fontSize="" zindex="" tag="" text="default"/>
-		<!--节点-->I
+		<!--节点-->
 		<node id="" x="" y="" width="" height="" src="res:ss.png" zindex="" tag=""/>
 		<node id="" x="" y="" width="" height="" src="res:ss.png" zindex="" tag="">
 			<action type="scale" from="" to="" duration="" repeat=""/>

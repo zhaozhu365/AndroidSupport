@@ -259,6 +259,7 @@ public class MapScene extends CScene {
         paint.setTextSize(textNode.mFontSize);
         paint.setColor(textNode.mColor);
         node.setPaint(paint);
+        node.setText(textNode.mText);
         return node;
     }
 
