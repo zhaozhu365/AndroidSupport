@@ -214,8 +214,36 @@ public abstract class CNode {
         return onTouch(ev);
     }
 
+    private Rect mTemp = new Rect();
+    private boolean mTouching = false;
     public boolean onTouch(MotionEvent event) {
-        return false;
+        if (mClickListener == null) {
+            return false;
+        }
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+        int action = event.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+            {
+                mTemp.set(getPosition().x, getPosition().y, getPosition().x + getWidth(),
+                        getPosition().y + getHeight());
+                mTouching = mTemp.contains(x, y);
+                return mTouching;
+            }
+            case MotionEvent.ACTION_UP:
+            {
+                if (mTemp.contains(x, y)) {
+                    //click
+                    if (mClickListener != null) {
+                        mClickListener.onClick(this);
+                    }
+                }
+                mTouching = false;
+                break;
+            }
+        }
+        return mTouching;
     }
 
     /**
@@ -364,5 +392,13 @@ public abstract class CNode {
             return this;
         }
         return null;
+    }
+
+    private OnNodeClickListener mClickListener;
+    public void setOnNodeClickListener(OnNodeClickListener listener) {
+        this.mClickListener = listener;
+    }
+    public static interface OnNodeClickListener {
+        void onClick(CNode node);
     }
 }

@@ -139,6 +139,9 @@ public class CLayer extends CNode {
             return super.dispatchTouchEvent(ev);
         }
 
+        if (mTargetNode == null)
+            return super.dispatchTouchEvent(ev);
+        
         boolean isIntercept = onInterceptTouchEvent(ev);
         if (isIntercept) {
             return super.dispatchTouchEvent(ev);
