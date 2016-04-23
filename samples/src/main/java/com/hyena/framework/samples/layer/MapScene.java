@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 
 import com.hyena.framework.animation.CLayer;
+import com.hyena.framework.animation.CScene;
+import com.hyena.framework.animation.CScrollLayer;
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.action.CAlphaToAction;
 import com.hyena.framework.animation.action.CFrameAction;
@@ -48,12 +50,12 @@ import java.util.List;
 /**
  * Created by yangzc on 16/4/22.
  */
-public class MapLayer extends SamplesScrollLayer {
+public class MapScene extends CScene {
 
     private MapParser mParser = new DefaultMapParser();
     private CMap mMap = null;
 
-    protected MapLayer(Director director) {
+    protected MapScene(Director director) {
         super(director);
     }
 
@@ -111,7 +113,7 @@ public class MapLayer extends SamplesScrollLayer {
         if (mapLayer == null)
             return null;
 
-        CLayer layer = CLayer.create(getDirector());
+        CLayer layer = CScrollLayer.create(getDirector());
         List<MapNode> nodes = mapLayer.getNodes();
         if (nodes != null && !nodes.isEmpty()) {
             for (int i = 0; i < nodes.size(); i++) {
