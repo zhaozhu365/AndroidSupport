@@ -15,6 +15,7 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.Scroller;
 
@@ -27,6 +28,7 @@ public class CLayer extends CNode {
 
     private int mScrollX, mScrollY;
     private List<CNode> mNodes;
+    private float mDepth;
 
     protected CLayer(Director director) {
         super(director);
@@ -72,13 +74,26 @@ public class CLayer extends CNode {
     }
 
     public void scrollTo(int x, int y) {
+        if (!isScrollable())
+            return;
+
         this.mScrollX = x;
         this.mScrollY = y;
+        if (mScrollerListener != null) {
+            mScrollerListener.onScroll(mScrollX, mScrollY, getWidth(), getHeight());
+        }
     }
 
     public void scrollBy(int dx, int dy) {
+        if (!isScrollable())
+            return;
+
         this.mScrollX += dx;
         this.mScrollY += dy;
+
+        if (mScrollerListener != null) {
+            mScrollerListener.onScroll(mScrollX, mScrollY, getWidth(), getHeight());
+        }
     }
 
     public int getScrollX() {
@@ -235,5 +250,31 @@ public class CLayer extends CNode {
             }
         }
         return null;
+    }
+
+    public List<CNode> getNodes() {
+        return mNodes;
+    }
+
+    public void setDepth(float depth) {
+        this.mDepth = depth;
+    }
+
+    public float getDepth() {
+        return mDepth;
+    }
+
+    protected boolean isScrollable() {
+        return getHeight() > getDirector().getViewSize().height();
+    }
+
+    private OnScrollerListener mScrollerListener;
+
+    public void setOnScrollerListener(OnScrollerListener listener) {
+        this.mScrollerListener = listener;
+    }
+
+    public static interface OnScrollerListener {
+        public void onScroll(int scrollX, int scrollY, int width, int height);
     }
 }

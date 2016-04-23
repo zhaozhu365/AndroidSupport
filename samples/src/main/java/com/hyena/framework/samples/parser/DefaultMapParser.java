@@ -81,8 +81,14 @@ public class DefaultMapParser implements MapParser {
 
     private MapNodeLayer parseLayer(Node layer, int screenWidth, int screenHeight) {
         MapNodeLayer mapLayer = new MapNodeLayer();
+        mapLayer.setId(XMLUtils.getAttributeValue(layer, "id"));
         mapLayer.setZIndex(MathUtils.valueOfInt(XMLUtils.getAttributeValue(layer, "zindex")));
-        mapLayer.setDepth(MathUtils.valueOfFloat(XMLUtils.getAttributeValue(layer, "depth")));
+        String depth = XMLUtils.getAttributeValue(layer, "depth");
+        if (!TextUtils.isEmpty(depth)) {
+            mapLayer.setDepth(MathUtils.valueOfFloat(depth));
+        } else {
+            mapLayer.setDepth(1);
+        }
         NodeList elementNode = layer.getChildNodes();
         for (int i = 0; i < elementNode.getLength(); i++) {
             Node element = elementNode.item(i);
@@ -196,8 +202,6 @@ public class DefaultMapParser implements MapParser {
         int duration = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "duration"));
         int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
         MapActionTranslate action = new MapActionTranslate(duration, repeat);
-        action.mFromX = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "fromX"));
-        action.mFromY = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "fromY"));
         action.mToX = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "toX"));
         action.mToY = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "toY"));
         return action;

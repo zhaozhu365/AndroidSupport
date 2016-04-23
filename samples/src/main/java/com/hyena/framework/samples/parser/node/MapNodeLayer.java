@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class MapNodeLayer {
 
+    private String mId;
     private int mZIndex;
     private float mDepth;
     private List<MapNode> mNodes;
@@ -35,6 +36,14 @@ public class MapNodeLayer {
             mNodes = new ArrayList<MapNode>();
         mNodes.add(node);
         sort();
+    }
+
+    public void setId(String id) {
+        this.mId = id;
+    }
+
+    public String getId() {
+        return mId;
     }
 
     public List<MapNode> getNodes() {

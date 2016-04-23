@@ -5,6 +5,7 @@ import android.view.View;
 
 import com.hyena.framework.animation.CScene;
 import com.hyena.framework.animation.Director;
+import com.hyena.framework.app.fragment.BaseUIFragment;
 import com.hyena.framework.app.fragment.BaseUIFragmentHelper;
 import com.hyena.framework.app.fragment.GameFragment;
 
@@ -19,6 +20,10 @@ public class GameScene extends CScene {
             , Director director) {
         super(director);
         this.mGameFragment = gameFragment;
+    }
+
+    public BaseUIFragment getBaseUIFragment() {
+        return mGameFragment;
     }
 
     @Override

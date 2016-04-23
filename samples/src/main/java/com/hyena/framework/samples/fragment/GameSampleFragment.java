@@ -14,6 +14,9 @@ public class GameSampleFragment extends GameFragment {
     @Override
     public void onViewCreatedImpl(View view, Bundle savedInstanceState) {
         super.onViewCreatedImpl(view, savedInstanceState);
-        showScene(new SampleScene(this, getDirector()));
+        SampleScene scene = new SampleScene(this, getDirector());
+        showScene(scene);
+
+        scene.loadAssetPath("mapdemo.xml");
     }
 }

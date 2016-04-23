@@ -59,7 +59,7 @@ public class MapScene extends CScene {
         super(director);
     }
 
-    public void loadPath(String path){
+    public void loadAssetPath(String path) {
         try {
             InputStream is = getDirector().getContext().getAssets().open(path);
             byte buf[] = FileUtils.getBytes(is);
@@ -75,22 +75,44 @@ public class MapScene extends CScene {
                 getDirector().getViewSize().height());
 
         if (mMap != null) {
+            int zIndex = 0;
+            CScrollLayer topLayer = null;
             List<MapNodeLayer> layers = mMap.getLayers();
             if (layers != null && !layers.isEmpty()) {
                 for (int i = 0; i < layers.size(); i++) {
                     MapNodeLayer nodeLayer = layers.get(i);
                     //load layer
-                    CLayer layer = createLayer(nodeLayer);
-
+                    CScrollLayer layer = createLayer(nodeLayer);
+                    if (nodeLayer.getZIndex() > zIndex) {
+                        topLayer = layer;
+                        zIndex = nodeLayer.getZIndex();
+                    }
                     if (layer != null) {
+                        layer.setDepth(nodeLayer.getDepth());
                         addNode(layer, nodeLayer.getZIndex());
                     }
                 }
             }
+            //compute depth
+            if (topLayer != null) {
+                topLayer.setOnScrollerListener(new OnScrollerListener() {
+
+                    @Override
+                    public void onScroll(int scrollX, int scrollY, int width, int height) {
+                        List<CNode> nodes = getNodes();
+                        for (int i = 0; i < nodes.size(); i++) {
+                            if (nodes.get(i) instanceof CScrollLayer) {
+                                CScrollLayer layer = (CScrollLayer) nodes.get(i);
+                                layer.scrollTo((int) (scrollX * layer.getDepth()/width), (int) (scrollY * layer.getDepth()/ height));
+                            }
+                        }
+                    }
+                });
+            }
         }
     }
 
-    private Bitmap loadBitmap(String tag, String url){
+    private Bitmap loadBitmap(String tag, String url) {
         if (url != null && url.startsWith("res:")) {
             try {
                 InputStream is = getDirector().getContext().getAssets()
@@ -109,11 +131,11 @@ public class MapScene extends CScene {
      *
      * @param mapLayer layer information
      */
-    private CLayer createLayer(MapNodeLayer mapLayer) {
+    private CScrollLayer createLayer(MapNodeLayer mapLayer) {
         if (mapLayer == null)
             return null;
 
-        CLayer layer = CScrollLayer.create(getDirector());
+        CScrollLayer layer = CScrollLayer.create(getDirector());
         List<MapNode> nodes = mapLayer.getNodes();
         if (nodes != null && !nodes.isEmpty()) {
             for (int i = 0; i < nodes.size(); i++) {
@@ -136,7 +158,7 @@ public class MapScene extends CScene {
         return layer;
     }
 
-    private CAction createAction(MapAction mapAction){
+    private CAction createAction(MapAction mapAction) {
         CAction action = null;
         if (mapAction instanceof MapActionAlpha) {
             action = createAlphaAction((MapActionAlpha) mapAction);
@@ -171,7 +193,7 @@ public class MapScene extends CScene {
         return action;
     }
 
-    private CFrameAction createFrameAction(MapActionFrame mapFrameAction){
+    private CFrameAction createFrameAction(MapActionFrame mapFrameAction) {
         List<MapFrame> frames = mapFrameAction.getFrames();
         if (frames != null && frames.size() > 0) {
             CFrameAction action = CFrameAction.create();
