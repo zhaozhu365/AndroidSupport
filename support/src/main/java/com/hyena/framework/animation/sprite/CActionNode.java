@@ -17,7 +17,7 @@ public abstract class CActionNode extends CNode {
 	
 	public abstract void setSkew(float skewX, float skewY);
 	
-	public abstract void setAnchor(int x, int y);
+	public abstract void setAnchor(float x, float y);
 	
 	public abstract void setScale(float sx, float sy);
 	

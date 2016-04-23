@@ -14,7 +14,7 @@ public class CMoveToAction extends CIntervalAction {
 
 	private Point mStart;
 	private Point mTarget;
-	
+
 	protected CMoveToAction(int x, int y, float d, Interpolator interpolator) {
 		super(d);
 		
@@ -50,7 +50,7 @@ public class CMoveToAction extends CIntervalAction {
 	@Override
 	public void update(float dt) {
 		if(mStart == null){
-			mStart = actionNode.getPosition();
+			mStart = new Point(actionNode.getPosition());
 			return;
 		}
 		
@@ -82,5 +82,10 @@ public class CMoveToAction extends CIntervalAction {
 		if(actionNode != null){
 			actionNode.setPosition(new Point(x, y));
 		}
+	}
+
+	@Override
+	public synchronized void reset() {
+		super.reset();
 	}
 }

@@ -6,7 +6,7 @@ package com.hyena.framework.samples.parser.node;
 public class MapNodeText extends MapNode {
 
     public String mText;
-    public int mColor;
+    public String mColor;
     public int mFontSize;
 
     public MapNodeText(String id, int width, int height) {

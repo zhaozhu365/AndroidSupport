@@ -1,22 +1,23 @@
 package com.hyena.framework.samples.layer;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 
-import com.hyena.framework.animation.CLayer;
 import com.hyena.framework.animation.CScene;
 import com.hyena.framework.animation.CScrollLayer;
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.action.CAlphaToAction;
 import com.hyena.framework.animation.action.CFrameAction;
 import com.hyena.framework.animation.action.CMoveToAction;
+import com.hyena.framework.animation.action.CRotateToAction;
 import com.hyena.framework.animation.action.CScaleToAction;
 import com.hyena.framework.animation.action.CSequenceAction;
 import com.hyena.framework.animation.action.base.CAction;
+import com.hyena.framework.animation.action.base.CIntervalAction;
+import com.hyena.framework.animation.action.base.CRepeatAction;
 import com.hyena.framework.animation.nodes.CTextNode;
 import com.hyena.framework.animation.sprite.CNode;
 import com.hyena.framework.animation.sprite.CPoint;
@@ -29,6 +30,7 @@ import com.hyena.framework.samples.parser.MapParser;
 import com.hyena.framework.samples.parser.action.MapAction;
 import com.hyena.framework.samples.parser.action.MapActionAlpha;
 import com.hyena.framework.samples.parser.action.MapActionFrame;
+import com.hyena.framework.samples.parser.action.MapActionRotate;
 import com.hyena.framework.samples.parser.action.MapActionScale;
 import com.hyena.framework.samples.parser.action.MapActionSequence;
 import com.hyena.framework.samples.parser.action.MapActionTranslate;
@@ -39,10 +41,10 @@ import com.hyena.framework.samples.parser.node.MapNodeLine;
 import com.hyena.framework.samples.parser.node.MapNodeSprite;
 import com.hyena.framework.samples.parser.node.MapNodeText;
 import com.hyena.framework.utils.FileUtils;
+import com.hyena.framework.utils.UIUtils;
 
 import org.apache.http.protocol.HTTP;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +77,7 @@ public class MapScene extends CScene {
                 getDirector().getViewSize().height());
 
         if (mMap != null) {
-            int zIndex = 0;
+            int zIndex = -1;
             CScrollLayer topLayer = null;
             List<MapNodeLayer> layers = mMap.getLayers();
             if (layers != null && !layers.isEmpty()) {
@@ -158,23 +160,39 @@ public class MapScene extends CScene {
         return layer;
     }
 
-    private CAction createAction(MapAction mapAction) {
-        CAction action = null;
+    private CAction createAction(MapNodeSprite spriteNode, MapAction mapAction) {
+        CIntervalAction action = null;
         if (mapAction instanceof MapActionAlpha) {
             action = createAlphaAction((MapActionAlpha) mapAction);
         } else if (mapAction instanceof MapActionScale) {
-            action = createScaleAction((MapActionScale) mapAction);
+            action = createScaleAction(spriteNode, (MapActionScale) mapAction);
         } else if (mapAction instanceof MapActionTranslate) {
             action = createMoveToAction((MapActionTranslate) mapAction);
         } else if (mapAction instanceof MapActionFrame) {
             action = createFrameAction((MapActionFrame) mapAction);
         } else if (mapAction instanceof MapActionSequence) {
-            action = createSequenceAction((MapActionSequence) mapAction);
+            action = createSequenceAction(spriteNode, (MapActionSequence) mapAction);
+        } else if (mapAction instanceof MapActionRotate) {
+            action = createRotateAction((MapActionRotate) mapAction);
         }
+        if (action != null) {
+            if (mapAction.getRepeat() == -1) {
+                return CRepeatAction.create(action, Integer.MAX_VALUE);
+            } else {
+                return CRepeatAction.create(action, mapAction.getRepeat());
+            }
+        }
+        return null;
+    }
+
+    private CRotateToAction createRotateAction(MapActionRotate mapRotateAction){
+        CRotateToAction action = CRotateToAction.create(mapRotateAction.mFrom,
+                mapRotateAction.mDegree, mapRotateAction.getDuration());
         return action;
     }
 
-    private CSequenceAction createSequenceAction(MapActionSequence mapSequenceAction) {
+    private CSequenceAction createSequenceAction(MapNodeSprite spriteNode,
+                                                 MapActionSequence mapSequenceAction) {
         List<MapAction> mapActions = mapSequenceAction.getActions();
         if (mapActions == null || mapActions.isEmpty())
             return null;
@@ -182,7 +200,7 @@ public class MapScene extends CScene {
         List<CAction> actions = new ArrayList<CAction>();
         for (int i = 0; i < mapActions.size(); i++) {
             MapAction mapAction = mapActions.get(i);
-            CAction action = createAction(mapAction);
+            CAction action = createAction(spriteNode, mapAction);
             if (action != null) {
                 actions.add(action);
             }
@@ -216,7 +234,7 @@ public class MapScene extends CScene {
         return action;
     }
 
-    private CScaleToAction createScaleAction(MapActionScale mapScaleAction) {
+    private CScaleToAction createScaleAction(MapNodeSprite spriteNode, MapActionScale mapScaleAction) {
         CScaleToAction action = CScaleToAction.create(mapScaleAction.mFrom,
                 mapScaleAction.mTo, mapScaleAction.getDuration());
         return action;
@@ -232,21 +250,24 @@ public class MapScene extends CScene {
         String path = spriteNode.mSrc;
         Bitmap bitmap = loadBitmap(spriteNode.getId(), path);
         CTexture texture = CTexture.create(getDirector(), bitmap);
+        texture.setSize(spriteNode.getWidth(), spriteNode.getHeight());
         if (spriteNode.getActions() != null
                 && !spriteNode.getActions().isEmpty()) {
             CSprite sprite = CSprite.create(getDirector(), texture);
-            sprite.setScale(spriteNode.getWidth() / bitmap.getWidth(),
-                    spriteNode.getHeight() / bitmap.getHeight());
             for (int i = 0; i < spriteNode.getActions().size(); i++) {
                 MapAction mapAction = spriteNode.getActions().get(i);
-                CAction action = createAction(mapAction);
+                CAction action = createAction(spriteNode, mapAction);
 
                 if (action != null) {
                     sprite.runAction(action);
                 }
             }
+            sprite.setAnchor(spriteNode.getAnchorX(), spriteNode.getAnchorY());
+            sprite.setPosition(new Point(spriteNode.getX(), spriteNode.getY()));
             return sprite;
         } else {
+            texture.setAnchor(spriteNode.getAnchorX(), spriteNode.getAnchorY());
+            texture.setPosition(new Point(spriteNode.getX(), spriteNode.getY()));
             return texture;
         }
     }
@@ -256,8 +277,8 @@ public class MapScene extends CScene {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         CTextNode node = CTextNode.create(getDirector());
         node.setPosition(new Point(textNode.getX(), textNode.getY()));
-        paint.setTextSize(textNode.mFontSize);
-        paint.setColor(textNode.mColor);
+        paint.setTextSize(UIUtils.dip2px(textNode.mFontSize));
+        paint.setColor(Color.parseColor(textNode.mColor));
         node.setPaint(paint);
         node.setText(textNode.mText);
         return node;
@@ -275,8 +296,10 @@ public class MapScene extends CScene {
         }
         node.setColor(0xffff0000);
 
-        node.setStartPoint(new CPoint(fromSprite.getX(), fromSprite.getY()));
-        node.setEndPoint(new CPoint(toSprite.getX(), toSprite.getY()));
+        node.setStartPoint(new CPoint(fromSprite.getX() + fromSprite.getWidth()/2,
+                fromSprite.getY() + fromSprite.getHeight()/2));
+        node.setEndPoint(new CPoint(toSprite.getX() + toSprite.getWidth()/2,
+                toSprite.getY() + toSprite.getHeight()/2));
         return node;
     }
 

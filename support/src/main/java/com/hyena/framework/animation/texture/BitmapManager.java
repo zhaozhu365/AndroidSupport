@@ -26,11 +26,12 @@ public class BitmapManager extends LruCache<String, SoftReference<Bitmap>> {
 	
 	public Bitmap getBitmap(Resources res, int resId){
 		SoftReference<Bitmap> bitmap = get(resId + "");
-		Bitmap value = null;
+		Bitmap value;
 		if(bitmap == null || bitmap.get() == null || bitmap.get().isRecycled()){
 			Bitmap newBitmap = BitmapUtils.decodeResourceInternal(res, resId);
 			if(newBitmap != null)
 				put(resId + "", new SoftReference<Bitmap>(newBitmap));
+			value = newBitmap;
 		}else{
 			value = bitmap.get();
 		}
@@ -39,11 +40,12 @@ public class BitmapManager extends LruCache<String, SoftReference<Bitmap>> {
 
 	public Bitmap getBitmap(String path){
 		SoftReference<Bitmap> bitmap = get(path);
-		Bitmap value = null;
+		Bitmap value;
 		if(bitmap == null || bitmap.get() == null || bitmap.get().isRecycled()){
 			Bitmap newBitmap = BitmapFactory.decodeFile(path);
 			if(newBitmap != null)
 				put(path, new SoftReference<Bitmap>(newBitmap));
+			value = newBitmap;
 		}else{
 			value = bitmap.get();
 		}
@@ -52,11 +54,12 @@ public class BitmapManager extends LruCache<String, SoftReference<Bitmap>> {
 
 	public Bitmap getBitmap(String path, InputStream is){
 		SoftReference<Bitmap> bitmap = get(path);
-		Bitmap value = null;
+		Bitmap value;
 		if(bitmap == null || bitmap.get() == null || bitmap.get().isRecycled()){
 			Bitmap newBitmap = BitmapFactory.decodeStream(is);
 			if(newBitmap != null)
 				put(path, new SoftReference<Bitmap>(newBitmap));
+			value = newBitmap;
 		}else{
 			value = bitmap.get();
 		}
@@ -68,9 +71,9 @@ public class BitmapManager extends LruCache<String, SoftReference<Bitmap>> {
 			SoftReference<Bitmap> oldValue, SoftReference<Bitmap> newValue) {
 		super.entryRemoved(evicted, key, oldValue, newValue);
 		
-		if(oldValue != null && oldValue.get() != null && !oldValue.get().isRecycled()){
-			oldValue.get().recycle();
-		}
+//		if(oldValue != null && oldValue.get() != null && !oldValue.get().isRecycled()){
+//			oldValue.get().recycle();
+//		}
 	}
 	
 	@Override

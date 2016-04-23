@@ -62,6 +62,16 @@ public class LineNode extends CNode {
     }
 
     @Override
+    public int getWidth() {
+        return Math.abs(mStartPoint.mX - mEndPoint.mX);
+    }
+
+    @Override
+    public int getHeight() {
+        return Math.abs(mStartPoint.mY - mEndPoint.mY);
+    }
+
+    @Override
     public void render(Canvas canvas) {
         super.render(canvas);
         if (mStartPoint != null && mEndPoint != null) {

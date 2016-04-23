@@ -15,6 +15,7 @@ public class MapNode {
     private int mX, mY;
     private int mZIndex;
     private String mTag;
+    private float mAnchorX = 0.0f, mAnchorY = 0.0f;
 
     public List<MapAction> mActions;
 
@@ -25,7 +26,7 @@ public class MapNode {
     }
 
     public void addAction(MapAction action) {
-        if (mActions != null) {
+        if (mActions == null) {
             mActions = new ArrayList<MapAction>();
         }
         mActions.add(action);
@@ -78,5 +79,21 @@ public class MapNode {
 
     public int getY() {
         return mY;
+    }
+
+    public float getAnchorX() {
+        return mAnchorX;
+    }
+
+    public void setAnchorX(float anchorX) {
+        this.mAnchorX = anchorX;
+    }
+
+    public float getAnchorY() {
+        return mAnchorY;
+    }
+
+    public void setAnchorY(float anchorY) {
+        this.mAnchorY = anchorY;
     }
 }

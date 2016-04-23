@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.hyena.framework.samples.parser.action.MapAction;
 import com.hyena.framework.samples.parser.action.MapActionAlpha;
+import com.hyena.framework.samples.parser.action.MapActionRotate;
 import com.hyena.framework.samples.parser.action.MapFrame;
 import com.hyena.framework.samples.parser.action.MapActionFrame;
 import com.hyena.framework.samples.parser.action.MapActionScale;
@@ -20,7 +21,6 @@ import com.hyena.framework.utils.MathUtils;
 import org.apache.http.protocol.HTTP;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -52,11 +52,7 @@ public class DefaultMapParser implements MapParser {
             String backGround = "";
             for (int i = 0; i < backGroundList.getLength(); i++) {
                 Node backGroundNode = backGroundList.item(i);
-                NamedNodeMap attributes = backGroundNode.getAttributes();
-                int attrCnt = attributes.getLength();
-                for (int j = 0; j < attrCnt; j++) {
-                    backGround = XMLUtils.getAttributeValue(attributes.item(j), "src");
-                }
+                backGround = XMLUtils.getAttributeValue(backGroundNode, "src");
             }
             map.mBackGround = backGround;
 
@@ -118,6 +114,16 @@ public class DefaultMapParser implements MapParser {
         mapNode.setY(getNumber(XMLUtils.getAttributeValue(node, "y"), screenWidth, screenHeight));
         mapNode.setZIndex(MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "zindex")));
         mapNode.setTag(XMLUtils.getAttributeValue(node, "tag"));
+
+        String anchorX = XMLUtils.getAttributeValue(node, "anchorX");
+        if (!TextUtils.isEmpty(anchorX)) {
+            mapNode.setAnchorX(MathUtils.valueOfFloat(anchorX));
+        }
+
+        String anchorY = XMLUtils.getAttributeValue(node, "anchorY");
+        if (!TextUtils.isEmpty(anchorY)) {
+            mapNode.setAnchorY(MathUtils.valueOfFloat(anchorY));
+        }
     }
 
     private void updateActions(MapNode mapNode, Node node) {
@@ -146,13 +152,34 @@ public class DefaultMapParser implements MapParser {
             action = parseFrameAction(node);
         } else if ("sequence".equals(type)) {
             action = parseSequenceAction(node);
+        } else if ("rotate".equals(type)) {
+            action = parseRotateAction(node);
         }
+        return action;
+    }
+
+    private MapActionRotate parseRotateAction(Node node){
+        int duration = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "duration"));
+//        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
+        String repeatStr = XMLUtils.getAttributeValue(node, "repeat");
+        int repeat = 1;
+        if (!TextUtils.isEmpty(repeatStr)) {
+            repeat = MathUtils.valueOfInt(repeatStr);
+        }
+        MapActionRotate action = new MapActionRotate(duration, repeat);
+        action.mFrom = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "from"));
+        action.mDegree = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "degree"));
         return action;
     }
 
     private MapActionSequence parseSequenceAction(Node node) {
         int duration = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "duration"));
-        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
+//        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
+        String repeatStr = XMLUtils.getAttributeValue(node, "repeat");
+        int repeat = 1;
+        if (!TextUtils.isEmpty(repeatStr)) {
+            repeat = MathUtils.valueOfInt(repeatStr);
+        }
         MapActionSequence action = new MapActionSequence(duration, repeat);
 
         NodeList actionList = node.getChildNodes();
@@ -171,7 +198,12 @@ public class DefaultMapParser implements MapParser {
 
     private MapActionFrame parseFrameAction(Node node) {
         int duration = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "duration"));
-        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
+//        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
+        String repeatStr = XMLUtils.getAttributeValue(node, "repeat");
+        int repeat = 1;
+        if (!TextUtils.isEmpty(repeatStr)) {
+            repeat = MathUtils.valueOfInt(repeatStr);
+        }
         MapActionFrame action = new MapActionFrame(duration, repeat);
 
         NodeList frameList = node.getChildNodes();
@@ -191,7 +223,12 @@ public class DefaultMapParser implements MapParser {
 
     private MapActionAlpha parseAlphaAction(Node node) {
         int duration = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "duration"));
-        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
+//        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
+        String repeatStr = XMLUtils.getAttributeValue(node, "repeat");
+        int repeat = 1;
+        if (!TextUtils.isEmpty(repeatStr)) {
+            repeat = MathUtils.valueOfInt(repeatStr);
+        }
         MapActionAlpha action = new MapActionAlpha(duration, repeat);
         action.mFrom = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "from"));
         action.mTo = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "to"));
@@ -200,7 +237,11 @@ public class DefaultMapParser implements MapParser {
 
     private MapActionTranslate parseTranslateAction(Node node) {
         int duration = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "duration"));
-        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
+        String repeatStr = XMLUtils.getAttributeValue(node, "repeat");
+        int repeat = 1;
+        if (!TextUtils.isEmpty(repeatStr)) {
+            repeat = MathUtils.valueOfInt(repeatStr);
+        }
         MapActionTranslate action = new MapActionTranslate(duration, repeat);
         action.mToX = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "toX"));
         action.mToY = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "toY"));
@@ -209,7 +250,11 @@ public class DefaultMapParser implements MapParser {
 
     private MapActionScale parseScaleAction(Node node) {
         int duration = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "duration"));
-        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
+        String repeatStr = XMLUtils.getAttributeValue(node, "repeat");
+        int repeat = 1;
+        if (!TextUtils.isEmpty(repeatStr)) {
+            repeat = MathUtils.valueOfInt(repeatStr);
+        }
         MapActionScale action = new MapActionScale(duration, repeat);
         action.mFrom = MathUtils.valueOfFloat(XMLUtils.getAttributeValue(node, "from"));
         action.mTo = MathUtils.valueOfFloat(XMLUtils.getAttributeValue(node, "to"));
@@ -230,8 +275,9 @@ public class DefaultMapParser implements MapParser {
         int width = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "width"));
         int height = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "height"));
         MapNodeText text = new MapNodeText(id, width, height);
-        text.mColor = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "color"));
+        text.mColor = XMLUtils.getAttributeValue(node, "color");
         text.mFontSize = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "fontSize"));
+        text.mText = XMLUtils.getAttributeValue(node, "text");
         return text;
     }
 

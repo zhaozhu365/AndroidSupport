@@ -80,7 +80,7 @@ public class CLayer extends CNode {
         this.mScrollX = x;
         this.mScrollY = y;
         if (mScrollerListener != null) {
-            mScrollerListener.onScroll(mScrollX, mScrollY, getWidth(), getHeight());
+            mScrollerListener.onScroll(mScrollX, mScrollY, getWidth(), getContentHeight());
         }
     }
 
@@ -92,7 +92,7 @@ public class CLayer extends CNode {
         this.mScrollY += dy;
 
         if (mScrollerListener != null) {
-            mScrollerListener.onScroll(mScrollX, mScrollY, getWidth(), getHeight());
+            mScrollerListener.onScroll(mScrollX, mScrollY, getWidth(), getContentHeight());
         }
     }
 
@@ -224,6 +224,10 @@ public class CLayer extends CNode {
 
     @Override
     public int getHeight() {
+        return super.getHeight();
+    }
+
+    protected int getContentHeight(){
         if (mNodes == null || mNodes.isEmpty())
             return super.getHeight();
 
@@ -265,7 +269,7 @@ public class CLayer extends CNode {
     }
 
     protected boolean isScrollable() {
-        return getHeight() > getDirector().getViewSize().height();
+        return getContentHeight() > getDirector().getViewSize().height();
     }
 
     private OnScrollerListener mScrollerListener;

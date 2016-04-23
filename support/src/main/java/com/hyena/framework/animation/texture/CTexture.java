@@ -3,6 +3,7 @@ package com.hyena.framework.animation.texture;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Point;
 
 import com.hyena.framework.animation.Director;
 
@@ -36,8 +37,20 @@ public class CTexture extends CBaseTexture {
 		if(mBitmap == null || mMatrix == null 
 				|| mPaint == null || mBitmap.isRecycled())
 			return;
-		
-		canvas.drawBitmap(mBitmap, mMatrix, mPaint);
+
+		Point position = getPosition();
+		canvas.save();
+
+		if(position == null){
+			canvas.translate(0, 0);
+		}else{
+			canvas.translate(position.x, position.y);
+		}
+		if (mBitmap != null) {
+			canvas.drawBitmap(mBitmap, mMatrix, mPaint);
+		}
+
+		canvas.restore();
 	}
 
 	/**
@@ -47,22 +60,35 @@ public class CTexture extends CBaseTexture {
 	public void setTexture(Bitmap bitmap){
 		this.mBitmap = bitmap;
 	}
-	
+
 	@Override
 	public int getWidth(){
-		if(mBitmap != null){
-			return (int) (mBitmap.getWidth() * mScaleX);
-		}
-		return 0;
+//		if(mBitmap != null){
+//			return (int) (mBitmap.getWidth() * mInitScaleX);
+//		}
+//		return 0;
+		return mWidth;
 	}
 
 	@Override
 	public int getHeight(){
-		if(mBitmap != null){
-			return (int) (mBitmap.getHeight() * mScaleY);
-		}
-		return 0;
+//		if(mBitmap != null){
+//			return (int) (mBitmap.getHeight() * mInitScaleY);
+//		}
+//		return 0;
+		return mHeight;
 	}
+
+	private int mWidth, mHeight;
+	public void setSize(int width, int height){
+		this.mWidth = width;
+		this.mHeight = height;
+		if (mBitmap != null) {
+			setInitScale((width + 0.0f) / mBitmap.getWidth()
+					, (height + 0.0f)/ mBitmap.getHeight());
+		}
+	}
+
 	
 	/**
 	 * 获得纹理图片

@@ -14,10 +14,13 @@ public class CSprite extends CActionNode {
 
 	//纹理
 	private CTexture mTexture;
+	private float mRawScaleX = 1, mRawScaleY = 1;
 	
 	private CSprite(Director director, CTexture texture){
 		super(director);
 		this.mTexture = texture;
+		this.mRawScaleX = texture.getScaleX();
+		this.mRawScaleY = texture.getScaleY();
 	}
 	
 	/**
@@ -115,7 +118,7 @@ public class CSprite extends CActionNode {
 	}
 
 	@Override
-	public void setAnchor(int x, int y) {
+	public void setAnchor(float x, float y) {
 		if(mTexture != null)
 			mTexture.setAnchor(x, y);
 	}
@@ -123,7 +126,7 @@ public class CSprite extends CActionNode {
 	@Override
 	public void setScale(float sx, float sy) {
 		if(mTexture != null)
-			mTexture.setScale(sx, sy);
+			mTexture.setScale(sx * mRawScaleX, sy * mRawScaleY);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package com.hyena.framework.samples.parser;
 
-import com.hyena.framework.samples.parser.node.MapNode;
 import com.hyena.framework.samples.parser.node.MapNodeLayer;
 
 import java.util.ArrayList;
