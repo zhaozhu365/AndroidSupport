@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.text.TextUtils;
 
 import com.hyena.framework.animation.CScene;
 import com.hyena.framework.animation.CScrollLayer;
@@ -45,6 +46,7 @@ import com.hyena.framework.utils.UIUtils;
 
 import org.apache.http.protocol.HTTP;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +123,8 @@ public class MapScene extends CScene {
                         .open(url.replace("res:", ""));
                 Bitmap bitmap = BitmapManager.getInstance().getBitmap(url, is);
                 return bitmap;
+            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -249,7 +253,20 @@ public class MapScene extends CScene {
     private CNode loadSprite(MapNodeSprite spriteNode) {
         String path = spriteNode.mSrc;
         Bitmap bitmap = loadBitmap(spriteNode.getId(), path);
-        CTexture texture = CTexture.create(getDirector(), bitmap);
+        Bitmap pressed = null;
+        if (!TextUtils.isEmpty(path)) {
+            String fileName = path.substring(0, path.indexOf("."));
+            String suffix = path.substring(path.indexOf("."));
+            pressed = loadBitmap(spriteNode.getId(), fileName + "_p" + suffix);
+        }
+
+        CTexture texture;
+        if (pressed == null) {
+            texture = CTexture.create(getDirector(), bitmap);
+        } else {
+            texture = PressableTexture.create(getDirector(), bitmap, pressed);
+        }
+
         texture.setSize(spriteNode.getWidth(), spriteNode.getHeight());
         if (spriteNode.getActions() != null
                 && !spriteNode.getActions().isEmpty()) {

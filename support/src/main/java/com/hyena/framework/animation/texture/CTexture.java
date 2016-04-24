@@ -16,7 +16,7 @@ public class CTexture extends CBaseTexture {
 
 	private Bitmap mBitmap;
 	
-	private CTexture(Director director, Bitmap bitmap){
+	protected CTexture(Director director, Bitmap bitmap){
 		super(director);
 		this.mBitmap = bitmap;
 	}

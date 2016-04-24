@@ -5,22 +5,26 @@
 	<!--zIndex:层次关系  depth:景深-->
 	<layer id="background" zindex="0" depth="1">
 		<!--线 normal|dot
-		-->
 		<line id="line1" from="texture" to="sprite" style="dot" tag=""/>
+		-->
 		<!--文本
 		-->
 		<text id="text1" x="0" y="100" width="200" height="100" color="#ff0000" fontSize="24" zindex="1" tag="" text="default"/>
 		<!--节点
 		-->
-		<node id="texture" x="0" y="0" width="200" height="200" src="res:map1/girl.jpg" zindex="" tag="" anchorX="0.5" anchorY="0.5">
+		<node id="texture" x="0" y="0" width="200" height="200" src="res:map1/wolf.jpg" zindex="0" tag="" anchorX="0.5" anchorY="0.5">
+			<!--
 			<action type="frame">
 				<frame src="res:map1/girl.png" duration="2000"/>
 				<frame src="res:map1/wolf.jpg" duration="2000"/>
 			</action>
 			<action type="scale" from="1" to="0.1" duration="10000" repeat="-1"/>
+			-->
 		</node>
 		<node id="sprite" x="600" y="600" width="200" height="200" src="res:map1/pic.jpg" zindex="" tag="" anchorX="0.5" anchorY="0.5">
+			<!--
 			<action type="rotate" from="0" degree="360" duration="1000" repeat="1"/>
+			-->
 			<!--
 			<action type="translate" toX="600" toY="600" duration="1000" repeat="1"/>
 			<action type="scale" from="1" to="0.1" duration="1000" repeat="-1"/>

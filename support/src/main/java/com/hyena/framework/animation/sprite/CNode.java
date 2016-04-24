@@ -229,9 +229,13 @@ public abstract class CNode {
                 mTemp.set(getPosition().x, getPosition().y, getPosition().x + getWidth(),
                         getPosition().y + getHeight());
                 mTouching = mTemp.contains(x, y);
+                if (mTouching) {
+                    onTouchDown();
+                }
                 return mTouching;
             }
             case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
             {
                 if (mTemp.contains(x, y)) {
                     //click
@@ -239,6 +243,7 @@ public abstract class CNode {
                         mClickListener.onClick(this);
                     }
                 }
+                onTouchUp();
                 mTouching = false;
                 break;
             }
@@ -393,6 +398,10 @@ public abstract class CNode {
         }
         return null;
     }
+
+    protected void onTouchDown(){}
+
+    protected void onTouchUp(){}
 
     private OnNodeClickListener mClickListener;
     public void setOnNodeClickListener(OnNodeClickListener listener) {

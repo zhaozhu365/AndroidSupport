@@ -35,7 +35,7 @@ public class MapNodeLayer {
         if (mNodes == null)
             mNodes = new ArrayList<MapNode>();
         mNodes.add(node);
-        sort();
+//        sort();
     }
 
     public void setId(String id) {
@@ -50,14 +50,14 @@ public class MapNodeLayer {
         return mNodes;
     }
 
-    private void sort() {
-        if (mNodes != null) {
-            Collections.sort(mNodes, new Comparator<MapNode>() {
-                @Override
-                public int compare(MapNode lhs, MapNode rhs) {
-                    return lhs.getZIndex() - rhs.getZIndex();
-                }
-            });
-        }
-    }
+//    private void sort() {
+//        if (mNodes != null) {
+//            Collections.sort(mNodes, new Comparator<MapNode>() {
+//                @Override
+//                public int compare(MapNode lhs, MapNode rhs) {
+//                    return lhs.getZIndex() - rhs.getZIndex();
+//                }
+//            });
+//        }
+//    }
 }
