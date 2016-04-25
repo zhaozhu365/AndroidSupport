@@ -34,8 +34,32 @@
 		<node id="level_2" x="188" y="func(53+90*12)" width="38" height="38" src="res:map1/icon_level.png"/>
 		<node id="level_1" x="95" y="func(53+90*13)" width="38" height="38" src="res:map1/icon_level.png"/>
 
-		<text id="level_text_13" x="95" y="func(53+90)" width="38" height="38" color="#ffffff"
+		<text id="level_text_13" x="95" y="func(53+90)" width="34" height="34" color="#ffffff"
 			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="13"/>
+		<text id="level_text_12" x="188" y="func(53+90*2)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="12"/>
+		<text id="level_text_11" x="95" y="func(53+90*3)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="11"/>
+		<text id="level_text_10" x="188" y="func(53+90*4)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="10"/>
+		<text id="level_text_9" x="95" y="func(53+90*5)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="9"/>
+		<text id="level_text_8" x="188" y="func(53+90*6)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="8"/>
+		<text id="level_text_7" x="95" y="func(53+90*7)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="7"/>
+		<text id="level_text_6" x="188" y="func(53+90*8)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="6"/>
+		<text id="level_text_5" x="95" y="func(53+90*9)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="5"/>
+		<text id="level_text_4" x="188" y="func(53+90*10)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="4"/>
+		<text id="level_text_3" x="95" y="func(53+90*11)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="3"/>
+		<text id="level_text_2" x="188" y="func(53+90*12)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="2"/>
+		<text id="level_text_1" x="95" y="func(53+90*13)" width="34" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="1"/>
 	</layer>
 
 </map>
