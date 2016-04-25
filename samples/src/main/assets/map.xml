@@ -3,28 +3,39 @@
 	<!--src可能是图片或者颜色-->
 	<background src="#ffffff"/>
 	<!--zIndex:层次关系  depth:景深-->
-	<layer id="background" zindex="0" depth="0.5">
-		<!--线-->
-		<line id="" from="" to="" style="normal|dot" tag=""/>
-		<!--文本-->
-		<text id="" x="" y="" width="" height="" color="" fontSize="" zindex="" tag="" text="default"/>
-		<!--节点-->
-		<node id="" x="" y="" width="" height="" src="res:ss.png" zindex="" tag=""/>
-		<node id="" x="" y="" width="" height="" src="res:ss.png" zindex="" tag="">
-			<action type="scale" from="" to="" duration="" repeat=""/>
-			<action type="translate" toX="" toY="" duration="" repeat=""/>
-			<action type="alpha" from="" to="" duration="" repeat=""/>
+	<layer id="background" zindex="0" depth="1">
+		<!--线 normal|dot
+		-->
+		<line id="line1" from="texture" to="sprite" style="dot" tag=""/>
+		<!--文本
+		-->
+		<text id="text1" x="0" y="100" width="200" height="100" color="#ff0000" fontSize="24" zindex="1" tag="" text="default"/>
+		<!--节点
+		-->
+		<node id="texture" x="0" y="0" width="200" height="200" src="res:map1/wolf.jpg" zindex="0" tag="" anchorX="0.5" anchorY="0.5">
+			<!--
 			<action type="frame">
-				<frame src="res:map1/pic.jpg" duration="200"/>
+				<frame src="res:map1/girl.png" duration="2000"/>
+				<frame src="res:map1/wolf.jpg" duration="2000"/>
 			</action>
-			<action type="sequence" repeat="-1">
-				<action type="scale" from="" to="" duration="" repeat=""/>
-				<action type="translate" toX="" toY="" duration="" repeat=""/>
-				<action type="alpha" from="" to="" duration="" repeat=""/>
-				<action type="frame">
-					<frame src="res:map1/pic.jpg" duration="200"/>
-				</action>
+			<action type="scale" from="1" to="0.1" duration="10000" repeat="-1"/>
+			-->
+		</node>
+		<node id="sprite" x="600" y="600" width="200" height="200" src="res:map1/pic.jpg" zindex="" tag="" anchorX="0.5" anchorY="0.5">
+			<!--
+			-->
+			<action type="rotate" from="0" degree="360" duration="1000" repeat="-1"/>
+			<!--
+			<action type="translate" toX="600" toY="600" duration="1000" repeat="1"/>
+			<action type="scale" from="1" to="0.1" duration="1000" repeat="-1"/>
+			<action type="alpha" from="255" to="100" duration="1000" repeat="-1"/>
+			<action type="sequence" repeat="1">
+				<action type="translate" toX="600" toY="600" duration="1000" repeat="1"/>
+				<action type="rotate" from="0" degree="360" duration="1000" repeat="2"/>
+				<action type="scale" from="1" to="0.1" duration="1000" repeat="1"/>
+				<action type="alpha" from="255" to="100" duration="1000" repeat="1"/>
 			</action>
+			-->
 		</node>
 	</layer>
 

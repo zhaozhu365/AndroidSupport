@@ -7,10 +7,12 @@ import java.io.File;
 import java.io.Serializable;
 
 import com.hyena.framework.audio.MusicDir;
+import com.hyena.framework.config.FrameworkConfig;
 import com.hyena.framework.security.MD5Util;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 /**
  * 歌曲信息
@@ -36,6 +38,10 @@ public class Song implements Serializable {
      * @return
      */
     public File getLocalFile() {
+        if(TextUtils.isEmpty(mLocalPath)) {
+            return new File(MusicDir.getMusicDir(), MD5Util.encode(mUrl)
+                + ".mp3");
+        }
         return new File(mLocalPath);
     }
 

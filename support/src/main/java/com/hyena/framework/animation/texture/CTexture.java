@@ -61,35 +61,43 @@ public class CTexture extends CBaseTexture {
 		this.mBitmap = bitmap;
 	}
 
-	@Override
-	public int getWidth(){
-//		if(mBitmap != null){
-//			return (int) (mBitmap.getWidth() * mInitScaleX);
+//	@Override
+//	public int getWidth(){
+////		if(mBitmap != null){
+////			return (int) (mBitmap.getWidth() * mInitScaleX);
+////		}
+////		return 0;
+//		return mWidth;
+//	}
+//
+//	@Override
+//	public int getHeight(){
+////		if(mBitmap != null){
+////			return (int) (mBitmap.getHeight() * mInitScaleY);
+////		}
+////		return 0;
+//		return mHeight;
+//	}
+
+//	private int mWidth, mHeight;
+//	public void setSize(int width, int height){
+//		this.mWidth = width;
+//		this.mHeight = height;
+//		if (mBitmap != null) {
+//			setInitScale((width + 0.0f) / mBitmap.getWidth()
+//					, (height + 0.0f)/ mBitmap.getHeight());
 //		}
-//		return 0;
-		return mWidth;
-	}
+//	}
 
 	@Override
-	public int getHeight(){
-//		if(mBitmap != null){
-//			return (int) (mBitmap.getHeight() * mInitScaleY);
-//		}
-//		return 0;
-		return mHeight;
-	}
-
-	private int mWidth, mHeight;
-	public void setSize(int width, int height){
-		this.mWidth = width;
-		this.mHeight = height;
+	public void setViewSize(int width, int height) {
+		super.setViewSize(width, height);
 		if (mBitmap != null) {
 			setInitScale((width + 0.0f) / mBitmap.getWidth()
 					, (height + 0.0f)/ mBitmap.getHeight());
 		}
 	}
 
-	
 	/**
 	 * 获得纹理图片
 	 * @return

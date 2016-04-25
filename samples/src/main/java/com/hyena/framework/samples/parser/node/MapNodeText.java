@@ -7,6 +7,7 @@ public class MapNodeText extends MapNode {
 
     public String mText;
     public String mColor;
+    public String mPressColor;
     public int mFontSize;
 
     public MapNodeText(String id, int width, int height) {

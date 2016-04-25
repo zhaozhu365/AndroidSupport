@@ -80,7 +80,7 @@ public class CLayer extends CNode {
         this.mScrollX = x;
         this.mScrollY = y;
         if (mScrollerListener != null) {
-            mScrollerListener.onScroll(mScrollX, mScrollY, getWidth(), getContentHeight());
+            mScrollerListener.onScroll(this, mScrollX, mScrollY, getWidth(), getContentHeight());
         }
     }
 
@@ -92,7 +92,7 @@ public class CLayer extends CNode {
         this.mScrollY += dy;
 
         if (mScrollerListener != null) {
-            mScrollerListener.onScroll(mScrollX, mScrollY, getWidth(), getContentHeight());
+            mScrollerListener.onScroll(this, mScrollX, mScrollY, getWidth(), getContentHeight());
         }
     }
 
@@ -210,26 +210,26 @@ public class CLayer extends CNode {
         return false;
     }
 
-    @Override
-    public int getWidth() {
-        if (mNodes == null || mNodes.isEmpty())
-            return super.getWidth();
-
-        int width = 0;
-        for (int i = 0; i < mNodes.size(); i++) {
-            CNode node = mNodes.get(i);
-            int maxX = node.getPosition().x + node.getWidth();
-            if (maxX > width) {
-                width = maxX;
-            }
-        }
-        return width;
-    }
-
-    @Override
-    public int getHeight() {
-        return super.getHeight();
-    }
+//    @Override
+//    public int getWidth() {
+//        if (mNodes == null || mNodes.isEmpty())
+//            return super.getWidth();
+//
+//        int width = 0;
+//        for (int i = 0; i < mNodes.size(); i++) {
+//            CNode node = mNodes.get(i);
+//            int maxX = node.getPosition().x + node.getWidth();
+//            if (maxX > width) {
+//                width = maxX;
+//            }
+//        }
+//        return width;
+//    }
+//
+//    @Override
+//    public int getHeight() {
+//        return super.getHeight();
+//    }
 
     protected int getContentHeight(){
         if (mNodes == null || mNodes.isEmpty())
@@ -283,6 +283,6 @@ public class CLayer extends CNode {
     }
 
     public static interface OnScrollerListener {
-        public void onScroll(int scrollX, int scrollY, int width, int height);
+        public void onScroll(CLayer layer, int scrollX, int scrollY, int width, int height);
     }
 }

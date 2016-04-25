@@ -21,8 +21,6 @@ import android.view.View.OnTouchListener;
  */
 public abstract class CNode {
 
-//	private static final String LOG_TAG = CNode.class.getSimpleName();
-
     public static final int FILL_PARENT = -1;
 
     private CNode mParent;
@@ -117,6 +115,7 @@ public abstract class CNode {
     public void setPosition(Point position) {
         this.mX = position.x;
         this.mY = position.y;
+        updatePosition();
     }
 
     /**
@@ -136,9 +135,12 @@ public abstract class CNode {
      * @return
      */
     public int getWidth() {
+        if (mWidth > 0)
+            return mWidth;
+
         if (mParent != null) {
             if (mWidth == FILL_PARENT) {
-                return mParent.getWidth();
+                mWidth = mParent.getWidth();
             }
             return mWidth;
         }
@@ -154,9 +156,13 @@ public abstract class CNode {
      * @return
      */
     public int getHeight() {
+        if (mHeight > 0) {
+            return mHeight;
+        }
+
         if (mParent != null) {
             if (mHeight == FILL_PARENT) {
-                return mParent.getHeight();
+                mHeight = mParent.getHeight();
             }
             return mHeight;
         }
@@ -175,6 +181,7 @@ public abstract class CNode {
         if (align == null)
             return;
         this.mAlign = align;
+        updatePosition();
     }
 
     public enum CAlign {
@@ -279,7 +286,13 @@ public abstract class CNode {
             mPosition.set(mX, mY);
             return mPosition;
         }
+        return mPosition;
+    }
 
+    /**
+     * 更新位置
+     */
+    private void updatePosition(){
         int pLeft = 0, pTop = 0;
         int pWidth = mDirector.getViewSize().width();
         int pHeight = mDirector.getViewSize().height();
@@ -339,7 +352,6 @@ public abstract class CNode {
         } else {
             mPosition.set(pLeft + mX, pTop + mY);
         }
-        return mPosition;
     }
 
     /**

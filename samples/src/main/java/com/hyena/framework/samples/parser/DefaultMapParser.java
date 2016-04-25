@@ -17,6 +17,7 @@ import com.hyena.framework.samples.parser.node.MapNodeSprite;
 import com.hyena.framework.samples.parser.node.MapNodeText;
 import com.hyena.framework.samples.parser.utils.XMLUtils;
 import com.hyena.framework.utils.MathUtils;
+import com.hyena.framework.utils.UIUtils;
 
 import org.apache.http.protocol.HTTP;
 import org.w3c.dom.Document;
@@ -91,9 +92,9 @@ public class DefaultMapParser implements MapParser {
             String nodeName = element.getNodeName();
             MapNode mapNode = null;
             if ("node".equals(nodeName)) {
-                mapNode = parseSprite(element);
+                mapNode = parseSprite(element, screenWidth, screenHeight);
             } else if ("text".equals(nodeName)) {
-                mapNode = parseText(element);
+                mapNode = parseText(element, screenWidth, screenHeight);
             } else if ("line".equals(nodeName)) {
                 mapNode = parseLine(element);
             }
@@ -261,21 +262,26 @@ public class DefaultMapParser implements MapParser {
         return action;
     }
 
-    private MapNodeSprite parseSprite(Node node) {
+    private MapNodeSprite parseSprite(Node node, int screenWidth, int screenHeight) {
         String id = XMLUtils.getAttributeValue(node, "id");
-        int width = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "width"));
-        int height = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "height"));
-        MapNodeSprite sprite = new MapNodeSprite(id, width, height);
+        String width = XMLUtils.getAttributeValue(node, "width");
+        String height = XMLUtils.getAttributeValue(node, "height");
+        MapNodeSprite sprite = new MapNodeSprite(id,
+                getNumber(width, screenWidth, screenHeight),
+                getNumber(height, screenWidth, screenHeight));
         sprite.mSrc = XMLUtils.getAttributeValue(node, "src");
         return sprite;
     }
 
-    private MapNodeText parseText(Node node) {
+    private MapNodeText parseText(Node node, int screenWidth, int screenHeight) {
         String id = XMLUtils.getAttributeValue(node, "id");
-        int width = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "width"));
-        int height = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "height"));
-        MapNodeText text = new MapNodeText(id, width, height);
+        String width = XMLUtils.getAttributeValue(node, "width");
+        String height = XMLUtils.getAttributeValue(node, "height");
+        MapNodeText text = new MapNodeText(id,
+                getNumber(width, screenWidth, screenHeight),
+                getNumber(height, screenWidth, screenHeight));
         text.mColor = XMLUtils.getAttributeValue(node, "color");
+        text.mPressColor = XMLUtils.getAttributeValue(node, "pressed");
         text.mFontSize = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "fontSize"));
         text.mText = XMLUtils.getAttributeValue(node, "text");
         return text;
@@ -287,6 +293,7 @@ public class DefaultMapParser implements MapParser {
         line.mFromId = XMLUtils.getAttributeValue(node, "from");
         line.mToId = XMLUtils.getAttributeValue(node, "to");
         line.mStyle = XMLUtils.getAttributeValue(node, "style");
+        line.mColor = XMLUtils.getAttributeValue(node, "color");
         return line;
     }
 
@@ -306,9 +313,9 @@ public class DefaultMapParser implements MapParser {
                 } catch (Exception e) {
                     result = MathUtils.eval(eval);
                 }
-                return result;
+                return UIUtils.dip2px(result);
             }
-            return Integer.valueOf(value);
+            return UIUtils.dip2px(Integer.valueOf(value));
         } catch (Exception e) {
             e.printStackTrace();
         }

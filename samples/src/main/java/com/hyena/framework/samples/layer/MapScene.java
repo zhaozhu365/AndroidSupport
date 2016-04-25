@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.text.TextUtils;
 
+import com.hyena.framework.animation.CLayer;
 import com.hyena.framework.animation.CScene;
 import com.hyena.framework.animation.CScrollLayer;
 import com.hyena.framework.animation.Director;
@@ -102,12 +103,14 @@ public class MapScene extends CScene {
                 topLayer.setOnScrollerListener(new OnScrollerListener() {
 
                     @Override
-                    public void onScroll(int scrollX, int scrollY, int width, int height) {
+                    public void onScroll(CLayer layer, int scrollX, int scrollY, int width, int height) {
                         List<CNode> nodes = getNodes();
                         for (int i = 0; i < nodes.size(); i++) {
                             if (nodes.get(i) instanceof CScrollLayer) {
-                                CScrollLayer layer = (CScrollLayer) nodes.get(i);
-                                layer.scrollTo((int) (scrollX * layer.getDepth()/width), (int) (scrollY * layer.getDepth()/ height));
+                                CScrollLayer scrollLayer = (CScrollLayer) nodes.get(i);
+                                if (scrollLayer != layer)
+                                    scrollLayer.scrollTo((int) (scrollX * layer.getDepth()/width),
+                                            (int) (scrollY * layer.getDepth()/ height));
                             }
                         }
                     }
@@ -267,7 +270,7 @@ public class MapScene extends CScene {
             texture = PressableTexture.create(getDirector(), bitmap, pressed);
         }
 
-        texture.setSize(spriteNode.getWidth(), spriteNode.getHeight());
+        texture.setViewSize(spriteNode.getWidth(), spriteNode.getHeight());
         if (spriteNode.getActions() != null
                 && !spriteNode.getActions().isEmpty()) {
             CSprite sprite = CSprite.create(getDirector(), texture);
@@ -281,6 +284,7 @@ public class MapScene extends CScene {
             }
             sprite.setAnchor(spriteNode.getAnchorX(), spriteNode.getAnchorY());
             sprite.setPosition(new Point(spriteNode.getX(), spriteNode.getY()));
+            sprite.setViewSize(spriteNode.getWidth(), spriteNode.getHeight());
             return sprite;
         } else {
             texture.setAnchor(spriteNode.getAnchorX(), spriteNode.getAnchorY());
@@ -291,12 +295,14 @@ public class MapScene extends CScene {
 
 
     private CTextNode createText(MapNodeText textNode) {
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         CTextNode node = CTextNode.create(getDirector());
         node.setPosition(new Point(textNode.getX(), textNode.getY()));
-        paint.setTextSize(UIUtils.dip2px(textNode.mFontSize));
-        paint.setColor(Color.parseColor(textNode.mColor));
-        node.setPaint(paint);
+        node.setViewSize(textNode.getWidth(), textNode.getHeight());
+        node.setFontSize(UIUtils.dip2px(textNode.mFontSize));
+        node.setColor(Color.parseColor(textNode.mColor));
+        if (!TextUtils.isEmpty(textNode.mPressColor)) {
+            node.setPressedColor(Color.parseColor(textNode.mPressColor));
+        }
         node.setText(textNode.mText);
         return node;
     }
@@ -311,7 +317,7 @@ public class MapScene extends CScene {
         } else {
             node.setStyle(LineNode.STYLE_NORMAL);
         }
-        node.setColor(0xffff0000);
+        node.setColor(Color.parseColor(line.mColor));
 
         node.setStartPoint(new CPoint(fromSprite.getX() + fromSprite.getWidth()/2,
                 fromSprite.getY() + fromSprite.getHeight()/2));

@@ -91,7 +91,7 @@ public class LineNode extends CNode {
                     int y = mStartPoint.mY;
                     while (y < mEndPoint.mY) {
                         y += mDistance;
-                        int cx = (mEndPoint.mX - mStartPoint.mX) * y / (mEndPoint.mY - mStartPoint.mY);
+                        int cx = mStartPoint.mX + (mEndPoint.mX - mStartPoint.mX) * (y - mStartPoint.mY) / (mEndPoint.mY - mStartPoint.mY);
                         canvas.drawCircle(cx, y, mRadius, mPaint);
                     }
                     break;
