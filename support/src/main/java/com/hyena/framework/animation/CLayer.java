@@ -131,7 +131,7 @@ public class CLayer extends CNode {
         }
     }
 
-    private CNode mTargetNode = null;
+//    private CNode mTargetNode = null;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -139,29 +139,30 @@ public class CLayer extends CNode {
             return super.dispatchTouchEvent(ev);
         }
 
-        if (mTargetNode != null)
-            return mTargetNode.dispatchTouchEvent(ev);
+//        if (mTargetNode != null)
+//            return mTargetNode.dispatchTouchEvent(ev);
         
         boolean isIntercept = onInterceptTouchEvent(ev);
         if (isIntercept) {
             return super.dispatchTouchEvent(ev);
         }
 
-        int action = ev.getAction();
-        if (action == MotionEvent.ACTION_DOWN) {
-            mTargetNode = null;
-        }
+//        int action = ev.getAction();
+//        if (action == MotionEvent.ACTION_DOWN) {
+//            mTargetNode = null;
+//        }
         for (int i = 0; i < mNodes.size(); i++) {
             CNode node = mNodes.get(i);
-            if (node.dispatchTouchEvent(ev)) {
-                mTargetNode = node;
-                return true;
-            }
+            node.dispatchTouchEvent(ev);
+//            if (node.dispatchTouchEvent(ev)) {
+////                mTargetNode = node;
+//                return true;
+//            }
         }
-        if (mTargetNode == null)
-            return super.dispatchTouchEvent(ev);
+//        if (mTargetNode == null)
+        return super.dispatchTouchEvent(ev);
 
-        return mTargetNode.dispatchTouchEvent(ev);
+//        return mTargetNode.dispatchTouchEvent(ev);
     }
 
     /**

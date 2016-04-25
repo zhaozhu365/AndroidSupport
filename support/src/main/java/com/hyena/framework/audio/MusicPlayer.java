@@ -153,7 +153,7 @@ public class MusicPlayer {
 //				mCurrentPos = mSong.getLocalFile().length();
 //			}
 			HttpProvider httpProvider = new HttpProvider();
-			HttpResult result = httpProvider.doGet(mSong.mUrl, 10, mCurrentPos, mCancelableListener);
+			HttpResult result = httpProvider.doGet(mSong.getUrl(), 10, mCurrentPos, mCancelableListener);
 			if(!result.isSuccess()){
 				mInnerPlayStateChangeListener.onPlayStateChange(StatusCode.STATUS_ERROR);
 			}
