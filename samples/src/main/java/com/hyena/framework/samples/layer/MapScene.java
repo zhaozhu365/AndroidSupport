@@ -304,6 +304,32 @@ public class MapScene extends CScene {
             node.setPressedColor(Color.parseColor(textNode.mPressColor));
         }
         node.setText(textNode.mText);
+        if (textNode.mAlign != null) {
+            if("topLeft".equals(textNode.mAlign)){
+                node.setTextAlign(CAlign.TOP_LEFT);
+            } else if("topCenter".equals(textNode.mAlign)){
+                node.setTextAlign(CAlign.TOP_CENTER);
+            } else if("topRight".equals(textNode.mAlign)){
+                node.setTextAlign(CAlign.TOP_RIGHT);
+            } else if("centerLeft".equals(textNode.mAlign)){
+                node.setTextAlign(CAlign.CENTER_LEFT);
+            } else if("center".equals(textNode.mAlign)){
+                node.setTextAlign(CAlign.CENTER_CENTER);
+            } else if("centerRight".equals(textNode.mAlign)){
+                node.setTextAlign(CAlign.CENTER_RIGHT);
+            } else if("bottomLeft".equals(textNode.mAlign)){
+                node.setTextAlign(CAlign.BOTTOM_LEFT);
+            } else if("bottomCenter".equals(textNode.mAlign)){
+                node.setTextAlign(CAlign.BOTTOM_CENTER);
+            } else if("bottomRight".equals(textNode.mAlign)){
+                node.setTextAlign(CAlign.BOTTOM_RIGHT);
+            } else {
+                node.setTextAlign(CAlign.CENTER_CENTER);
+            }
+        } else {
+            node.setTextAlign(CAlign.CENTER_CENTER);
+        }
+
         return node;
     }
 

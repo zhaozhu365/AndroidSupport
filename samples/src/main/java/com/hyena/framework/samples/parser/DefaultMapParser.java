@@ -284,6 +284,7 @@ public class DefaultMapParser implements MapParser {
         text.mPressColor = XMLUtils.getAttributeValue(node, "pressed");
         text.mFontSize = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "fontSize"));
         text.mText = XMLUtils.getAttributeValue(node, "text");
+        text.mAlign = XMLUtils.getAttributeValue(node, "align");
         return text;
     }
 

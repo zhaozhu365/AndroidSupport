@@ -21,6 +21,9 @@ public class CScene extends CLayer {
         super(director);
         if (EngineConfig.DEBUG_ABLE) {
             mTextNode = CTextNode.create(director);
+            mTextNode.setTextAlign(CAlign.BOTTOM_LEFT);
+            mTextNode.setViewSize(100, 40);
+            mTextNode.setPosition(new Point(director.getViewSize().left + 10, director.getViewSize().bottom - 60));
             addNode(mTextNode, Integer.MAX_VALUE);
         }
     }

@@ -60,6 +60,19 @@
 			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="2"/>
 		<text id="level_text_1" x="95" y="func(53+90*13)" width="34" height="34" color="#ffffff"
 			pressed="#ff0000" fontSize="16" zindex="1" tag="" text="1"/>
+		src="res:map1/icon_level.png"/>
+
+		<text id="level_13_title" x="35" y="func(53+90)" width="60" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="13" zindex="1" tag="" text="综合复习" align="topLeft"/>
+		<text id="level_13_sub_title" x="35" y="func(53+90+15)" width="60" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="12" zindex="1" tag="" text="0/5" align="topLeft"/>
+		<node id="level_13_star" x="func(35+25)" y="func(53+90+22)" width="9" height="9" src="res:map1/icon_star.png"/>
+
+		<text id="level_12_title" x="235" y="func(53+90*2)" width="60" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="13" zindex="1" tag="" text="综合复习" align="topLeft"/>
+		<text id="level_12_sub_title" x="235" y="func(53+90*2+15)" width="60" height="34" color="#ffffff"
+			pressed="#ff0000" fontSize="12" zindex="1" tag="" text="0/5" align="topLeft"/>
+		<node id="level_12_star" x="func(235+25)" y="func(53+90*2+22)" width="9" height="9" src="res:map1/icon_star.png"/>
 	</layer>
 
 </map>
