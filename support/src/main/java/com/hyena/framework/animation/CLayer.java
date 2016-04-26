@@ -223,7 +223,7 @@ public class CLayer extends CNode {
 //        return super.getHeight();
 //    }
 
-    protected int getContentHeight(){
+    public int getContentHeight(){
         if (mNodes == null || mNodes.isEmpty())
             return super.getHeight();
 

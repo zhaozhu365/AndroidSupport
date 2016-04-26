@@ -5,12 +5,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.text.TextUtils;
 
 import com.hyena.framework.animation.CLayer;
 import com.hyena.framework.animation.CScene;
 import com.hyena.framework.animation.CScrollLayer;
 import com.hyena.framework.animation.Director;
+import com.hyena.framework.animation.RenderView;
 import com.hyena.framework.animation.action.CAlphaToAction;
 import com.hyena.framework.animation.action.CFrameAction;
 import com.hyena.framework.animation.action.CMoveToAction;
@@ -62,6 +64,7 @@ public class MapScene extends CScene {
 
     private MapParser mParser = new DefaultMapParser();
     private CMap mMap = null;
+    private CLayer mTopLayer;
 
     protected MapScene(Director director) {
         super(director);
@@ -101,6 +104,7 @@ public class MapScene extends CScene {
                     }
                 }
             }
+            mTopLayer = topLayer;
             //compute depth
             if (topLayer != null) {
                 topLayer.setOnScrollerListener(new OnScrollerListener() {
@@ -119,9 +123,17 @@ public class MapScene extends CScene {
                     }
                 });
             }
-
-            topLayer.scrollTo(0, getContentHeight() - getDirector().getViewSize().height());
         }
+    }
+
+    private boolean isInited = false;
+    @Override
+    public synchronized void update(float dt) {
+        if (!isInited && mTopLayer != null) {
+            mTopLayer.scrollTo(0, -mTopLayer.getContentHeight() + getDirector().getViewSize().height());
+            isInited = true;
+        }
+        super.update(dt);
     }
 
     private Bitmap loadBitmap(String tag, String url) {

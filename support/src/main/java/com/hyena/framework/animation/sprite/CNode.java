@@ -2,6 +2,7 @@ package com.hyena.framework.animation.sprite;
 
 import java.util.Random;
 
+import com.hyena.framework.animation.CLayer;
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.RenderView;
 import com.hyena.framework.utils.UIUtils;
@@ -227,6 +228,12 @@ public abstract class CNode {
         if (mClickListener == null) {
             return false;
         }
+        int scrollX = 0, scrollY = 0;
+        if (mParent != null && mParent instanceof CLayer) {
+            scrollX = ((CLayer)mParent).getScrollX();
+            scrollY = ((CLayer)mParent).getScrollY();
+        }
+
         int x = (int) event.getX();
         int y = (int) event.getY();
         int action = event.getAction();
@@ -235,7 +242,7 @@ public abstract class CNode {
             {
                 mTemp.set(getPosition().x, getPosition().y, getPosition().x + getWidth(),
                         getPosition().y + getHeight());
-                mTouching = mTemp.contains(x, y);
+                mTouching = mTemp.contains(x + scrollX, y - scrollY);
                 if (mTouching) {
                     onTouchDown();
                 }
@@ -244,7 +251,7 @@ public abstract class CNode {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
             {
-                if (mTemp.contains(x, y)) {
+                if (mTemp.contains(x + scrollX, y - scrollY)) {
                     //click
                     if (mClickListener != null) {
                         mClickListener.onClick(this);

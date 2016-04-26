@@ -2,6 +2,8 @@ package com.hyena.framework.samples.scene;
 
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;
+import com.hyena.framework.animation.sprite.CSprite;
+import com.hyena.framework.animation.texture.CTexture;
 import com.hyena.framework.app.fragment.BaseUIFragment;
 import com.hyena.framework.app.fragment.BaseUIFragmentHelper;
 import com.hyena.framework.app.fragment.GameFragment;
@@ -25,7 +27,6 @@ public class SampleScene extends MapScene {
     @Override
     public void load(String xml) {
         super.load(xml);
-//        scrollTo(0, getContentHeight() - getDirector().getViewSize().height());
         setOnNodeClickListener(mNodeClickListener);
     }
 
@@ -37,7 +38,9 @@ public class SampleScene extends MapScene {
 
         @Override
         public void onClick(CNode node) {
-            LogUtil.v(TAG, "onNodeClick: " + node.getTag());
+            if (node instanceof CTexture || node instanceof CSprite) {
+                LogUtil.v(TAG, "onNodeClick: " + node.getTag());
+            }
         }
     };
 }
