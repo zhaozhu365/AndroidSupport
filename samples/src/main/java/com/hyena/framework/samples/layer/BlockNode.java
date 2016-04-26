@@ -62,17 +62,22 @@ public class BlockNode extends CNode {
         super.render(canvas);
         mPaint.setTextSize(mTitleFontSize);
         mPaint.setColor(mTitleColor);
-        int y = getPosition().y + getTextHeight(mPaint);
+
+        int height = getTextHeight(mPaint);
+
+        int y = getPosition().y + height;
         if (!TextUtils.isEmpty(mTitle))
             canvas.drawText(mTitle, getPosition().x, y, mPaint);
 
         mPaint.setTextSize(mSubTitleFontSize);
-        y += getTextHeight(mPaint);
+
+        height = getTextHeight(mPaint);
+        y += height;
         if (!TextUtils.isEmpty(mSubTitle))
             canvas.drawText(mSubTitle, getPosition().x, y, mPaint);
 
         int x = (int) mPaint.measureText(mSubTitle) + getPosition().x;
-        canvas.drawBitmap(mSubTitleBitmap, x + UIUtils.dip2px(3), y - (getTextHeight(mPaint) + mSubTitleBitmap.getHeight())/2 + UIUtils.dip2px(3), mPaint);
+        canvas.drawBitmap(mSubTitleBitmap, x + UIUtils.dip2px(3), y - (height + mSubTitleBitmap.getHeight())/2 + UIUtils.dip2px(3), mPaint);
     }
 
     @Override

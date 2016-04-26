@@ -58,13 +58,13 @@ public abstract class CNode {
      * @param canvas
      */
     public void render(Canvas canvas) {
-        if (!isValid() || !isVisible()) {
-            return;
-        }
-        if (mPaint != null) {
-            canvas.drawRect(new Rect(getPosition().x, getPosition().y,
-                    getPosition().x + getWidth(), getPosition().y + getHeight()), mPaint);
-        }
+//        if (!isValid() || !isVisible()) {
+//            return;
+//        }
+//        if (mPaint != null) {
+//            canvas.drawRect(new Rect(getPosition().x, getPosition().y,
+//                    getPosition().x + getWidth(), getPosition().y + getHeight()), mPaint);
+//        }
     }
 
     /**
