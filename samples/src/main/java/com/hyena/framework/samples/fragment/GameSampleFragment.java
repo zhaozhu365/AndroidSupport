@@ -16,7 +16,6 @@ public class GameSampleFragment extends GameFragment {
         super.onViewCreatedImpl(view, savedInstanceState);
         SampleScene scene = new SampleScene(this, getDirector());
         showScene(scene);
-
         scene.loadAssetPath("mapdemo.xml");
     }
 }

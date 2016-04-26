@@ -1,23 +1,15 @@
 package com.hyena.framework.animation;
 
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.view.MotionEvent;
+
+import com.hyena.framework.animation.sprite.CNode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import com.hyena.framework.animation.sprite.CNode;
-
-import android.graphics.Canvas;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.view.MotionEvent;
-import android.view.VelocityTracker;
-import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.ViewConfiguration;
-import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.Scroller;
 
 /**
  * 展现层
@@ -284,5 +276,15 @@ public class CLayer extends CNode {
 
     public static interface OnScrollerListener {
         public void onScroll(CLayer layer, int scrollX, int scrollY, int width, int height);
+    }
+
+    @Override
+    public void setOnNodeClickListener(OnNodeClickListener listener) {
+        if (mNodes != null) {
+            for (int i = 0; i < mNodes.size(); i++) {
+                CNode node = mNodes.get(i);
+                node.setOnNodeClickListener(listener);
+            }
+        }
     }
 }

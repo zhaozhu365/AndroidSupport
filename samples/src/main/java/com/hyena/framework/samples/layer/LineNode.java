@@ -2,6 +2,8 @@ package com.hyena.framework.samples.layer;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.view.MotionEvent;
 
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;
@@ -47,6 +49,19 @@ public class LineNode extends CNode {
 
     public Paint getPaint() {
         return mPaint;
+    }
+
+    @Override
+    public Point getPosition() {
+        int x = mStartPoint.mX, y = mStartPoint.mY;
+        if (x < mEndPoint.mX) {
+            x = mEndPoint.mX;
+        }
+        if (y < mEndPoint.mY) {
+            y = mEndPoint.mY;
+        }
+        super.getPosition().set(x, y);
+        return super.getPosition();
     }
 
     public void setStartPoint(CPoint start) {

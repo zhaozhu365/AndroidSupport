@@ -23,12 +23,12 @@ public class PressableTexture extends CTexture {
         super(director, normal);
         this.mNormal = normal;
         this.mPressed = pressed;
-        setOnNodeClickListener(new OnNodeClickListener() {
-            @Override
-            public void onClick(CNode node) {
-
-            }
-        });
+//        setOnNodeClickListener(new OnNodeClickListener() {
+//            @Override
+//            public void onClick(CNode node) {
+//
+//            }
+//        });
     }
 
     @Override

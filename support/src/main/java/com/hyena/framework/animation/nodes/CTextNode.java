@@ -34,12 +34,12 @@ public class CTextNode extends CNode {
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mPaint.setColor(Color.RED);
 		mPaint.setTextSize(26);
-		setOnNodeClickListener(new OnNodeClickListener() {
-			@Override
-			public void onClick(CNode node) {
-
-			}
-		});
+//		setOnNodeClickListener(new OnNodeClickListener() {
+//			@Override
+//			public void onClick(CNode node) {
+//
+//			}
+//		});
 	}
 	
 	public void setPaint(Paint paint){

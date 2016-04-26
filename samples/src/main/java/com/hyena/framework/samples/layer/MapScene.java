@@ -119,6 +119,8 @@ public class MapScene extends CScene {
                     }
                 });
             }
+
+            topLayer.scrollTo(0, getContentHeight() - getDirector().getViewSize().height());
         }
     }
 
@@ -491,4 +493,5 @@ public class MapScene extends CScene {
         }
         super.render(canvas);
     }
+
 }
