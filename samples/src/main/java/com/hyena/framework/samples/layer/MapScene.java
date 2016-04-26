@@ -38,11 +38,14 @@ import com.hyena.framework.samples.parser.action.MapActionSequence;
 import com.hyena.framework.samples.parser.action.MapActionTranslate;
 import com.hyena.framework.samples.parser.action.MapFrame;
 import com.hyena.framework.samples.parser.node.MapNode;
+import com.hyena.framework.samples.parser.node.MapNodeBlock;
 import com.hyena.framework.samples.parser.node.MapNodeLayer;
 import com.hyena.framework.samples.parser.node.MapNodeLine;
 import com.hyena.framework.samples.parser.node.MapNodeSprite;
 import com.hyena.framework.samples.parser.node.MapNodeText;
+import com.hyena.framework.samples.parser.style.MapStyle;
 import com.hyena.framework.utils.FileUtils;
+import com.hyena.framework.utils.MathUtils;
 import com.hyena.framework.utils.UIUtils;
 
 import org.apache.http.protocol.HTTP;
@@ -109,8 +112,8 @@ public class MapScene extends CScene {
                             if (nodes.get(i) instanceof CScrollLayer) {
                                 CScrollLayer scrollLayer = (CScrollLayer) nodes.get(i);
                                 if (scrollLayer != layer)
-                                    scrollLayer.scrollTo((int) (scrollX * layer.getDepth()/width),
-                                            (int) (scrollY * layer.getDepth()/ height));
+                                    scrollLayer.scrollTo((int) (scrollX * layer.getDepth() / width),
+                                            (int) (scrollY * layer.getDepth() / height));
                             }
                         }
                     }
@@ -151,9 +154,35 @@ public class MapScene extends CScene {
                 MapNode mapNode = nodes.get(i);
                 CNode node = null;
                 if (mapNode instanceof MapNodeSprite) {
-                    node = loadSprite((MapNodeSprite) mapNode);
+                    MapNodeSprite sprite = (MapNodeSprite) mapNode;
+                    node = loadSprite(sprite);
+
+                    if (sprite.getBlocks() != null && !sprite.getBlocks().isEmpty()) {
+                        for (int j = 0; j < sprite.getBlocks().size(); j++) {
+                            MapNodeBlock mapBlock = sprite.getBlocks().get(j);
+                            BlockNode blockNode = createBlock(mapBlock, sprite);
+                            if (blockNode != null) {
+                                blockNode.setTag(mapBlock.getId());
+                                layer.addNode(blockNode, mapBlock.getZIndex());
+                            }
+                        }
+                    }
+
+                    if (sprite.getTexts() != null && !sprite.getTexts().isEmpty()) {
+                        for (int j = 0; j < sprite.getTexts().size(); j++) {
+                            MapNodeText textMap = sprite.getTexts().get(j);
+                            //style
+                            CTextNode textNode = createText(textMap, sprite);
+                            if (textNode != null) {
+                                textNode.setTag(textMap.getId());
+                                layer.addNode(textNode, textMap.getZIndex());
+                            }
+                        }
+                    }
+
                 } else if (mapNode instanceof MapNodeText) {
-                    node = createText((MapNodeText) mapNode);
+                    MapNodeText nodeText = (MapNodeText) mapNode;
+                    node = createText(nodeText, null);
                 } else if (mapNode instanceof MapNodeLine) {
                     node = createLine(mapLayer, (MapNodeLine) mapNode);
                 }
@@ -163,6 +192,18 @@ public class MapScene extends CScene {
                     layer.addNode(node, mapNode.getZIndex());
                 }
             }
+
+//            for (int i = 0; i < nodes.size(); i++) {
+//                MapNode mapNode = nodes.get(i);
+//                CNode node = null;
+//                if (mapNode instanceof MapNodeBlock) {
+//                    node = createBlock(mapLayer, (MapNodeBlock) mapNode);
+//                }
+//                if (node != null) {
+//                    node.setTag(mapNode.getId());
+//                    layer.addNode(node, mapNode.getZIndex());
+//                }
+//            }
         }
         return layer;
     }
@@ -192,7 +233,7 @@ public class MapScene extends CScene {
         return null;
     }
 
-    private CRotateToAction createRotateAction(MapActionRotate mapRotateAction){
+    private CRotateToAction createRotateAction(MapActionRotate mapRotateAction) {
         CRotateToAction action = CRotateToAction.create(mapRotateAction.mFrom,
                 mapRotateAction.mDegree, mapRotateAction.getDuration());
         return action;
@@ -271,6 +312,7 @@ public class MapScene extends CScene {
         }
 
         texture.setViewSize(spriteNode.getWidth(), spriteNode.getHeight());
+        CNode node;
         if (spriteNode.getActions() != null
                 && !spriteNode.getActions().isEmpty()) {
             CSprite sprite = CSprite.create(getDirector(), texture);
@@ -285,43 +327,101 @@ public class MapScene extends CScene {
             sprite.setAnchor(spriteNode.getAnchorX(), spriteNode.getAnchorY());
             sprite.setPosition(new Point(spriteNode.getX(), spriteNode.getY()));
             sprite.setViewSize(spriteNode.getWidth(), spriteNode.getHeight());
-            return sprite;
+            node = sprite;
         } else {
             texture.setAnchor(spriteNode.getAnchorX(), spriteNode.getAnchorY());
             texture.setPosition(new Point(spriteNode.getX(), spriteNode.getY()));
-            return texture;
+            node = texture;
         }
+        return node;
     }
 
+    private BlockNode createBlock(MapNodeBlock block, MapNode attachNode) {
+        MapStyle style = getStyle(block.mStyle);
+        if (style == null)
+            return null;
 
-    private CTextNode createText(MapNodeText textNode) {
-        CTextNode node = CTextNode.create(getDirector());
-        node.setPosition(new Point(textNode.getX(), textNode.getY()));
-        node.setViewSize(textNode.getWidth(), textNode.getHeight());
-        node.setFontSize(UIUtils.dip2px(textNode.mFontSize));
-        node.setColor(Color.parseColor(textNode.mColor));
-        if (!TextUtils.isEmpty(textNode.mPressColor)) {
-            node.setPressedColor(Color.parseColor(textNode.mPressColor));
+        String path = style.getStyle("subTitleSrc");
+        Bitmap bitmap = loadBitmap(block.getId(), path);
+
+        BlockNode node = BlockNode.create(getDirector());
+        node.setTitle(block.mTitle);
+        node.setSubTitle(block.mSubTitle, bitmap);
+
+        int titleFontSize = MathUtils.valueOfInt(style.getStyle("titleFontSize"));
+        int subTitleFontSize = MathUtils.valueOfInt(style.getStyle("subTitleFontSize"));
+        int marginLeft = MathUtils.valueOfInt(style.getStyle("marginLeft"));
+        int marginRight = MathUtils.valueOfInt(style.getStyle("marginRight"));
+
+        node.setTitleStyle(UIUtils.dip2px(titleFontSize), style.getStyle("titleColor"));
+        node.setSubTitleStyle(UIUtils.dip2px(subTitleFontSize));
+        if (attachNode != null) {
+            String direction = style.getStyle("attachDirection");
+            if (TextUtils.isEmpty(direction)) {
+                direction = "left";
+            }
+            if ("left".equals(direction)) {
+                node.setPosition(new Point(attachNode.getX() - node.getWidth() - UIUtils.dip2px(marginRight), attachNode.getY()));
+            } else {
+                node.setPosition(new Point(attachNode.getX() + attachNode.getWidth() + UIUtils.dip2px(marginLeft), attachNode.getY()));
+            }
         }
+        return node;
+    }
+
+    private CTextNode createText(MapNodeText textNode, MapNode attach) {
+        CTextNode node = CTextNode.create(getDirector());
         node.setText(textNode.mText);
-        if (textNode.mAlign != null) {
-            if("topLeft".equals(textNode.mAlign)){
+        Point position = null;
+        if (attach != null) {
+            position = new Point(attach.getX(), attach.getY());
+        } else {
+            node.setPosition(new Point(textNode.getX(), textNode.getY()));
+        }
+        int width, height, fontSize;
+        String textColor, pressColor, textAlign;
+        MapStyle style = getStyle(textNode.mStyle);
+        if (style != null) {
+            width = MathUtils.valueOfInt(style.getStyle("width"));
+            height = MathUtils.valueOfInt(style.getStyle("height"));
+            fontSize = MathUtils.valueOfInt(style.getStyle("fontSize"));
+            textColor = style.getStyle("color");
+            pressColor = style.getStyle("pressed");
+            textAlign = style.getStyle("textAlign");
+        } else {
+            width = textNode.getWidth();
+            height = textNode.getHeight();
+            fontSize = textNode.mFontSize;
+            textColor = textNode.mColor;
+            pressColor = textNode.mPressColor;
+            textAlign = textNode.mAlign;
+        }
+        node.setPosition(position);
+        node.setViewSize(UIUtils.dip2px(width), UIUtils.dip2px(height));
+        node.setFontSize(UIUtils.dip2px(fontSize));
+        node.setColor(Color.parseColor(textColor));
+        if (!TextUtils.isEmpty(pressColor)) {
+            node.setPressedColor(Color.parseColor(pressColor));
+        }
+
+        if (textAlign != null) {
+            if ("topLeft".equals(textAlign)) {
                 node.setTextAlign(CAlign.TOP_LEFT);
-            } else if("topCenter".equals(textNode.mAlign)){
+            } else if ("topCenter".equals(textAlign)) {
                 node.setTextAlign(CAlign.TOP_CENTER);
-            } else if("topRight".equals(textNode.mAlign)){
+            } else if ("topRight".equals(textAlign)) {
                 node.setTextAlign(CAlign.TOP_RIGHT);
-            } else if("centerLeft".equals(textNode.mAlign)){
+            } else if ("centerLeft".equals(textAlign)) {
                 node.setTextAlign(CAlign.CENTER_LEFT);
-            } else if("center".equals(textNode.mAlign)){
+            } else if ("center".equals(textAlign)) {
                 node.setTextAlign(CAlign.CENTER_CENTER);
-            } else if("centerRight".equals(textNode.mAlign)){
+            } else if ("centerRight".equals(textAlign)) {
                 node.setTextAlign(CAlign.CENTER_RIGHT);
-            } else if("bottomLeft".equals(textNode.mAlign)){
+            } else if ("bottomLeft".equals(textAlign)) {
                 node.setTextAlign(CAlign.BOTTOM_LEFT);
-            } else if("bottomCenter".equals(textNode.mAlign)){
+            } else if ("bottomCenter".equals(textAlign)) {
                 node.setTextAlign(CAlign.BOTTOM_CENTER);
-            } else if("bottomRight".equals(textNode.mAlign)){
+            } else if ("bottomRight".equals(textAlign)) {
                 node.setTextAlign(CAlign.BOTTOM_RIGHT);
             } else {
                 node.setTextAlign(CAlign.CENTER_CENTER);
@@ -329,13 +429,12 @@ public class MapScene extends CScene {
         } else {
             node.setTextAlign(CAlign.CENTER_CENTER);
         }
-
         return node;
     }
 
     private LineNode createLine(MapNodeLayer nodeLayer, MapNodeLine line) {
-        MapNodeSprite fromSprite = getSprite(nodeLayer, line.mFromId);
-        MapNodeSprite toSprite = getSprite(nodeLayer, line.mToId);
+        MapNode fromSprite = getSprite(nodeLayer, line.mFromId);
+        MapNode toSprite = getSprite(nodeLayer, line.mToId);
 
         LineNode node = LineNode.create(getDirector());
         if ("dot".equals(line.mStyle)) {
@@ -345,23 +444,38 @@ public class MapScene extends CScene {
         }
         node.setColor(Color.parseColor(line.mColor));
 
-        node.setStartPoint(new CPoint(fromSprite.getX() + fromSprite.getWidth()/2,
-                fromSprite.getY() + fromSprite.getHeight()/2));
-        node.setEndPoint(new CPoint(toSprite.getX() + toSprite.getWidth()/2,
-                toSprite.getY() + toSprite.getHeight()/2));
+        node.setStartPoint(new CPoint(fromSprite.getX() + fromSprite.getWidth() / 2,
+                fromSprite.getY() + fromSprite.getHeight() / 2));
+        node.setEndPoint(new CPoint(toSprite.getX() + toSprite.getWidth() / 2,
+                toSprite.getY() + toSprite.getHeight() / 2));
         return node;
     }
 
-    private MapNodeSprite getSprite(MapNodeLayer layer, String id) {
+    private MapNode getSprite(MapNodeLayer layer, String id) {
         if (layer != null) {
             List<MapNode> nodes = layer.getNodes();
             if (nodes != null && !nodes.isEmpty()) {
                 for (int i = 0; i < nodes.size(); i++) {
                     MapNode mapNode = nodes.get(i);
-                    if (mapNode instanceof MapNodeSprite) {
-                        if (mapNode.getId() != null && mapNode.getId().equals(id)) {
-                            return (MapNodeSprite) mapNode;
-                        }
+                    if (mapNode.getId() != null && mapNode.getId().equals(id)) {
+                        return mapNode;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private MapStyle getStyle(String styleId) {
+        if (TextUtils.isEmpty(styleId))
+            return null;
+        if (mMap != null) {
+            List<MapStyle> styles = mMap.getStyles();
+            if (styles != null && !styles.isEmpty()) {
+                for (int i = 0; i < styles.size(); i++) {
+                    MapStyle style = styles.get(i);
+                    if (styleId.equals(style.getId())) {
+                        return styles.get(i);
                     }
                 }
             }

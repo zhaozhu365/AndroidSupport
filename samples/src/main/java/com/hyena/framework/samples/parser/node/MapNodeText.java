@@ -11,6 +11,8 @@ public class MapNodeText extends MapNode {
     public int mFontSize;
     public String mAlign;
 
+    public String mStyle;
+
     public MapNodeText(String id, int width, int height) {
         super(id, width, height);
     }

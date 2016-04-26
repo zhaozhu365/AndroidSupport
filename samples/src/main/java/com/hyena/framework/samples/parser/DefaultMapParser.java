@@ -10,11 +10,13 @@ import com.hyena.framework.samples.parser.action.MapActionFrame;
 import com.hyena.framework.samples.parser.action.MapActionScale;
 import com.hyena.framework.samples.parser.action.MapActionSequence;
 import com.hyena.framework.samples.parser.action.MapActionTranslate;
+import com.hyena.framework.samples.parser.node.MapNodeBlock;
 import com.hyena.framework.samples.parser.node.MapNodeLine;
 import com.hyena.framework.samples.parser.node.MapNodeLayer;
 import com.hyena.framework.samples.parser.node.MapNode;
 import com.hyena.framework.samples.parser.node.MapNodeSprite;
 import com.hyena.framework.samples.parser.node.MapNodeText;
+import com.hyena.framework.samples.parser.style.MapStyle;
 import com.hyena.framework.samples.parser.utils.XMLUtils;
 import com.hyena.framework.utils.MathUtils;
 import com.hyena.framework.utils.UIUtils;
@@ -22,6 +24,7 @@ import com.hyena.framework.utils.UIUtils;
 import org.apache.http.protocol.HTTP;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -56,6 +59,19 @@ public class DefaultMapParser implements MapParser {
                 backGround = XMLUtils.getAttributeValue(backGroundNode, "src");
             }
             map.mBackGround = backGround;
+
+            //解析样式
+            NodeList styleList = rootElement.getElementsByTagName("style");
+            for (int i = 0; i < styleList.getLength(); i++) {
+                Node style = styleList.item(i);
+                NamedNodeMap attrMap = style.getAttributes();
+                MapStyle mapStyle = new MapStyle(XMLUtils.getAttributeValue(style, "id"));
+                for (int j = 0; j < attrMap.getLength(); j++) {
+                    Node attr = attrMap.item(j);
+                    mapStyle.setStyle(attr.getNodeName(), attr.getNodeValue());
+                }
+                map.addStyle(mapStyle);
+            }
 
             NodeList layerList = rootElement.getElementsByTagName("layer");
             for (int i = 0; i < layerList.getLength(); i++) {
@@ -270,6 +286,37 @@ public class DefaultMapParser implements MapParser {
                 getNumber(width, screenWidth, screenHeight),
                 getNumber(height, screenWidth, screenHeight));
         sprite.mSrc = XMLUtils.getAttributeValue(node, "src");
+
+        //解析描述快
+        NodeList blockList = node.getChildNodes();
+        if (blockList != null) {
+            for (int i = 0; i < blockList.getLength(); i++) {
+                Node blockNode = blockList.item(i);
+                //描述块
+                if ("block".equals(blockNode.getNodeName())) {
+                    id = XMLUtils.getAttributeValue(blockNode, "id");
+                    width = XMLUtils.getAttributeValue(blockNode, "width");
+                    height = XMLUtils.getAttributeValue(blockNode, "height");
+                    MapNodeBlock block = new MapNodeBlock(id,
+                            getNumber(width, screenWidth, screenHeight),
+                            getNumber(height, screenWidth, screenHeight));
+                    block.mTitle = XMLUtils.getAttributeValue(blockNode, "title");
+                    block.mSubTitle = XMLUtils.getAttributeValue(blockNode, "subTitle");
+                    block.mStyle = XMLUtils.getAttributeValue(blockNode, "style");
+                    sprite.addMapBlock(block);
+                } else if ("text".equals(blockNode.getNodeName())) {
+                    id = XMLUtils.getAttributeValue(blockNode, "id");
+                    width = XMLUtils.getAttributeValue(blockNode, "width");
+                    height = XMLUtils.getAttributeValue(blockNode, "height");
+                    MapNodeText mapText = new MapNodeText(id,
+                            getNumber(width, screenWidth, screenHeight),
+                            getNumber(height, screenWidth, screenHeight));
+                    mapText.mText = XMLUtils.getAttributeValue(blockNode, "text");
+                    mapText.mStyle = XMLUtils.getAttributeValue(blockNode, "style");
+                    sprite.addMapText(mapText);
+                }
+            }
+        }
         return sprite;
     }
 
@@ -297,6 +344,28 @@ public class DefaultMapParser implements MapParser {
         line.mColor = XMLUtils.getAttributeValue(node, "color");
         return line;
     }
+
+//    private MapNodeBlock parseBlock(Node node, int screenWidth, int screenHeight){
+//        String id = XMLUtils.getAttributeValue(node, "id");
+//        String width = XMLUtils.getAttributeValue(node, "width");
+//        String height = XMLUtils.getAttributeValue(node, "height");
+//        MapNodeBlock block = new MapNodeBlock(id,
+//                getNumber(width, screenWidth, screenHeight),
+//                getNumber(height, screenWidth, screenHeight));
+//        block.mTitle = XMLUtils.getAttributeValue(node, "title");
+//        block.mSubTitle = XMLUtils.getAttributeValue(node, "subTitle");
+//        block.mSubTitleSrc = XMLUtils.getAttributeValue(node, "subTitleSrc");
+//        block.mAttachNodeId = XMLUtils.getAttributeValue(node, "attach");
+//        block.mAttachDirection = XMLUtils.getAttributeValue(node, "attachDirection");
+//
+//        block.mTitleColor = XMLUtils.getAttributeValue(node, "titleColor");
+//        block.mTitleFontSize = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "titleFontSize"));
+//        block.mSubTitleFontSize = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "subTitleFontSize"));
+//
+//        block.mMarginLeft = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "marginLeft"));
+//        block.mMarginRight = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "marginRight"));
+//        return block;
+//    }
 
     private int getNumber(String value, int screenWidth, int screenHeight) {
         if (TextUtils.isEmpty(value))
