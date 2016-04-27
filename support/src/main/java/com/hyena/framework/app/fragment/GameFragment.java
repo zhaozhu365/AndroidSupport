@@ -3,7 +3,6 @@ package com.hyena.framework.app.fragment;
 import android.os.Bundle;
 import android.view.View;
 
-import com.hyena.framework.animation.CGLView;
 import com.hyena.framework.animation.CScene;
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.RenderView;
@@ -16,9 +15,9 @@ public class GameFragment<T extends BaseUIFragmentHelper> extends
 
     private Director mDirector;
 
-    public RenderView buildRenderView() {
-        return new CGLView(getActivity());
-    }
+//    public RenderView buildRenderView() {
+//        return new CGLView(getActivity());
+//    }
 
     public Director getDirector() {
         return mDirector;
@@ -36,13 +35,19 @@ public class GameFragment<T extends BaseUIFragmentHelper> extends
         mDirector = new Director(getActivity());
     }
 
-    @Override
-    public View onCreateViewImpl(Bundle savedInstanceState) {
-        RenderView renderView = buildRenderView();
+//    @Override
+//    public View onCreateViewImpl(Bundle savedInstanceState) {
+//        RenderView renderView = buildRenderView();
+//        if (mDirector != null) {
+//            mDirector.setRenderView(renderView);
+//        }
+//        return (View) renderView;
+//    }
+
+    public void setRenderView(RenderView renderView){
         if (mDirector != null) {
             mDirector.setRenderView(renderView);
         }
-        return (View) renderView;
     }
 
     @Override

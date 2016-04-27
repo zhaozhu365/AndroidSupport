@@ -8,6 +8,7 @@ import com.hyena.framework.app.fragment.BaseUIFragment;
 import com.hyena.framework.app.fragment.BaseUIFragmentHelper;
 import com.hyena.framework.app.fragment.GameFragment;
 import com.hyena.framework.clientlog.LogUtil;
+import com.hyena.framework.samples.layer.ButtonNode;
 import com.hyena.framework.samples.layer.MapScene;
 
 /**
@@ -25,8 +26,8 @@ public class SampleScene extends MapScene {
     }
 
     @Override
-    public void load(String xml) {
-        super.load(xml);
+    public void load(String xml, int screenWidth, int screenHeight) {
+        super.load(xml, screenWidth, screenHeight);
         setOnNodeClickListener(mNodeClickListener);
     }
 
@@ -38,9 +39,18 @@ public class SampleScene extends MapScene {
 
         @Override
         public void onClick(CNode node) {
-            if (node instanceof CTexture || node instanceof CSprite) {
+            if (node instanceof CTexture || node instanceof CSprite
+                    || node instanceof ButtonNode) {
                 LogUtil.v(TAG, "onNodeClick: " + node.getTag());
             }
         }
     };
+
+    public static int STATUS_BAG_UNABLE = 1;
+    public static int STATUS_BAG_OPEN = 1;
+    public static int STATUS_BAG_CLICKABLE = 1;
+
+    public void setBagStatus(String bagId, int bagStatus){
+
+    }
 }

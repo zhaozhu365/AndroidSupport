@@ -224,22 +224,22 @@ public abstract class CNode {
 
     private Rect mTemp = new Rect();
     private boolean mTouching = false;
+
     public boolean onTouch(MotionEvent event) {
         if (mClickListener == null) {
             return false;
         }
         int scrollX = 0, scrollY = 0;
         if (mParent != null && mParent instanceof CLayer) {
-            scrollX = ((CLayer)mParent).getScrollX();
-            scrollY = ((CLayer)mParent).getScrollY();
+            scrollX = ((CLayer) mParent).getScrollX();
+            scrollY = ((CLayer) mParent).getScrollY();
         }
 
         int x = (int) event.getX();
         int y = (int) event.getY();
         int action = event.getAction();
         switch (action) {
-            case MotionEvent.ACTION_DOWN:
-            {
+            case MotionEvent.ACTION_DOWN: {
                 mTemp.set(getPosition().x, getPosition().y, getPosition().x + getWidth(),
                         getPosition().y + getHeight());
                 mTouching = mTemp.contains(x + scrollX, y - scrollY);
@@ -249,8 +249,7 @@ public abstract class CNode {
                 return mTouching;
             }
             case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-            {
+            case MotionEvent.ACTION_CANCEL: {
                 if (mTemp.contains(x + scrollX, y - scrollY)) {
                     //click
                     if (mClickListener != null) {
@@ -299,7 +298,7 @@ public abstract class CNode {
     /**
      * 更新位置
      */
-    private void updatePosition(){
+    private void updatePosition() {
         int pLeft = 0, pTop = 0;
         int pWidth = mDirector.getViewSize().width();
         int pHeight = mDirector.getViewSize().height();
@@ -418,15 +417,29 @@ public abstract class CNode {
         return null;
     }
 
-    protected void onTouchDown(){}
+    protected void onTouchDown() {
+    }
 
-    protected void onTouchUp(){}
+    protected void onTouchUp() {
+    }
 
     private OnNodeClickListener mClickListener;
+
     public void setOnNodeClickListener(OnNodeClickListener listener) {
         this.mClickListener = listener;
     }
+
     public static interface OnNodeClickListener {
         void onClick(CNode node);
+    }
+
+    private boolean mTouchable = false;
+
+    public void setTouchable(boolean touchable) {
+        this.mTouchable = touchable;
+    }
+
+    public boolean isTouchable() {
+        return mTouchable;
     }
 }

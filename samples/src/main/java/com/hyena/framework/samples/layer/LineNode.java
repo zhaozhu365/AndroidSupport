@@ -38,7 +38,7 @@ public class LineNode extends CNode {
     private void init() {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mDistance = UIUtils.dip2px(5);
-        mRadius = UIUtils.dip2px(2);
+        mRadius = UIUtils.dip2px(1.25f);
     }
 
     public void setColor(int color) {

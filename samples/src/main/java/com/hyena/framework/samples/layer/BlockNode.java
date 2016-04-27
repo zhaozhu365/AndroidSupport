@@ -52,8 +52,10 @@ public class BlockNode extends CNode {
     }
 
     private int mSubTitleFontSize;
-    public void setSubTitleStyle(int fontSize){
+    private int mSubTitleColor;
+    public void setSubTitleStyle(int fontSize, String color){
         this.mSubTitleFontSize = fontSize;
+        this.mSubTitleColor = Color.parseColor(color);
     }
 
 
@@ -70,7 +72,7 @@ public class BlockNode extends CNode {
             canvas.drawText(mTitle, getPosition().x, y, mPaint);
 
         mPaint.setTextSize(mSubTitleFontSize);
-
+        mPaint.setColor(mSubTitleColor);
         height = getTextHeight(mPaint);
         y += height;
         if (!TextUtils.isEmpty(mSubTitle))

@@ -39,7 +39,7 @@ public class CScrollLayer extends CLayer {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (!isScrollable()) {
+        if (!isScrollable() || !isTouchable()) {
             return super.onInterceptTouchEvent(ev);
         }
         int action = ev.getAction();
@@ -70,7 +70,7 @@ public class CScrollLayer extends CLayer {
 
     @Override
     public boolean onTouch(MotionEvent event) {
-        if (!isScrollable()) {
+        if (!isScrollable() || !isTouchable()) {
             return super.onInterceptTouchEvent(event);
         }
         int action = event.getAction();
@@ -88,7 +88,7 @@ public class CScrollLayer extends CLayer {
             }
             case MotionEvent.ACTION_MOVE: {
                 addTrackerMovement(event);
-                int minY = -getContentHeight() + getDirector().getViewSize().height();
+                int minY = -getHeight() + getDirector().getViewSize().height();
                 if (getScrollY() + y - mLastY < minY) {
                     scrollTo(0, minY);
                 } else if (getScrollY() + y - mLastY > 0) {
@@ -109,7 +109,7 @@ public class CScrollLayer extends CLayer {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
                     float yVelocity = mVelocityTracker.getYVelocity();
                     if (Math.abs(yVelocity) > mMinimumVelocity) {
-                        int minY = -getContentHeight() + getDirector().getViewSize().height();
+                        int minY = -getHeight() + getDirector().getViewSize().height();
                         mScroller.fling(0, getScrollY(), 0, (int) yVelocity
                                 , 0, 0, minY, 0);
                     }
@@ -126,7 +126,7 @@ public class CScrollLayer extends CLayer {
         super.update(dt);
         if (mScroller != null && mScroller.computeScrollOffset()) {
             int y = mScroller.getCurrY();
-            int minY = -getContentHeight() + getDirector().getViewSize().height();
+            int minY = -getHeight() + getDirector().getViewSize().height();
             if (y < minY)
                 y = minY;
             if (y > 0)

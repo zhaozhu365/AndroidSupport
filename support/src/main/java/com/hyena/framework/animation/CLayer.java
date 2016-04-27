@@ -72,7 +72,7 @@ public class CLayer extends CNode {
         this.mScrollX = x;
         this.mScrollY = y;
         if (mScrollerListener != null) {
-            mScrollerListener.onScroll(this, mScrollX, mScrollY, getWidth(), getContentHeight());
+            mScrollerListener.onScroll(this, mScrollX, mScrollY, getWidth(), getHeight());
         }
     }
 
@@ -84,7 +84,7 @@ public class CLayer extends CNode {
         this.mScrollY += dy;
 
         if (mScrollerListener != null) {
-            mScrollerListener.onScroll(this, mScrollX, mScrollY, getWidth(), getContentHeight());
+            mScrollerListener.onScroll(this, mScrollX, mScrollY, getWidth(), getHeight());
         }
     }
 
@@ -223,20 +223,20 @@ public class CLayer extends CNode {
 //        return super.getHeight();
 //    }
 
-    public int getContentHeight(){
-        if (mNodes == null || mNodes.isEmpty())
-            return super.getHeight();
-
-        int height = 0;
-        for (int i = 0; i < mNodes.size(); i++) {
-            CNode node = mNodes.get(i);
-            int maxY = node.getPosition().y + node.getHeight();
-            if (maxY > height) {
-                height = maxY;
-            }
-        }
-        return height;
-    }
+//    public int getContentHeight(){
+//        if (mNodes == null || mNodes.isEmpty())
+//            return super.getHeight();
+//
+//        int height = 0;
+//        for (int i = 0; i < mNodes.size(); i++) {
+//            CNode node = mNodes.get(i);
+//            int maxY = node.getPosition().y + node.getHeight();
+//            if (maxY > height) {
+//                height = maxY;
+//            }
+//        }
+//        return height;
+//    }
 
     @Override
     public CNode findNodeByTag(String tag) {
@@ -265,7 +265,7 @@ public class CLayer extends CNode {
     }
 
     protected boolean isScrollable() {
-        return getContentHeight() > getDirector().getViewSize().height();
+        return getHeight() > getDirector().getViewSize().height();
     }
 
     private OnScrollerListener mScrollerListener;

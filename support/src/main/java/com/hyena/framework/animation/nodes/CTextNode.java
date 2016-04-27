@@ -110,7 +110,7 @@ public class CTextNode extends CNode {
 				break;
 			}
 			case TOP_RIGHT: {
-				x = getWidth() - getTextWidth();
+				x = getPosition().x + getWidth() - getTextWidth();
 				y = getPosition().y + getTextHeight();
 				break;
 			}
@@ -127,7 +127,7 @@ public class CTextNode extends CNode {
 				break;
 			}
 			case CENTER_RIGHT: {
-				x = getWidth() - getTextWidth();
+				x = getPosition().x + getWidth() - getTextWidth();
 				Paint.FontMetrics fm = mPaint.getFontMetrics();
 				y = (int) (getPosition().y + (getHeight() - fm.bottom - fm.top)/2);
 				break;
@@ -143,7 +143,7 @@ public class CTextNode extends CNode {
 				break;
 			}
 			case BOTTOM_RIGHT: {
-				x = getWidth() - getTextWidth();
+				x = getPosition().x + getWidth() - getTextWidth();
 				y = getPosition().y + getHeight();
 				break;
 			}

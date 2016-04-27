@@ -11,11 +11,13 @@ import com.hyena.framework.samples.parser.action.MapActionScale;
 import com.hyena.framework.samples.parser.action.MapActionSequence;
 import com.hyena.framework.samples.parser.action.MapActionTranslate;
 import com.hyena.framework.samples.parser.node.MapNodeBlock;
+import com.hyena.framework.samples.parser.node.MapNodeButton;
 import com.hyena.framework.samples.parser.node.MapNodeLine;
 import com.hyena.framework.samples.parser.node.MapNodeLayer;
 import com.hyena.framework.samples.parser.node.MapNode;
 import com.hyena.framework.samples.parser.node.MapNodeSprite;
 import com.hyena.framework.samples.parser.node.MapNodeText;
+import com.hyena.framework.samples.parser.node.MapNodeTitle;
 import com.hyena.framework.samples.parser.style.MapStyle;
 import com.hyena.framework.samples.parser.utils.XMLUtils;
 import com.hyena.framework.utils.MathUtils;
@@ -102,6 +104,17 @@ public class DefaultMapParser implements MapParser {
         } else {
             mapLayer.setDepth(1);
         }
+        String width = XMLUtils.getAttributeValue(layer, "width");
+        String height = XMLUtils.getAttributeValue(layer, "height");
+        if (width == null) {
+            width = "WIDTH";
+        }
+        if (height == null) {
+            height = "HEIGHT";
+        }
+        mapLayer.setSize(getNumber(width, screenWidth, screenHeight),
+                getNumber(height, screenWidth, screenHeight));
+
         NodeList elementNode = layer.getChildNodes();
         for (int i = 0; i < elementNode.getLength(); i++) {
             Node element = elementNode.item(i);
@@ -113,12 +126,16 @@ public class DefaultMapParser implements MapParser {
                 mapNode = parseText(element, screenWidth, screenHeight);
             } else if ("line".equals(nodeName)) {
                 mapNode = parseLine(element);
+            } else if ("title".equals(nodeName)){
+                mapNode = parseTitle(element, screenWidth, screenHeight);
+            } else if("button".equals(nodeName)){
+                mapNode = parseButton(element, screenWidth, screenHeight);
             }
             if (mapNode != null) {
                 //update x, y, tag
                 updateMapNode(mapNode, element, screenWidth, screenHeight);
                 //update actions
-                updateActions(mapNode, element);
+                updateActions(mapNode, element, screenWidth, screenHeight);
 
                 mapLayer.addNode(mapNode);
             }
@@ -143,12 +160,12 @@ public class DefaultMapParser implements MapParser {
         }
     }
 
-    private void updateActions(MapNode mapNode, Node node) {
+    private void updateActions(MapNode mapNode, Node node, int screenWidth, int screenHeight) {
         NodeList nodeList = node.getChildNodes();
         if (nodeList != null && nodeList.getLength() > 0) {
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node child = nodeList.item(i);
-                MapAction action = parseActions(child);
+                MapAction action = parseActions(child, screenWidth, screenHeight);
                 if (action != null) {
                     mapNode.addAction(action);
                 }
@@ -156,19 +173,19 @@ public class DefaultMapParser implements MapParser {
         }
     }
 
-    private MapAction parseActions(Node node){
+    private MapAction parseActions(Node node, int screenWidth, int screenHeight){
         MapAction action = null;
         String type = XMLUtils.getAttributeValue(node, "type");
         if ("scale".equals(type)) {
             action = parseScaleAction(node);
         } else if ("translate".equals(type)) {
-            action = parseTranslateAction(node);
+            action = parseTranslateAction(node, screenWidth, screenHeight);
         } else if ("alpha".equals(type)) {
             action = parseAlphaAction(node);
         } else if ("frame".equals(type)) {
             action = parseFrameAction(node);
         } else if ("sequence".equals(type)) {
-            action = parseSequenceAction(node);
+            action = parseSequenceAction(node, screenWidth, screenHeight);
         } else if ("rotate".equals(type)) {
             action = parseRotateAction(node);
         }
@@ -189,7 +206,7 @@ public class DefaultMapParser implements MapParser {
         return action;
     }
 
-    private MapActionSequence parseSequenceAction(Node node) {
+    private MapActionSequence parseSequenceAction(Node node, int screenWidth, int screenHeight) {
         int duration = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "duration"));
 //        int repeat = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "repeat"));
         String repeatStr = XMLUtils.getAttributeValue(node, "repeat");
@@ -203,7 +220,7 @@ public class DefaultMapParser implements MapParser {
         if (actionList != null && actionList.getLength() > 0) {
             for (int i = 0; i < actionList.getLength(); i++) {
                 Node actionNode = actionList.item(i);
-                MapAction subAction = parseActions(actionNode);
+                MapAction subAction = parseActions(actionNode, screenWidth, screenHeight);
                 if (subAction != null) {
                     action.addAction(subAction);
                 }
@@ -252,7 +269,7 @@ public class DefaultMapParser implements MapParser {
         return action;
     }
 
-    private MapActionTranslate parseTranslateAction(Node node) {
+    private MapActionTranslate parseTranslateAction(Node node, int screenWidth, int screenHeight) {
         int duration = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "duration"));
         String repeatStr = XMLUtils.getAttributeValue(node, "repeat");
         int repeat = 1;
@@ -260,8 +277,8 @@ public class DefaultMapParser implements MapParser {
             repeat = MathUtils.valueOfInt(repeatStr);
         }
         MapActionTranslate action = new MapActionTranslate(duration, repeat);
-        action.mToX = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "toX"));
-        action.mToY = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "toY"));
+        action.mToX = getNumber(XMLUtils.getAttributeValue(node, "toX"), screenWidth, screenHeight);
+        action.mToY = getNumber(XMLUtils.getAttributeValue(node, "toY"), screenWidth, screenHeight);
         return action;
     }
 
@@ -329,9 +346,10 @@ public class DefaultMapParser implements MapParser {
                 getNumber(height, screenWidth, screenHeight));
         text.mColor = XMLUtils.getAttributeValue(node, "color");
         text.mPressColor = XMLUtils.getAttributeValue(node, "pressed");
-        text.mFontSize = MathUtils.valueOfInt(XMLUtils.getAttributeValue(node, "fontSize"));
+        text.mFontSize = UIUtils.dip2px(MathUtils.valueOfInt(
+                XMLUtils.getAttributeValue(node, "fontSize")));
         text.mText = XMLUtils.getAttributeValue(node, "text");
-        text.mAlign = XMLUtils.getAttributeValue(node, "align");
+        text.mAlign = XMLUtils.getAttributeValue(node, "textAlign");
         return text;
     }
 
@@ -342,7 +360,51 @@ public class DefaultMapParser implements MapParser {
         line.mToId = XMLUtils.getAttributeValue(node, "to");
         line.mStyle = XMLUtils.getAttributeValue(node, "style");
         line.mColor = XMLUtils.getAttributeValue(node, "color");
+
+//        line.mHasBag = "true".equals(XMLUtils.getAttributeValue(node, "hasBox"));
+//        line.mBagStyle = XMLUtils.getAttributeValue(node, "bagStyle");
         return line;
+    }
+
+//    <title id="title" x="func(WIDTH/2-61)" y="10" width="123" height="43" background="res:map1/title_bg.png"
+//    title="海底世界" titleFontSize="16" titleColor="#ffffff"
+//    subTitleLeft="10/" subTitleFontSize="12" subTitleLeftColor="#ffffff"
+//    subTitleRight="50" subTitleRightColor="#ffffff"/>
+    private MapNodeTitle parseTitle(Node node, int screenWidth, int screenHeight){
+        String id = XMLUtils.getAttributeValue(node, "id");
+        String width = XMLUtils.getAttributeValue(node, "width");
+        String height = XMLUtils.getAttributeValue(node, "height");
+        MapNodeTitle title = new MapNodeTitle(id,
+                getNumber(width, screenWidth, screenHeight),
+                getNumber(height, screenWidth, screenHeight));
+
+
+        title.mBackGround = XMLUtils.getAttributeValue(node, "background");
+        title.mTitle = XMLUtils.getAttributeValue(node, "title");
+        title.mTitleFontSize = UIUtils.dip2px(MathUtils.valueOfInt(XMLUtils
+                .getAttributeValue(node, "titleFontSize")));
+        title.mTitleColor = XMLUtils.getAttributeValue(node, "titleColor");
+
+        title.mSubTitleFontSize = UIUtils.dip2px(MathUtils.valueOfInt(XMLUtils
+                .getAttributeValue(node, "subTitleFontSize")));
+
+        title.mSubTitleLeft = XMLUtils.getAttributeValue(node, "subTitleLeft");
+        title.mSubTitleLeftColor = XMLUtils.getAttributeValue(node, "subTitleLeftColor");
+        title.mSubTitleRight = XMLUtils.getAttributeValue(node, "subTitleRight");
+        title.mSubTitleRightColor = XMLUtils.getAttributeValue(node, "subTitleRightColor");
+
+        return title;
+    }
+
+    private MapNodeButton parseButton(Node node, int screenWidth, int screenHeight){
+        String id = XMLUtils.getAttributeValue(node, "id");
+        String width = XMLUtils.getAttributeValue(node, "width");
+        String height = XMLUtils.getAttributeValue(node, "height");
+        MapNodeButton button = new MapNodeButton(id,
+                getNumber(width, screenWidth, screenHeight),
+                getNumber(height, screenWidth, screenHeight));
+        button.mTitle = XMLUtils.getAttributeValue(node, "title");
+        return button;
     }
 
 //    private MapNodeBlock parseBlock(Node node, int screenWidth, int screenHeight){

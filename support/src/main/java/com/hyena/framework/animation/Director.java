@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 
 import com.hyena.framework.animation.utils.UIUtils;
+import com.hyena.framework.clientlog.LogUtil;
 
 import java.util.Stack;
 
@@ -261,9 +262,10 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
     public boolean onTouch(View v, MotionEvent event) {
         CScene scene = getActiveScene();
         if (scene != null) {
-            return scene.dispatchTouchEvent(event);
+            LogUtil.v("yangzc", event.getAction() + "");
+            scene.dispatchTouchEvent(event);
         }
-        return false;
+        return true;
     }
 
     private static final int MSG_LOOPER = 1;

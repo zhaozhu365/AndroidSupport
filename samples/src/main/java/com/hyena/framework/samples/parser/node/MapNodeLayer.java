@@ -14,6 +14,20 @@ public class MapNodeLayer {
     private int mZIndex;
     private float mDepth;
     private List<MapNode> mNodes;
+    private int mWidth, mHeight;
+
+    public void setSize(int width, int height) {
+        this.mWidth = width;
+        this.mHeight = height;
+    }
+
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public int getHeight() {
+        return mHeight;
+    }
 
     public void setZIndex(int zIndex) {
         this.mZIndex = zIndex;

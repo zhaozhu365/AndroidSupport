@@ -41,10 +41,12 @@ import com.hyena.framework.samples.parser.action.MapActionTranslate;
 import com.hyena.framework.samples.parser.action.MapFrame;
 import com.hyena.framework.samples.parser.node.MapNode;
 import com.hyena.framework.samples.parser.node.MapNodeBlock;
+import com.hyena.framework.samples.parser.node.MapNodeButton;
 import com.hyena.framework.samples.parser.node.MapNodeLayer;
 import com.hyena.framework.samples.parser.node.MapNodeLine;
 import com.hyena.framework.samples.parser.node.MapNodeSprite;
 import com.hyena.framework.samples.parser.node.MapNodeText;
+import com.hyena.framework.samples.parser.node.MapNodeTitle;
 import com.hyena.framework.samples.parser.style.MapStyle;
 import com.hyena.framework.utils.FileUtils;
 import com.hyena.framework.utils.MathUtils;
@@ -70,20 +72,18 @@ public class MapScene extends CScene {
         super(director);
     }
 
-    public void loadAssetPath(String path) {
+    public void loadAssetPath(String path, int screenWidth, int screenHeight) {
         try {
             InputStream is = getDirector().getContext().getAssets().open(path);
             byte buf[] = FileUtils.getBytes(is);
-            load(new String(buf, HTTP.UTF_8));
+            load(new String(buf, HTTP.UTF_8), screenWidth, screenHeight);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void load(String xml) {
-        mMap = mParser.parse(xml,
-                getDirector().getViewSize().width(),
-                getDirector().getViewSize().height());
+    public void load(String xml, int screenWidth, int screenHeight) {
+        mMap = mParser.parse(xml, screenWidth, screenHeight);
 
         if (mMap != null) {
             int zIndex = -1;
@@ -94,17 +94,19 @@ public class MapScene extends CScene {
                     MapNodeLayer nodeLayer = layers.get(i);
                     //load layer
                     CScrollLayer layer = createLayer(nodeLayer);
-                    if (nodeLayer.getZIndex() > zIndex) {
+                    if (nodeLayer.getZIndex() > zIndex && nodeLayer.getDepth() > 0) {
                         topLayer = layer;
                         zIndex = nodeLayer.getZIndex();
                     }
                     if (layer != null) {
+                        layer.setViewSize(nodeLayer.getWidth(), nodeLayer.getHeight());
                         layer.setDepth(nodeLayer.getDepth());
                         addNode(layer, nodeLayer.getZIndex());
                     }
                 }
             }
             mTopLayer = topLayer;
+            mTopLayer.setTouchable(true);
             //compute depth
             if (topLayer != null) {
                 topLayer.setOnScrollerListener(new OnScrollerListener() {
@@ -115,9 +117,9 @@ public class MapScene extends CScene {
                         for (int i = 0; i < nodes.size(); i++) {
                             if (nodes.get(i) instanceof CScrollLayer) {
                                 CScrollLayer scrollLayer = (CScrollLayer) nodes.get(i);
-                                if (scrollLayer != layer)
-                                    scrollLayer.scrollTo((int) (scrollX * layer.getDepth() / width),
-                                            (int) (scrollY * layer.getDepth() / height));
+                                if (scrollLayer != layer && scrollLayer.getDepth() > 0)
+                                    scrollLayer.scrollTo((int) (scrollX * layer.getDepth() * 1.0f),
+                                            (int) (scrollY * layer.getDepth() * 1.0f));
                             }
                         }
                     }
@@ -130,10 +132,22 @@ public class MapScene extends CScene {
     @Override
     public synchronized void update(float dt) {
         if (!isInited && mTopLayer != null) {
-            mTopLayer.scrollTo(0, -mTopLayer.getContentHeight() + getDirector().getViewSize().height());
+            scrollToBottom();
             isInited = true;
         }
         super.update(dt);
+    }
+
+    private void scrollToBottom(){
+        if (getNodes() != null) {
+            for (int i = 0; i < getNodes().size(); i++) {
+                CNode node = getNodes().get(i);
+                if (node instanceof CLayer) {
+                    CLayer layer = (CLayer) node;
+                    layer.scrollTo(0, -layer.getHeight() + getDirector().getViewSize().height());
+                }
+            }
+        }
     }
 
     private Bitmap loadBitmap(String tag, String url) {
@@ -170,7 +184,7 @@ public class MapScene extends CScene {
                 if (mapNode instanceof MapNodeSprite) {
                     MapNodeSprite sprite = (MapNodeSprite) mapNode;
                     node = loadSprite(sprite);
-
+                    //加载关卡描述
                     if (sprite.getBlocks() != null && !sprite.getBlocks().isEmpty()) {
                         for (int j = 0; j < sprite.getBlocks().size(); j++) {
                             MapNodeBlock mapBlock = sprite.getBlocks().get(j);
@@ -181,7 +195,7 @@ public class MapScene extends CScene {
                             }
                         }
                     }
-
+                    //加载关卡索引
                     if (sprite.getTexts() != null && !sprite.getTexts().isEmpty()) {
                         for (int j = 0; j < sprite.getTexts().size(); j++) {
                             MapNodeText textMap = sprite.getTexts().get(j);
@@ -193,12 +207,22 @@ public class MapScene extends CScene {
                             }
                         }
                     }
-
+                } else if (mapNode instanceof MapNodeLine) {
+                    MapNodeLine mapNodeLine = (MapNodeLine) mapNode;
+                    node = createLine(mapLayer, mapNodeLine);
+//                    if (mapNodeLine.mHasBag) {
+//                        CNode bagNode = createBagNode(mapNodeLine);
+//                        if (bagNode != null) {
+//                            layer.addNode(bagNode, mapNodeLine.getZIndex() + 1);
+//                        }
+//                    }
                 } else if (mapNode instanceof MapNodeText) {
                     MapNodeText nodeText = (MapNodeText) mapNode;
                     node = createText(nodeText, null);
-                } else if (mapNode instanceof MapNodeLine) {
-                    node = createLine(mapLayer, (MapNodeLine) mapNode);
+                } else if (mapNode instanceof MapNodeTitle) {
+                    node = createTitle((MapNodeTitle) mapNode);
+                } else if (mapNode instanceof MapNodeButton) {
+                    node = createButton((MapNodeButton)mapNode);
                 }
 
                 if (node != null) {
@@ -221,6 +245,16 @@ public class MapScene extends CScene {
         }
         return layer;
     }
+
+//    private CNode createBagNode(MapNodeLine mapNodeLine){
+//        if (TextUtils.isEmpty(mapNodeLine.mBagStyle))
+//            return null;
+//        MapStyle style = getStyle(mapNodeLine.mBagStyle);
+//        if (style != null) {
+//
+//        }
+//        return null;
+//    }
 
     private CAction createAction(MapNodeSprite spriteNode, MapAction mapAction) {
         CIntervalAction action = null;
@@ -368,7 +402,7 @@ public class MapScene extends CScene {
         int marginRight = MathUtils.valueOfInt(style.getStyle("marginRight"));
 
         node.setTitleStyle(UIUtils.dip2px(titleFontSize), style.getStyle("titleColor"));
-        node.setSubTitleStyle(UIUtils.dip2px(subTitleFontSize));
+        node.setSubTitleStyle(UIUtils.dip2px(subTitleFontSize), style.getStyle("subTitleColor"));
         if (attachNode != null) {
             String direction = style.getStyle("attachDirection");
             if (TextUtils.isEmpty(direction)) {
@@ -383,6 +417,30 @@ public class MapScene extends CScene {
         return node;
     }
 
+    private CNode createButton(MapNodeButton buttonNode) {
+        //TODO
+        ButtonNode button = ButtonNode.create(getDirector());
+        button.setPosition(new Point(buttonNode.getX(), buttonNode.getY()));
+        button.setViewSize(buttonNode.getWidth(), buttonNode.getHeight());
+        button.setTitle(buttonNode.mTitle);
+        return button;
+    }
+
+    private TitleNode createTitle(MapNodeTitle titleNode) {
+        TitleNode node = TitleNode.create(getDirector());
+        Bitmap bitmap = loadBitmap(titleNode.getId(), titleNode.mBackGround);
+        node.setBackGround(bitmap);
+        node.setTitle(titleNode.mTitle);
+        node.setSubTitle(titleNode.mSubTitleLeft, titleNode.mSubTitleRight);
+        node.setTitleStyle(titleNode.mTitleFontSize, titleNode.mTitleColor);
+        node.setSubTitleStyle(titleNode.mSubTitleFontSize, titleNode.mSubTitleLeftColor,
+                titleNode.mSubTitleRightColor);
+
+        node.setPosition(new Point(titleNode.getX(), titleNode.getY()));
+        node.setViewSize(titleNode.getWidth(), titleNode.getHeight());
+        return node;
+    }
+
     private CTextNode createText(MapNodeText textNode, MapNode attach) {
         CTextNode node = CTextNode.create(getDirector());
         node.setText(textNode.mText);
@@ -390,15 +448,18 @@ public class MapScene extends CScene {
         if (attach != null) {
             position = new Point(attach.getX(), attach.getY());
         } else {
-            node.setPosition(new Point(textNode.getX(), textNode.getY()));
+            position = new Point(textNode.getX(), textNode.getY());
         }
         int width, height, fontSize;
         String textColor, pressColor, textAlign;
         MapStyle style = getStyle(textNode.mStyle);
         if (style != null) {
             width = MathUtils.valueOfInt(style.getStyle("width"));
+            width = UIUtils.dip2px(width);
             height = MathUtils.valueOfInt(style.getStyle("height"));
+            height = UIUtils.dip2px(height);
             fontSize = MathUtils.valueOfInt(style.getStyle("fontSize"));
+            fontSize = UIUtils.dip2px(fontSize);
             textColor = style.getStyle("color");
             pressColor = style.getStyle("pressed");
             textAlign = style.getStyle("textAlign");
@@ -411,8 +472,8 @@ public class MapScene extends CScene {
             textAlign = textNode.mAlign;
         }
         node.setPosition(position);
-        node.setViewSize(UIUtils.dip2px(width), UIUtils.dip2px(height));
-        node.setFontSize(UIUtils.dip2px(fontSize));
+        node.setViewSize(width, height);
+        node.setFontSize(fontSize);
         node.setColor(Color.parseColor(textColor));
         if (!TextUtils.isEmpty(pressColor)) {
             node.setPressedColor(Color.parseColor(pressColor));

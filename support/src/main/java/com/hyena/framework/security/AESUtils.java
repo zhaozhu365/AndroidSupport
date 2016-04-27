@@ -76,7 +76,7 @@ public class AESUtils {
 
     private static byte[] encrypt(byte[] raw, byte[] clear) throws Exception {
         SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
         cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new IvParameterSpec(
                 new byte[cipher.getBlockSize()]));
         byte[] encrypted = cipher.doFinal(clear);
