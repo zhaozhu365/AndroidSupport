@@ -12,8 +12,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 
 /**
  * 单个对象节点
@@ -25,21 +23,20 @@ public abstract class CNode {
     public static final int FILL_PARENT = -1;
 
     private CNode mParent;
-    //对齐方式
-    protected CAlign mAlign = null;
-    //花费的时间
-    private float elapsed = 0;
+
     //z轴索引
     private int mZIndex;
-
+    private String mId;
     private int mX = 0, mY = 0;
     private int mWidth = FILL_PARENT;
     private int mHeight = FILL_PARENT;
     private boolean isVisible = true;
+
     private Paint mPaint;
-
-    private String mTag;
-
+    //对齐方式
+    protected CAlign mAlign = null;
+    //花费的时间
+    private float elapsed = 0;
     private Point mPosition = new Point();
     private static Random mRandom = new Random();
 
@@ -402,16 +399,16 @@ public abstract class CNode {
         return mDirector;
     }
 
-    public void setTag(String tag) {
-        this.mTag = tag;
+    public void setId(String id) {
+        this.mId = id;
     }
 
-    public String getTag() {
-        return mTag;
+    public String getId() {
+        return mId;
     }
 
-    public CNode findNodeByTag(String tag) {
-        if (tag != null && tag.equals(getTag())) {
+    public CNode findNodeById(String id) {
+        if (id != null && id.equals(getId())) {
             return this;
         }
         return null;

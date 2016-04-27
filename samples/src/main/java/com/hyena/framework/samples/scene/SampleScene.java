@@ -41,7 +41,7 @@ public class SampleScene extends MapScene {
         public void onClick(CNode node) {
             if (node instanceof CTexture || node instanceof CSprite
                     || node instanceof ButtonNode) {
-                LogUtil.v(TAG, "onNodeClick: " + node.getTag());
+                LogUtil.v(TAG, "onNodeClick: " + node.getId());
             }
         }
     };

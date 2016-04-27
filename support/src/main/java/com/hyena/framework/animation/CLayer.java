@@ -202,48 +202,12 @@ public class CLayer extends CNode {
         return false;
     }
 
-//    @Override
-//    public int getWidth() {
-//        if (mNodes == null || mNodes.isEmpty())
-//            return super.getWidth();
-//
-//        int width = 0;
-//        for (int i = 0; i < mNodes.size(); i++) {
-//            CNode node = mNodes.get(i);
-//            int maxX = node.getPosition().x + node.getWidth();
-//            if (maxX > width) {
-//                width = maxX;
-//            }
-//        }
-//        return width;
-//    }
-//
-//    @Override
-//    public int getHeight() {
-//        return super.getHeight();
-//    }
-
-//    public int getContentHeight(){
-//        if (mNodes == null || mNodes.isEmpty())
-//            return super.getHeight();
-//
-//        int height = 0;
-//        for (int i = 0; i < mNodes.size(); i++) {
-//            CNode node = mNodes.get(i);
-//            int maxY = node.getPosition().y + node.getHeight();
-//            if (maxY > height) {
-//                height = maxY;
-//            }
-//        }
-//        return height;
-//    }
-
     @Override
-    public CNode findNodeByTag(String tag) {
+    public CNode findNodeById(String tag) {
         if (mNodes != null && mNodes.size() > 0) {
             for (int i = 0; i < mNodes.size(); i++) {
                 CNode node = mNodes.get(i);
-                CNode result = node.findNodeByTag(tag);
+                CNode result = node.findNodeById(tag);
                 if (result != null) {
                     return result;
                 }

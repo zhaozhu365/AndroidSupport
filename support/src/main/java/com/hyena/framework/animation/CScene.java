@@ -1,11 +1,12 @@
 package com.hyena.framework.animation;
 
+import android.graphics.Point;
+import android.graphics.Rect;
+
 import com.hyena.framework.animation.nodes.CTextNode;
 import com.hyena.framework.animation.sprite.CNode;
 
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.view.MotionEvent;
+import java.util.List;
 
 /**
  * 场景
@@ -79,36 +80,10 @@ public class CScene extends CLayer {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        return super.dispatchTouchEvent(ev);
-    }
-
-    @Override
     public void onSizeChange(RenderView view, Rect rect) {
         super.onSizeChange(view, rect);
         if (mTextNode != null)
             mTextNode.setPosition(new Point(0, getHeight() - dip2px(20)));
     }
 
-    @Override
-    public boolean isActive() {
-        return super.isActive();
-    }
-
-//    @Override
-//    public int getContentHeight() {
-//        int height = 0;
-//        if (getNodes() != null) {
-//            for (int i = 0; i < getNodes().size(); i++) {
-//                CNode node = getNodes().get(i);
-//                if (node != null && node instanceof CLayer) {
-//                    int nodeHeight = ((CLayer)node).getHeight();
-//                    if (nodeHeight > height) {
-//                        height = nodeHeight;
-//                    }
-//                }
-//            }
-//        }
-//        return height;
-//    }
 }

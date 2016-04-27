@@ -3,16 +3,13 @@ package com.hyena.framework.samples.layer;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.text.TextUtils;
 
 import com.hyena.framework.animation.CLayer;
 import com.hyena.framework.animation.CScene;
 import com.hyena.framework.animation.CScrollLayer;
 import com.hyena.framework.animation.Director;
-import com.hyena.framework.animation.RenderView;
 import com.hyena.framework.animation.action.CAlphaToAction;
 import com.hyena.framework.animation.action.CFrameAction;
 import com.hyena.framework.animation.action.CMoveToAction;
@@ -190,7 +187,7 @@ public class MapScene extends CScene {
                             MapNodeBlock mapBlock = sprite.getBlocks().get(j);
                             BlockNode blockNode = createBlock(mapBlock, sprite);
                             if (blockNode != null) {
-                                blockNode.setTag(mapBlock.getId());
+                                blockNode.setId(mapBlock.getId());
                                 layer.addNode(blockNode, mapBlock.getZIndex());
                             }
                         }
@@ -202,7 +199,7 @@ public class MapScene extends CScene {
                             //style
                             CTextNode textNode = createText(textMap, sprite);
                             if (textNode != null) {
-                                textNode.setTag(textMap.getId());
+                                textNode.setId(textMap.getId());
                                 layer.addNode(textNode, textMap.getZIndex());
                             }
                         }
@@ -226,7 +223,7 @@ public class MapScene extends CScene {
                 }
 
                 if (node != null) {
-                    node.setTag(mapNode.getId());
+                    node.setId(mapNode.getId());
                     layer.addNode(node, mapNode.getZIndex());
                 }
             }
@@ -238,7 +235,7 @@ public class MapScene extends CScene {
 //                    node = createBlock(mapLayer, (MapNodeBlock) mapNode);
 //                }
 //                if (node != null) {
-//                    node.setTag(mapNode.getId());
+//                    node.setId(mapNode.getId());
 //                    layer.addNode(node, mapNode.getZIndex());
 //                }
 //            }

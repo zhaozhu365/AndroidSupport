@@ -262,7 +262,6 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
     public boolean onTouch(View v, MotionEvent event) {
         CScene scene = getActiveScene();
         if (scene != null) {
-            LogUtil.v("yangzc", event.getAction() + "");
             scene.dispatchTouchEvent(event);
         }
         return true;
