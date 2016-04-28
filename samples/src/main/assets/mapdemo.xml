@@ -12,7 +12,7 @@
 		subTitleColor="#ffffff" attach="level_13" attachDirection="right"
 		marginLeft="10" marginRight=""/>
 	<!--每个关卡索引字体样式-->
-	<style id="style_text_index" width="34" height="34" color="#ffffff" pressed="#ff0000"
+	<style id="style_text_index" width="36" height="34" color="#ffffff" pressed="#ff0000"
 		fontSize="16" zindex="1" tag="" textAlign=""/>
 
 	<!--标题层-->
@@ -108,10 +108,13 @@
         </node>
 		<!--试玩-->
 		<node id="try" x="8" y="1300" width="41" height="16" src="res:map1/try.png"/>
+		<node id="anchor" x="60" y="1270" width="20" height="26" src="res:map1/icon_anchor.png" zindex="10"/>
 
 		<!--bag sprite-->
 		<node id="level_13_end" x="189" y="77" width="38" height="45" src="res:map1/badge_unfinish.png" anchorX="0.5" anchorY="0.5">
+			<!--
 			<action type="rotate" from="0" degree="360" duration="1000" repeat="-1"/>
+			-->
 		</node>
 		<node id="bag_2_3" x="64" y="1118" width="39" height="28" src="res:map1/bag_clickable.png" unable="res:map1/bag_unable.png" open="res:map1/bag_open.png" anchorX="0.5" anchorY="0.5"/>
 		<node id="bag_4_5" x="138" y="920" width="39" height="28" src="res:map1/bag_clickable.png" unable="res:map1/bag_unable.png" open="res:map1/bag_open.png" anchorX="0.5" anchorY="0.5"/>
@@ -126,7 +129,9 @@
 		<node id="bg_0_286" x="0" y="1141" width="85" height="95" src="res:map1/bg_0_2282.png"/>
 		<node id="bg_0_286" x="0" y="1311" width="169" height="129" src="res:map1/bg_0_2623.png"/>
 		<node id="bg_0_286" x="func(WIDTH)" y="782" width="67" height="38" src="res:map1/bg_14_1565.png" zindex="2">
+			<!--
 			<action type="translate" toX="-67" toY="782" duration="30000" repeat="-1"/>
+			-->
 		</node>
 		<node id="bg_0_286" x="78" y="349" width="98" height="145" src="res:map1/bg_156_699.png"/>
 		<node id="bg_0_286" x="112" y="992" width="248" height="160" src="res:map1/bg_224_1984.png"/>
@@ -136,6 +141,11 @@
 		<node id="bg_0_286" x="231" y="616" width="92" height="209" src="res:map1/bg_462_1232.png"/>
 		<node id="bg_0_286" x="253" y="495" width="80" height="14" src="res:map1/bg_506_991.png"/>
 		<node id="bg_0_286" x="func(WIDTH/2-160)" y="func(1441-59)" width="320" height="59" src="res:map1/bg_0_2704.png"/>
-		<node id="bg_0_286" x="func(WIDTH-188)" y="func(1441-219-50)" width="188" height="219" src="res:map1/elephant.png"/>
+		<node id="bg_0_286" x="func(WIDTH-188)" y="func(1441-219-50)" width="188" height="219" src="res:map1/elephant.png">
+			<action type="sequence" repeat="2">
+				<action type="translate" toX="func(WIDTH-188)" toY="func(1441-219-50-40)" duration="1000" repeat="1"/>
+				<action type="translate" toX="func(WIDTH-188)" toY="func(1441-219-50)" duration="1000" repeat="1"/>
+			</action>
+		</node>
 	</layer>
 </map>

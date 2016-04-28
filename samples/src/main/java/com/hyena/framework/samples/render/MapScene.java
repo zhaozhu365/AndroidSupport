@@ -175,6 +175,56 @@ public class MapScene extends CScene {
         return null;
     }
 
+    private String mLevelId;
+
+    public String getCurrentLevel() {
+        return mLevelId;
+    }
+
+    public void setAnchor(String levelId, boolean hasAnim){
+        if (hasAnim) {
+            setAnchor(mLevelId, levelId);
+        } else {
+            setAnchor(levelId);
+        }
+    }
+
+    public void setAnchor(String levelId) {
+        try {
+            this.mLevelId = levelId;
+            StateSprite levelSprite = (StateSprite) findNodeById(levelId);
+            StateSprite anchorSprite = (StateSprite) findNodeById("anchor");
+            if (levelSprite != null && anchorSprite != null) {
+                Point target = new Point(levelSprite.getPosition().x + (levelSprite.getWidth() - anchorSprite.getWidth())/2
+                        , levelSprite.getPosition().y - UIUtils.dip2px(22));
+                anchorSprite.setPosition(target);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setAnchor(String fromLevelId, String toLevelId) {
+        this.mLevelId = toLevelId;
+        StateSprite fromLevelSprite = (StateSprite) findNodeById(fromLevelId);
+        StateSprite toLevelSprite = (StateSprite) findNodeById(toLevelId);
+        StateSprite anchorSprite = (StateSprite) findNodeById("anchor");
+        if (fromLevelSprite != null && toLevelSprite != null && anchorSprite != null) {
+            CMoveToAction toCenter = CMoveToAction.create(
+                    fromLevelSprite.getPosition().x + (fromLevelSprite.getWidth() - anchorSprite.getWidth())/2
+                    , fromLevelSprite.getPosition().y + fromLevelSprite.getHeight()/2 - anchorSprite.getHeight(), 300);
+
+            CMoveToAction toTarget = CMoveToAction.create(
+                    toLevelSprite.getPosition().x + (toLevelSprite.getWidth() - anchorSprite.getWidth())/2
+                    , toLevelSprite.getPosition().y + toLevelSprite.getHeight()/2 - anchorSprite.getHeight(), 1600);
+
+            CMoveToAction toFinal = CMoveToAction.create(
+                    toLevelSprite.getPosition().x + (toLevelSprite.getWidth() - anchorSprite.getWidth())/2,
+                    toLevelSprite.getPosition().y - UIUtils.dip2px(22), 300);
+            anchorSprite.runAction(CSequenceAction.create(toCenter, toTarget, toFinal));
+        }
+    }
+
     public static final int STATUS_LEVEL_LOCKED = 1;
     public static final int STATUS_LEVEL_UNLOCK = 2;
     public static final int STATUS_LEVEL_OPEN = 3;
@@ -371,7 +421,7 @@ public class MapScene extends CScene {
         return layer;
     }
 
-    private CAction createAction(MapNodeSprite spriteNode, MapAction mapAction) {
+    private CRepeatAction createAction(MapNodeSprite spriteNode, MapAction mapAction) {
         CIntervalAction action = null;
         if (mapAction instanceof MapActionAlpha) {
             action = createAlphaAction((MapActionAlpha) mapAction);
@@ -387,11 +437,13 @@ public class MapScene extends CScene {
             action = createRotateAction((MapActionRotate) mapAction);
         }
         if (action != null) {
+            CRepeatAction result;
             if (mapAction.getRepeat() == -1) {
-                return CRepeatAction.create(action, Integer.MAX_VALUE);
+                result = CRepeatAction.create(action, Integer.MAX_VALUE);
             } else {
-                return CRepeatAction.create(action, mapAction.getRepeat());
+                result = CRepeatAction.create(action, mapAction.getRepeat());
             }
+            return result;
         }
         return null;
     }
@@ -411,12 +463,11 @@ public class MapScene extends CScene {
         List<CAction> actions = new ArrayList<CAction>();
         for (int i = 0; i < mapActions.size(); i++) {
             MapAction mapAction = mapActions.get(i);
-            CAction action = createAction(spriteNode, mapAction);
+            CRepeatAction action = createAction(spriteNode, mapAction);
             if (action != null) {
                 actions.add(action);
             }
         }
-
         CSequenceAction action = CSequenceAction.create(actions
                 .toArray(new CAction[actions.size()]));
         return action;

@@ -1,5 +1,7 @@
 package com.hyena.framework.samples.scene;
 
+import android.text.TextUtils;
+
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;
 import com.hyena.framework.app.fragment.BaseUIFragment;
@@ -47,6 +49,7 @@ public class SampleScene extends MapScene {
         setBoxStatus("bag_6_7", STATUS_BAG_ENABLE);
         setBoxStatus("bag_9_10", STATUS_BAG_UNABLE);
         setBoxStatus("bag_11_12", STATUS_BAG_UNABLE);
+        setAnchor("level_1");
     }
 
     public BaseUIFragment getBaseUIFragment() {
@@ -57,7 +60,11 @@ public class SampleScene extends MapScene {
 
         @Override
         public void onClick(CNode node) {
-            LogUtil.v(TAG, "onNodeClick: " + node.getId());
+//            LogUtil.v(TAG, "onNodeClick: " + node.getId());
+            String id = node.getId();
+            if (!TextUtils.isEmpty(id) && id.startsWith("level")) {
+                setAnchor(node.getId(), true);
+            }
         }
     };
 
