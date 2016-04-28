@@ -91,6 +91,7 @@ public class CRepeatAction extends CAction {
 	
 	@Override
 	public void reset(){
+		mRepeatedTimes = 0;
 		if(mIntervalAction != null){
 			mIntervalAction.reset();
 		}

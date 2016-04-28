@@ -5,6 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.text.TextUtils;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 import com.hyena.framework.animation.CLayer;
 import com.hyena.framework.animation.CScene;
@@ -196,7 +199,7 @@ public class MapScene extends CScene {
             StateSprite anchorSprite = (StateSprite) findNodeById("anchor");
             if (levelSprite != null && anchorSprite != null) {
                 Point target = new Point(levelSprite.getPosition().x + (levelSprite.getWidth() - anchorSprite.getWidth())/2
-                        , levelSprite.getPosition().y - UIUtils.dip2px(22));
+                        , levelSprite.getPosition().y - UIUtils.dip2px(20));
                 anchorSprite.setPosition(target);
             }
         } catch (Exception e) {
@@ -212,7 +215,8 @@ public class MapScene extends CScene {
         if (fromLevelSprite != null && toLevelSprite != null && anchorSprite != null) {
             CMoveToAction toCenter = CMoveToAction.create(
                     fromLevelSprite.getPosition().x + (fromLevelSprite.getWidth() - anchorSprite.getWidth())/2
-                    , fromLevelSprite.getPosition().y + fromLevelSprite.getHeight()/2 - anchorSprite.getHeight(), 300);
+                    , fromLevelSprite.getPosition().y + fromLevelSprite.getHeight()/2 - anchorSprite.getHeight(),
+                    300, new DecelerateInterpolator());
 
             CMoveToAction toTarget = CMoveToAction.create(
                     toLevelSprite.getPosition().x + (toLevelSprite.getWidth() - anchorSprite.getWidth())/2
@@ -220,7 +224,8 @@ public class MapScene extends CScene {
 
             CMoveToAction toFinal = CMoveToAction.create(
                     toLevelSprite.getPosition().x + (toLevelSprite.getWidth() - anchorSprite.getWidth())/2,
-                    toLevelSprite.getPosition().y - UIUtils.dip2px(22), 300);
+                    toLevelSprite.getPosition().y - UIUtils.dip2px(20),
+                    300, new AccelerateInterpolator());
             anchorSprite.runAction(CSequenceAction.create(toCenter, toTarget, toFinal));
         }
     }

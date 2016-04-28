@@ -142,7 +142,7 @@
 		<node id="bg_0_286" x="253" y="495" width="80" height="14" src="res:map1/bg_506_991.png"/>
 		<node id="bg_0_286" x="func(WIDTH/2-160)" y="func(1441-59)" width="320" height="59" src="res:map1/bg_0_2704.png"/>
 		<node id="bg_0_286" x="func(WIDTH-188)" y="func(1441-219-50)" width="188" height="219" src="res:map1/elephant.png">
-			<action type="sequence" repeat="2">
+			<action type="sequence" repeat="-1">
 				<action type="translate" toX="func(WIDTH-188)" toY="func(1441-219-50-40)" duration="1000" repeat="1"/>
 				<action type="translate" toX="func(WIDTH-188)" toY="func(1441-219-50)" duration="1000" repeat="1"/>
 			</action>
