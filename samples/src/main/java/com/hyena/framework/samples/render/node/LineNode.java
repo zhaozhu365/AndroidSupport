@@ -1,4 +1,4 @@
-package com.hyena.framework.samples.layer;
+package com.hyena.framework.samples.render.node;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

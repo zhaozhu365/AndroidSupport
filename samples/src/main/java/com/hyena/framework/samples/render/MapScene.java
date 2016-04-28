@@ -1,4 +1,4 @@
-package com.hyena.framework.samples.layer;
+package com.hyena.framework.samples.render;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -45,6 +45,12 @@ import com.hyena.framework.samples.parser.node.MapNodeSprite;
 import com.hyena.framework.samples.parser.node.MapNodeText;
 import com.hyena.framework.samples.parser.node.MapNodeTitle;
 import com.hyena.framework.samples.parser.style.MapStyle;
+import com.hyena.framework.samples.render.node.BlockNode;
+import com.hyena.framework.samples.render.node.ButtonNode;
+import com.hyena.framework.samples.render.node.LineNode;
+import com.hyena.framework.samples.render.node.StateSprite;
+import com.hyena.framework.samples.render.node.StateTexture;
+import com.hyena.framework.samples.render.node.TitleNode;
 import com.hyena.framework.utils.FileUtils;
 import com.hyena.framework.utils.MathUtils;
 import com.hyena.framework.utils.UIUtils;
@@ -69,6 +75,12 @@ public class MapScene extends CScene {
         super(director);
     }
 
+    /**
+     * 加载asset中的文件
+     * @param path 路径
+     * @param screenWidth 屏幕dp宽度
+     * @param screenHeight 屏幕dp高度
+     */
     public void loadAssetPath(String path, int screenWidth, int screenHeight) {
         try {
             InputStream is = getDirector().getContext().getAssets().open(path);
@@ -79,9 +91,15 @@ public class MapScene extends CScene {
         }
     }
 
+    /**
+     * 加载地图文件
+     * @param xml 文件内容xml格式
+     * @param screenWidth 屏幕dp宽度
+     * @param screenHeight 屏幕dp高度
+     */
     public void load(String xml, int screenWidth, int screenHeight) {
+        //解析地图
         mMap = mParser.parse(xml, screenWidth, screenHeight);
-
         if (mMap != null) {
             int zIndex = -1;
             CScrollLayer topLayer = null;
@@ -89,7 +107,7 @@ public class MapScene extends CScene {
             if (layers != null && !layers.isEmpty()) {
                 for (int i = 0; i < layers.size(); i++) {
                     MapNodeLayer nodeLayer = layers.get(i);
-                    //load layer
+                    //创建层
                     CScrollLayer layer = createLayer(nodeLayer);
                     if (nodeLayer.getZIndex() > zIndex && nodeLayer.getDepth() > 0) {
                         topLayer = layer;
@@ -98,13 +116,14 @@ public class MapScene extends CScene {
                     if (layer != null) {
                         layer.setViewSize(nodeLayer.getWidth(), nodeLayer.getHeight());
                         layer.setDepth(nodeLayer.getDepth());
+                        //加载层
                         addNode(layer, nodeLayer.getZIndex());
                     }
                 }
             }
             mTopLayer = topLayer;
             mTopLayer.setTouchable(true);
-            //compute depth
+            //同步滚动位置
             if (topLayer != null) {
                 topLayer.setOnScrollerListener(new OnScrollerListener() {
 
@@ -128,6 +147,7 @@ public class MapScene extends CScene {
     private boolean isInited = false;
     @Override
     public synchronized void update(float dt) {
+        //初始化滚动到最底端
         if (!isInited && mTopLayer != null) {
             scrollToBottom();
             isInited = true;
@@ -135,6 +155,106 @@ public class MapScene extends CScene {
         super.update(dt);
     }
 
+
+    //=====================地图控制逻辑==============================
+
+    /**
+     * 判断本关卡后边是否存在宝箱
+     * @param levelId
+     * @return
+     */
+    public StateSprite getNextBag(String levelId) {
+        try {
+            StateSprite levelSprite = (StateSprite) findNodeById(levelId);
+            if (levelSprite != null && !TextUtils.isEmpty(levelSprite.getNextBagId())) {
+                return (StateSprite) findNodeById(levelSprite.getNextBagId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static final int STATUS_LEVEL_LOCKED = 1;
+    public static final int STATUS_LEVEL_UNLOCK = 2;
+    public static final int STATUS_LEVEL_OPEN = 3;
+
+    /**
+     * 设置关卡状态
+     * @param levelId 关卡ID
+     * @param status 关卡状态
+     */
+    public void setLevelStatus(String levelId, int status) {
+        try {
+            StateSprite levelSprite = (StateSprite) findNodeById(levelId);
+            CSprite lockSprite = (CSprite) findNodeById(levelId + "_lock");
+            CTextNode indexText = (CTextNode) findNodeById(levelId + "_index");
+            if (levelSprite != null && lockSprite != null && indexText != null) {
+                switch (status) {
+                    case STATUS_LEVEL_LOCKED: {
+                        lockSprite.setVisible(true);
+                        indexText.setVisible(false);
+                        levelSprite.setStatus(StateSprite.STATUS_UNABLE);
+                        break;
+                    }
+                    case STATUS_LEVEL_UNLOCK: {
+                        lockSprite.setVisible(false);
+                        indexText.setVisible(true);
+                        levelSprite.setStatus(StateSprite.STATUS_UNABLE);
+                        break;
+                    }
+                    case STATUS_LEVEL_OPEN: {
+                        lockSprite.setVisible(false);
+                        indexText.setVisible(true);
+                        levelSprite.setStatus(StateSprite.STATUS_NORMAL);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static final int STATUS_BAG_UNABLE = 1;
+    public static final int STATUS_BAG_ENABLE = 3;
+    public static final int STATUS_BAG_OPENED = 2;
+
+    /**
+     * 设置宝箱状态
+     * @param bagId 宝箱ID
+     * @param bagStatus 宝箱状态
+     */
+    public void setBoxStatus(String bagId, int bagStatus) {
+        try {
+            StateSprite boxSprite = (StateSprite) findNodeById(bagId);
+            if (boxSprite != null) {
+                switch (bagStatus) {
+                    case STATUS_BAG_UNABLE: {
+                        boxSprite.setStatus(StateSprite.STATUS_UNABLE);
+                        break;
+                    }
+                    case STATUS_BAG_ENABLE: {
+                        boxSprite.setStatus(StateSprite.STATUS_NORMAL);
+                        break;
+                    }
+                    case STATUS_BAG_OPENED: {
+                        boxSprite.setStatus(StateSprite.STATUS_OPENED);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //=====================地图渲染逻辑==============================
+
+    /**
+     * 滚动所有层到最底端
+     */
     private void scrollToBottom(){
         if (getNodes() != null) {
             for (int i = 0; i < getNodes().size(); i++) {
@@ -147,7 +267,13 @@ public class MapScene extends CScene {
         }
     }
 
-    private Bitmap loadBitmap(String tag, String url) {
+    /**
+     * 加载图片
+     * @param tag 节点标签
+     * @param url 节点路径
+     * @return
+     */
+    protected Bitmap loadBitmap(String tag, String url) {
         if (url != null && url.startsWith("res:")) {
             try {
                 InputStream is = getDirector().getContext().getAssets()
@@ -155,7 +281,6 @@ public class MapScene extends CScene {
                 Bitmap bitmap = BitmapManager.getInstance().getBitmap(url, is);
                 return bitmap;
             } catch (FileNotFoundException e) {
-//                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -164,9 +289,8 @@ public class MapScene extends CScene {
     }
 
     /**
-     * load Layer
-     *
-     * @param mapLayer layer information
+     * 创建层
+     * @param mapLayer 层信息
      */
     private CScrollLayer createLayer(MapNodeLayer mapLayer) {
         if (mapLayer == null)
@@ -180,18 +304,22 @@ public class MapScene extends CScene {
                 CNode node = null;
                 if (mapNode instanceof MapNodeSprite) {
                     MapNodeSprite sprite = (MapNodeSprite) mapNode;
-                    node = loadSprite(sprite);
+                    //加载精灵
+                    node = loadSprite(sprite, null);
+
                     //加载关卡描述
                     if (sprite.getBlocks() != null && !sprite.getBlocks().isEmpty()) {
                         for (int j = 0; j < sprite.getBlocks().size(); j++) {
                             MapNodeBlock mapBlock = sprite.getBlocks().get(j);
                             BlockNode blockNode = createBlock(mapBlock, sprite);
                             if (blockNode != null) {
-                                blockNode.setId(mapBlock.getId());
+                                blockNode.setId(TextUtils.isEmpty(mapBlock.getId())
+                                        ? sprite.getId() + "_block" : mapBlock.getId());
                                 layer.addNode(blockNode, mapBlock.getZIndex());
                             }
                         }
                     }
+
                     //加载关卡索引
                     if (sprite.getTexts() != null && !sprite.getTexts().isEmpty()) {
                         for (int j = 0; j < sprite.getTexts().size(); j++) {
@@ -199,59 +327,49 @@ public class MapScene extends CScene {
                             //style
                             CTextNode textNode = createText(textMap, sprite);
                             if (textNode != null) {
-                                textNode.setId(textMap.getId());
-                                layer.addNode(textNode, textMap.getZIndex());
+                                textNode.setId(TextUtils.isEmpty(textMap.getId())
+                                        ? sprite.getId() + "_index" : textMap.getId());
+                                layer.addNode(textNode, sprite.getZIndex() + 1);
                             }
                         }
                     }
+
+                    //加载覆盖层
+                    if (sprite.getSprites() != null && !sprite.getSprites().isEmpty()) {
+                        for (int j = 0; j < sprite.getSprites().size(); j++) {
+                            MapNodeSprite cover = sprite.getSprites().get(j);
+                            if (TextUtils.isEmpty(cover.mSrc)) {
+                                cover.mSrc = "res:icon_lock.png";
+                            }
+                            CSprite coverNode = loadSprite(cover, sprite);
+                            if (coverNode != null) {
+                                coverNode.setId(TextUtils.isEmpty(cover.getId())
+                                        ? sprite.getId() + "_lock" : cover.getId());
+                                layer.addNode(coverNode, cover.getZIndex() + 2);
+                            }
+                        }
+                    }
+
                 } else if (mapNode instanceof MapNodeLine) {
                     MapNodeLine mapNodeLine = (MapNodeLine) mapNode;
                     node = createLine(mapLayer, mapNodeLine);
-//                    if (mapNodeLine.mHasBag) {
-//                        CNode bagNode = createBagNode(mapNodeLine);
-//                        if (bagNode != null) {
-//                            layer.addNode(bagNode, mapNodeLine.getZIndex() + 1);
-//                        }
-//                    }
                 } else if (mapNode instanceof MapNodeText) {
                     MapNodeText nodeText = (MapNodeText) mapNode;
                     node = createText(nodeText, null);
                 } else if (mapNode instanceof MapNodeTitle) {
                     node = createTitle((MapNodeTitle) mapNode);
-                } else if (mapNode instanceof MapNodeButton) {
+                } else if (mapNode instanceof MapNodeButton) {//TODO：暂时没有该节点
                     node = createButton((MapNodeButton)mapNode);
                 }
-
+                //添加子节点
                 if (node != null) {
                     node.setId(mapNode.getId());
                     layer.addNode(node, mapNode.getZIndex());
                 }
             }
-
-//            for (int i = 0; i < nodes.size(); i++) {
-//                MapNode mapNode = nodes.get(i);
-//                CNode node = null;
-//                if (mapNode instanceof MapNodeBlock) {
-//                    node = createBlock(mapLayer, (MapNodeBlock) mapNode);
-//                }
-//                if (node != null) {
-//                    node.setId(mapNode.getId());
-//                    layer.addNode(node, mapNode.getZIndex());
-//                }
-//            }
         }
         return layer;
     }
-
-//    private CNode createBagNode(MapNodeLine mapNodeLine){
-//        if (TextUtils.isEmpty(mapNodeLine.mBagStyle))
-//            return null;
-//        MapStyle style = getStyle(mapNodeLine.mBagStyle);
-//        if (style != null) {
-//
-//        }
-//        return null;
-//    }
 
     private CAction createAction(MapNodeSprite spriteNode, MapAction mapAction) {
         CIntervalAction action = null;
@@ -339,28 +457,34 @@ public class MapScene extends CScene {
         return action;
     }
 
-    private CNode loadSprite(MapNodeSprite spriteNode) {
-        String path = spriteNode.mSrc;
-        Bitmap bitmap = loadBitmap(spriteNode.getId(), path);
-        Bitmap pressed = null;
-        if (!TextUtils.isEmpty(path)) {
-            String fileName = path.substring(0, path.indexOf("."));
-            String suffix = path.substring(path.indexOf("."));
-            pressed = loadBitmap(spriteNode.getId(), fileName + "_p" + suffix);
-        }
+    /**
+     * 创建精灵节点
+     * @param spriteNode 精灵节点信息
+     * @param attach 关联的节点
+     * @return 精灵节点
+     */
+    private CSprite loadSprite(MapNodeSprite spriteNode, MapNode attach) {
+        CTexture normal = createTexture(spriteNode.getId(), spriteNode.mSrc,
+                spriteNode.getWidth(), spriteNode.getHeight());
+        CTexture unable = createTexture(spriteNode.getId(), spriteNode.mUnableSrc,
+                spriteNode.getWidth(), spriteNode.getHeight());
+        CTexture open = createTexture(spriteNode.getId(), spriteNode.mOpenSrc,
+                spriteNode.getWidth(), spriteNode.getHeight());
 
-        CTexture texture;
-        if (pressed == null) {
-            texture = CTexture.create(getDirector(), bitmap);
+        StateSprite sprite = StateSprite.create(getDirector(), normal);
+        sprite.setNextBagId(spriteNode.mNextBagId);
+        sprite.setTexture(normal, unable, open);
+        sprite.setAnchor(spriteNode.getAnchorX(), spriteNode.getAnchorY());
+
+        if (attach != null) {
+            sprite.setPosition(new Point(attach.getX() + spriteNode.getX(),
+                    attach.getY() + spriteNode.getY()));
         } else {
-            texture = PressableTexture.create(getDirector(), bitmap, pressed);
+            sprite.setPosition(new Point(spriteNode.getX(), spriteNode.getY()));
         }
 
-        texture.setViewSize(spriteNode.getWidth(), spriteNode.getHeight());
-        CNode node;
         if (spriteNode.getActions() != null
-                && !spriteNode.getActions().isEmpty()) {
-            CSprite sprite = CSprite.create(getDirector(), texture);
+                && !spriteNode.getActions().isEmpty()){
             for (int i = 0; i < spriteNode.getActions().size(); i++) {
                 MapAction mapAction = spriteNode.getActions().get(i);
                 CAction action = createAction(spriteNode, mapAction);
@@ -369,24 +493,24 @@ public class MapScene extends CScene {
                     sprite.runAction(action);
                 }
             }
-            sprite.setAnchor(spriteNode.getAnchorX(), spriteNode.getAnchorY());
-            sprite.setPosition(new Point(spriteNode.getX(), spriteNode.getY()));
-            sprite.setViewSize(spriteNode.getWidth(), spriteNode.getHeight());
-            node = sprite;
-        } else {
-            texture.setAnchor(spriteNode.getAnchorX(), spriteNode.getAnchorY());
-            texture.setPosition(new Point(spriteNode.getX(), spriteNode.getY()));
-            node = texture;
         }
-        return node;
+        return sprite;
     }
 
+    /**
+     * 创建节点描述信息
+     * @param block 描述信息
+     * @param attachNode 关联的节点
+     * @return 描述信息节点
+     */
     private BlockNode createBlock(MapNodeBlock block, MapNode attachNode) {
         MapStyle style = getStyle(block.mStyle);
         if (style == null)
             return null;
 
         String path = style.getStyle("subTitleSrc");
+        if (TextUtils.isEmpty(path))
+            path = "res:icon_star.png";
         Bitmap bitmap = loadBitmap(block.getId(), path);
 
         BlockNode node = BlockNode.create(getDirector());
@@ -414,8 +538,14 @@ public class MapScene extends CScene {
         return node;
     }
 
+    /**
+     * 创建按钮节点
+     * @param buttonNode 节点信息
+     * @return
+     */
+    @Deprecated
     private CNode createButton(MapNodeButton buttonNode) {
-        //TODO
+        //TODO:暂时没有使用
         ButtonNode button = ButtonNode.create(getDirector());
         button.setPosition(new Point(buttonNode.getX(), buttonNode.getY()));
         button.setViewSize(buttonNode.getWidth(), buttonNode.getHeight());
@@ -423,10 +553,18 @@ public class MapScene extends CScene {
         return button;
     }
 
+    /**
+     * 创建标题节点
+     * @param titleNode 节点信息
+     * @return
+     */
     private TitleNode createTitle(MapNodeTitle titleNode) {
         TitleNode node = TitleNode.create(getDirector());
         Bitmap bitmap = loadBitmap(titleNode.getId(), titleNode.mBackGround);
         node.setBackGround(bitmap);
+
+        node.setStarBitmap(loadBitmap(titleNode.getId(), "res:icon_star.png"));
+
         node.setTitle(titleNode.mTitle);
         node.setSubTitle(titleNode.mSubTitleLeft, titleNode.mSubTitleRight);
         node.setTitleStyle(titleNode.mTitleFontSize, titleNode.mTitleColor);
@@ -438,12 +576,18 @@ public class MapScene extends CScene {
         return node;
     }
 
+    /**
+     * 创建文本节点
+     * @param textNode 节点信息
+     * @param attach 关联的节点信息
+     * @return
+     */
     private CTextNode createText(MapNodeText textNode, MapNode attach) {
         CTextNode node = CTextNode.create(getDirector());
         node.setText(textNode.mText);
-        Point position = null;
+        Point position;
         if (attach != null) {
-            position = new Point(attach.getX(), attach.getY());
+            position = new Point(attach.getX() + textNode.getX(), attach.getY() + textNode.getY());
         } else {
             position = new Point(textNode.getX(), textNode.getY());
         }
@@ -504,6 +648,12 @@ public class MapScene extends CScene {
         return node;
     }
 
+    /**
+     * 创建线节点
+     * @param nodeLayer 线所在的层信息
+     * @param line 线信息
+     * @return
+     */
     private LineNode createLine(MapNodeLayer nodeLayer, MapNodeLine line) {
         MapNode fromSprite = getSprite(nodeLayer, line.mFromId);
         MapNode toSprite = getSprite(nodeLayer, line.mToId);
@@ -523,6 +673,12 @@ public class MapScene extends CScene {
         return node;
     }
 
+    /**
+     * 根据ID查找精灵信息
+     * @param layer 关联层信息
+     * @param id 精灵ID
+     * @return 精灵信息
+     */
     private MapNode getSprite(MapNodeLayer layer, String id) {
         if (layer != null) {
             List<MapNode> nodes = layer.getNodes();
@@ -538,6 +694,11 @@ public class MapScene extends CScene {
         return null;
     }
 
+    /**
+     * 根据样式ID查找样式
+     * @param styleId 样式ID
+     * @return 样式信息
+     */
     private MapStyle getStyle(String styleId) {
         if (TextUtils.isEmpty(styleId))
             return null;
@@ -555,9 +716,31 @@ public class MapScene extends CScene {
         return null;
     }
 
+    /**
+     * 创建纹理
+     * @param id
+     * @param path
+     * @param width
+     * @param height
+     * @return
+     */
+    private CTexture createTexture(String id, String path, int width, int height){
+        Bitmap bitmap = loadBitmap(id, path);
+        Bitmap pressed = null;
+        if (!TextUtils.isEmpty(path)) {
+            String fileName = path.substring(0, path.indexOf("."));
+            String suffix = path.substring(path.indexOf("."));
+            pressed = loadBitmap(id, fileName + "_p" + suffix);
+        }
+
+        CTexture texture = StateTexture.create(getDirector(), bitmap, pressed);
+        texture.setViewSize(width, height);
+        return texture;
+    }
+
     @Override
     public synchronized void render(Canvas canvas) {
-        //draw background color
+        //绘制背景
         if (mMap != null) {
             canvas.drawColor(Color.parseColor(mMap.mBackGround));
         }

@@ -2,14 +2,12 @@ package com.hyena.framework.samples.scene;
 
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;
-import com.hyena.framework.animation.sprite.CSprite;
-import com.hyena.framework.animation.texture.CTexture;
 import com.hyena.framework.app.fragment.BaseUIFragment;
 import com.hyena.framework.app.fragment.BaseUIFragmentHelper;
 import com.hyena.framework.app.fragment.GameFragment;
 import com.hyena.framework.clientlog.LogUtil;
-import com.hyena.framework.samples.layer.ButtonNode;
-import com.hyena.framework.samples.layer.MapScene;
+import com.hyena.framework.samples.render.MapScene;
+import com.hyena.framework.samples.render.node.StateSprite;
 
 /**
  * Created by yangzc on 16/4/19.
@@ -28,7 +26,27 @@ public class SampleScene extends MapScene {
     @Override
     public void load(String xml, int screenWidth, int screenHeight) {
         super.load(xml, screenWidth, screenHeight);
-        setOnNodeClickListener(mNodeClickListener);
+        //初始化所有关卡
+        setLevelStatus("level_1", STATUS_LEVEL_OPEN);
+        setLevelStatus("level_2", STATUS_LEVEL_UNLOCK);
+        setLevelStatus("level_3", STATUS_LEVEL_UNLOCK);
+        setLevelStatus("level_4", STATUS_LEVEL_UNLOCK);
+        setLevelStatus("level_5", STATUS_LEVEL_UNLOCK);
+        setLevelStatus("level_6", STATUS_LEVEL_LOCKED);
+        setLevelStatus("level_7", STATUS_LEVEL_LOCKED);
+        setLevelStatus("level_8", STATUS_LEVEL_LOCKED);
+        setLevelStatus("level_9", STATUS_LEVEL_LOCKED);
+        setLevelStatus("level_10", STATUS_LEVEL_LOCKED);
+        setLevelStatus("level_11", STATUS_LEVEL_LOCKED);
+        setLevelStatus("level_12", STATUS_LEVEL_LOCKED);
+        setLevelStatus("level_13", STATUS_LEVEL_LOCKED);
+
+        //宝箱状态
+        setBoxStatus("bag_2_3", STATUS_BAG_OPENED);
+        setBoxStatus("bag_4_5", STATUS_BAG_OPENED);
+        setBoxStatus("bag_6_7", STATUS_BAG_ENABLE);
+        setBoxStatus("bag_9_10", STATUS_BAG_UNABLE);
+        setBoxStatus("bag_11_12", STATUS_BAG_UNABLE);
     }
 
     public BaseUIFragment getBaseUIFragment() {
@@ -39,18 +57,33 @@ public class SampleScene extends MapScene {
 
         @Override
         public void onClick(CNode node) {
-            if (node instanceof CTexture || node instanceof CSprite
-                    || node instanceof ButtonNode) {
-                LogUtil.v(TAG, "onNodeClick: " + node.getId());
-            }
+            LogUtil.v(TAG, "onNodeClick: " + node.getId());
         }
     };
 
-    public static int STATUS_BAG_UNABLE = 1;
-    public static int STATUS_BAG_OPEN = 1;
-    public static int STATUS_BAG_CLICKABLE = 1;
-
-    public void setBagStatus(String bagId, int bagStatus){
-
+    @Override
+    public void setLevelStatus(String levelId, int status) {
+        super.setLevelStatus(levelId, status);
+        try {
+            StateSprite levelSprite = (StateSprite) findNodeById(levelId);
+            if (levelSprite != null) {
+                switch (status) {
+                    case STATUS_LEVEL_LOCKED: {
+                        levelSprite.setOnNodeClickListener(null);
+                        break;
+                    }
+                    case STATUS_LEVEL_UNLOCK: {
+                        levelSprite.setOnNodeClickListener(mNodeClickListener);
+                        break;
+                    }
+                    case STATUS_LEVEL_OPEN: {
+                        levelSprite.setOnNodeClickListener(mNodeClickListener);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

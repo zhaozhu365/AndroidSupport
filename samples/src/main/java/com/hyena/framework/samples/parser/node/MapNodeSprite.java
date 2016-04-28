@@ -9,8 +9,12 @@ import java.util.List;
 public class MapNodeSprite extends MapNode {
 
     public String mSrc;
+    public String mUnableSrc;
+    public String mOpenSrc;
+    public String mNextBagId;
     public List<MapNodeBlock> mBlocks;
     public List<MapNodeText> mTexts;
+    public List<MapNodeSprite> mSprites;
 
     public MapNodeSprite(String id, int width, int height) {
         super(id, width, height);
@@ -34,5 +38,15 @@ public class MapNodeSprite extends MapNode {
 
     public List<MapNodeText> getTexts() {
         return mTexts;
+    }
+
+    public void addSprite(MapNodeSprite sprite) {
+        if (mSprites == null)
+            mSprites = new ArrayList<MapNodeSprite>();
+        mSprites.add(sprite);
+    }
+
+    public List<MapNodeSprite> getSprites() {
+        return mSprites;
     }
 }

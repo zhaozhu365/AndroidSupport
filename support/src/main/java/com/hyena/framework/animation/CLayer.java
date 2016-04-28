@@ -123,38 +123,34 @@ public class CLayer extends CNode {
         }
     }
 
-//    private CNode mTargetNode = null;
+    private CNode mTargetNode = null;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        int action = ev.getAction();
+        if (action == MotionEvent.ACTION_DOWN) {
+            mTargetNode = null;
+        }
+
         if (mNodes == null || mNodes.isEmpty()) {
             return super.dispatchTouchEvent(ev);
         }
 
-//        if (mTargetNode != null)
-//            return mTargetNode.dispatchTouchEvent(ev);
+        if (mTargetNode != null)
+            return mTargetNode.dispatchTouchEvent(ev);
         
         boolean isIntercept = onInterceptTouchEvent(ev);
         if (isIntercept) {
-            return super.dispatchTouchEvent(ev);
+            return onTouch(ev);
         }
-
-//        int action = ev.getAction();
-//        if (action == MotionEvent.ACTION_DOWN) {
-//            mTargetNode = null;
-//        }
         for (int i = 0; i < mNodes.size(); i++) {
             CNode node = mNodes.get(i);
-            node.dispatchTouchEvent(ev);
-//            if (node.dispatchTouchEvent(ev)) {
-////                mTargetNode = node;
-//                return true;
-//            }
+            if (node.dispatchTouchEvent(ev)) {
+                mTargetNode = node;
+                return true;
+            }
         }
-//        if (mTargetNode == null)
-        return super.dispatchTouchEvent(ev);
-
-//        return mTargetNode.dispatchTouchEvent(ev);
+        return false;
     }
 
     /**
@@ -203,11 +199,11 @@ public class CLayer extends CNode {
     }
 
     @Override
-    public CNode findNodeById(String tag) {
+    public CNode findNodeById(String id) {
         if (mNodes != null && mNodes.size() > 0) {
             for (int i = 0; i < mNodes.size(); i++) {
                 CNode node = mNodes.get(i);
-                CNode result = node.findNodeById(tag);
+                CNode result = node.findNodeById(id);
                 if (result != null) {
                     return result;
                 }
@@ -242,13 +238,4 @@ public class CLayer extends CNode {
         public void onScroll(CLayer layer, int scrollX, int scrollY, int width, int height);
     }
 
-    @Override
-    public void setOnNodeClickListener(OnNodeClickListener listener) {
-        if (mNodes != null) {
-            for (int i = 0; i < mNodes.size(); i++) {
-                CNode node = mNodes.get(i);
-                node.setOnNodeClickListener(listener);
-            }
-        }
-    }
 }

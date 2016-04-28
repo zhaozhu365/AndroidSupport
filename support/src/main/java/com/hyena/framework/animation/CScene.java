@@ -2,6 +2,7 @@ package com.hyena.framework.animation;
 
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.view.MotionEvent;
 
 import com.hyena.framework.animation.nodes.CTextNode;
 import com.hyena.framework.animation.sprite.CNode;
@@ -77,6 +78,17 @@ public class CScene extends CLayer {
     }
 
     public void onScenePause() {
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (getNodes() != null) {
+            for (int i = 0; i < getNodes().size(); i++) {
+                CNode node = getNodes().get(i);
+                node.dispatchTouchEvent(ev);
+            }
+        }
+        return true;
     }
 
     @Override

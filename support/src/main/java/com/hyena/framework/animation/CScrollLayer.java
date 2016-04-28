@@ -1,5 +1,6 @@
 package com.hyena.framework.animation;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
@@ -51,6 +52,12 @@ public class CScrollLayer extends CLayer {
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 mDragging = false;
+                abortScroller();
+                initOrResetVelocityTracker();
+                addTrackerMovement(ev);
+
+                mLastX = x;
+                mLastY = y;
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
@@ -61,7 +68,6 @@ public class CScrollLayer extends CLayer {
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                mDragging = false;
                 break;
             }
         }
@@ -71,17 +77,13 @@ public class CScrollLayer extends CLayer {
     @Override
     public boolean onTouch(MotionEvent event) {
         if (!isScrollable() || !isTouchable()) {
-            return super.onInterceptTouchEvent(event);
+            return super.onTouch(event);
         }
         int action = event.getAction();
         float x = event.getX();
         float y = event.getY();
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
-                abortScroller();
-                initOrResetVelocityTracker();
-                addTrackerMovement(event);
-
                 mLastX = x;
                 mLastY = y;
                 break;

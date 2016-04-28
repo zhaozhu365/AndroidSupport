@@ -16,7 +16,7 @@ public class CSprite extends CActionNode {
 	private CTexture mTexture;
 	private float mRawScaleX = 1, mRawScaleY = 1;
 	
-	private CSprite(Director director, CTexture texture){
+	protected CSprite(Director director, CTexture texture){
 		super(director);
 		this.mTexture = texture;
 		this.mRawScaleX = texture.getScaleX();
@@ -96,7 +96,23 @@ public class CSprite extends CActionNode {
 	public void setTexture(CTexture texture){
 		this.mTexture = texture;
 	}
-	
+
+	@Override
+	protected void onTouchDown() {
+		super.onTouchDown();
+		if (mTexture != null) {
+			mTexture.onTouchDown();
+		}
+	}
+
+	@Override
+	protected void onTouchUp() {
+		super.onTouchUp();
+		if (mTexture != null) {
+			mTexture.onTouchUp();
+		}
+	}
+
 	/**
 	 * 获得纹理
 	 * @return

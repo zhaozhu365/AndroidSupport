@@ -1,4 +1,4 @@
-package com.hyena.framework.samples.layer;
+package com.hyena.framework.samples.render.node;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;
+import com.hyena.framework.utils.UIUtils;
 
 /**
  * Created by yangzc on 16/4/27.
@@ -16,6 +17,7 @@ import com.hyena.framework.animation.sprite.CNode;
 public class TitleNode extends CNode {
 
     private Bitmap mBackGround;
+    private Bitmap mStarBitmap;
     private Rect mRect = new Rect();
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -63,6 +65,10 @@ public class TitleNode extends CNode {
         this.mBackGround = bitmap;
     }
 
+    public void setStarBitmap(Bitmap bitmap) {
+        this.mStarBitmap = bitmap;
+    }
+
     @Override
     public void render(Canvas canvas) {
         super.render(canvas);
@@ -91,6 +97,11 @@ public class TitleNode extends CNode {
         mPaint.setColor(mSubTitleRightColor);
         if (!TextUtils.isEmpty(mSubTitleRight)) {
             canvas.drawText(mSubTitleRight, x, y, mPaint);
+            x += mPaint.measureText(mSubTitleRight);
+        }
+
+        if (mStarBitmap != null && !mStarBitmap.isRecycled()) {
+            canvas.drawBitmap(mStarBitmap, x + UIUtils.dip2px(2), y - mStarBitmap.getHeight() - UIUtils.dip2px(2), mPaint);
         }
     }
 

@@ -1,4 +1,4 @@
-package com.hyena.framework.samples.layer;
+package com.hyena.framework.samples.render.node;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.text.TextUtils;
 import android.view.MotionEvent;
-import android.view.View;
 
 import com.hyena.framework.animation.Director;
 import com.hyena.framework.animation.sprite.CNode;

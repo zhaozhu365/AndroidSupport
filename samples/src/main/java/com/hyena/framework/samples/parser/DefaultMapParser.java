@@ -303,6 +303,9 @@ public class DefaultMapParser implements MapParser {
                 getNumber(width, screenWidth, screenHeight),
                 getNumber(height, screenWidth, screenHeight));
         sprite.mSrc = XMLUtils.getAttributeValue(node, "src");
+        sprite.mUnableSrc = XMLUtils.getAttributeValue(node, "unable");
+        sprite.mOpenSrc = XMLUtils.getAttributeValue(node, "open");
+        sprite.mNextBagId = XMLUtils.getAttributeValue(node, "bagId");
 
         //解析描述快
         NodeList blockList = node.getChildNodes();
@@ -331,6 +334,11 @@ public class DefaultMapParser implements MapParser {
                     mapText.mText = XMLUtils.getAttributeValue(blockNode, "text");
                     mapText.mStyle = XMLUtils.getAttributeValue(blockNode, "style");
                     sprite.addMapText(mapText);
+                    updateMapNode(mapText, blockNode, screenWidth, screenHeight);
+                } else if ("node".equals(blockNode.getNodeName())) {
+                    MapNodeSprite cover = parseSprite(blockNode, screenWidth, screenHeight);
+                    sprite.addSprite(cover);
+                    updateMapNode(cover, blockNode, screenWidth, screenHeight);
                 }
             }
         }
