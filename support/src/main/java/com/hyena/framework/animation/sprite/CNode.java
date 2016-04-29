@@ -27,6 +27,7 @@ public abstract class CNode {
     //z轴索引
     private int mZIndex;
     private String mId;
+    private String mTag;
     private int mX = 0, mY = 0;
     private int mWidth = FILL_PARENT;
     private int mHeight = FILL_PARENT;
@@ -412,6 +413,14 @@ public abstract class CNode {
             return this;
         }
         return null;
+    }
+
+    public String getTag() {
+        return mTag;
+    }
+
+    public void setTag(String tag){
+        this.mTag = tag;
     }
 
     protected void onTouchDown() {

@@ -370,6 +370,7 @@ public class MapScene extends CScene {
                             if (blockNode != null) {
                                 blockNode.setId(TextUtils.isEmpty(mapBlock.getId())
                                         ? sprite.getId() + "_block" : mapBlock.getId());
+                                blockNode.setTag(mapBlock.getTag());
                                 layer.addNode(blockNode, mapBlock.getZIndex());
                             }
                         }
@@ -384,6 +385,7 @@ public class MapScene extends CScene {
                             if (textNode != null) {
                                 textNode.setId(TextUtils.isEmpty(textMap.getId())
                                         ? sprite.getId() + "_index" : textMap.getId());
+                                textNode.setTag(textMap.getTag());
                                 layer.addNode(textNode, sprite.getZIndex() + 1);
                             }
                         }
@@ -400,6 +402,7 @@ public class MapScene extends CScene {
                             if (coverNode != null) {
                                 coverNode.setId(TextUtils.isEmpty(cover.getId())
                                         ? sprite.getId() + "_lock" : cover.getId());
+                                coverNode.setTag(cover.getTag());
                                 layer.addNode(coverNode, cover.getZIndex() + 2);
                             }
                         }
@@ -419,6 +422,7 @@ public class MapScene extends CScene {
                 //添加子节点
                 if (node != null) {
                     node.setId(mapNode.getId());
+                    node.setTag(mapNode.getTag());
                     layer.addNode(node, mapNode.getZIndex());
                 }
             }
