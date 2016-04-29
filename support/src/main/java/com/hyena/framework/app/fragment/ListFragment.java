@@ -44,6 +44,7 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
             mLvListView.initFooter(mLvFooter = newFooterView());
 
         mLvListView.setAdapter(mListAdapter = getListAdapter());
+        mLvListView.setEnableLoadMore(mEnableLoadMore);
         setLoadMoreText("正在加载中...");
 
         mSrlPanel.addView(mLvListView);

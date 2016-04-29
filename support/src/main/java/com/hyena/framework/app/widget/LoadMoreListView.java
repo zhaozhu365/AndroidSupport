@@ -37,7 +37,7 @@ public class LoadMoreListView extends ListView implements OnScrollListener {
 		super(context, attrs);
 		super.setOnScrollListener(this);
 	}
-	
+
 	public void initFooter(ListLoadingMoreFooter footer){
 //		mAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.anim_rotate_loading);
 //		mAnimation.setInterpolator(new LinearInterpolator());
@@ -53,8 +53,11 @@ public class LoadMoreListView extends ListView implements OnScrollListener {
 
 	@Override
 	public final void onScroll(final AbsListView view,
-			final int firstVisibleItem, final int visibleItemCount,
-			final int totalItemCount) {
+							   final int firstVisibleItem, final int visibleItemCount,
+							   final int totalItemCount) {
+		if (!mEnableLoadMore)
+			return;
+
 		if (null != mOnLastItemVisibleListener) {
 			mLastItemVisible = (totalItemCount > 0)
 					&& (firstVisibleItem + visibleItemCount >= totalItemCount - 1);
@@ -68,9 +71,9 @@ public class LoadMoreListView extends ListView implements OnScrollListener {
 	public void setLoadStatus(boolean isLoading){
 		setLoadingFootVisible(isLoading);
 	}
-	
+
 	public void setLoadingFootVisible(boolean isVisible){
-		if (getAdapter() == null)
+		if (getAdapter() == null || !mEnableLoadMore)
 			return;
 
 		mFootView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
@@ -81,10 +84,13 @@ public class LoadMoreListView extends ListView implements OnScrollListener {
 			mFootView.setPadding(0, -mFootView.getHeight(), 0, 0);
 		}
 	}
-	
+
 	@Override
 	public void onScrollStateChanged(final AbsListView view,
-			final int state) {
+									 final int state) {
+		if (!mEnableLoadMore)
+			return;
+
 		if (state == OnScrollListener.SCROLL_STATE_IDLE
 				&& null != mOnLastItemVisibleListener && mLastItemVisible) {
 			mOnLastItemVisibleListener.onLastItemVisible();
@@ -94,7 +100,7 @@ public class LoadMoreListView extends ListView implements OnScrollListener {
 			mOnScrollListener.onScrollStateChanged(view, state);
 		}
 	}
-	
+
 	@Override
 	public void setAdapter(ListAdapter adapter) {
 		super.setAdapter(adapter);
@@ -116,6 +122,11 @@ public class LoadMoreListView extends ListView implements OnScrollListener {
 
 	public interface OnLastItemVisibleListener {
 		void onLastItemVisible();
+	}
 
+	private boolean mEnableLoadMore = true;
+
+	public void setEnableLoadMore(boolean enableLoadMore){
+		this.mEnableLoadMore = enableLoadMore;
 	}
 }
