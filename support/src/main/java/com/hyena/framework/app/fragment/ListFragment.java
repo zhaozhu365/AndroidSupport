@@ -33,21 +33,30 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
     protected SingleTypeAdapter<K> mListAdapter;
 
     private boolean mHasMore = true;
+    private boolean mEnableLoadMore = true;
 
     @Override
     public View onCreateViewImpl(Bundle savedInstanceState) {
         mSrlPanel = newSwipeRefreshLayout();
 
         mLvListView = newLoadMoreListView();
-        mLvListView.initFooter(mLvFooter = newFooterView());
+        if (mEnableLoadMore)
+            mLvListView.initFooter(mLvFooter = newFooterView());
+
         mLvListView.setAdapter(mListAdapter = getListAdapter());
         setLoadMoreText("正在加载中...");
 
         mSrlPanel.addView(mLvListView);
 
         mSrlPanel.setOnRefreshListener(mRefreshListener);
-        mLvListView.setOnLastItemVisibleListener(mLastItemVisibleListener);
+
+        if (mEnableLoadMore)
+            mLvListView.setOnLastItemVisibleListener(mLastItemVisibleListener);
         return mSrlPanel;
+    }
+
+    public void disableLoadMore() {
+        this.mEnableLoadMore = false;
     }
 
     private SwipeRefreshLayout.OnRefreshListener mRefreshListener
