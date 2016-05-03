@@ -26,4 +26,5 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':support')
+    compile project(':gridlayout-v7-21.0.0')
 }

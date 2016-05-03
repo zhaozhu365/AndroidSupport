@@ -27,7 +27,7 @@ public class MainActivity extends FragmentActivity {
 
         setContentView(R.layout.activity_main);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.main_container, new GameSampleFragment());
+        transaction.replace(R.id.main_container, new GridLayoutSamples());
         transaction.commitAllowingStateLoss();
     }
 
