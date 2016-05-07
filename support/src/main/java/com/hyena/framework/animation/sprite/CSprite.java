@@ -95,6 +95,7 @@ public class CSprite extends CActionNode {
 	 */
 	public void setTexture(CTexture texture){
 		this.mTexture = texture;
+		updateAttr();
 	}
 
 	@Override
@@ -120,34 +121,55 @@ public class CSprite extends CActionNode {
 	public CTexture getTexture(){
 		return mTexture;
 	}
-	
+
+	private float mDegree;
 	@Override
 	public void rotate(float degrees) {
+		this.mDegree = degrees;
 		if(mTexture != null)
 			mTexture.rotate(degrees);
 	}
 
+	private float mSkewX, mSkewY;
 	@Override
 	public void setSkew(float skewX, float skewY) {
+		this.mSkewX = skewX;
+		this.mSkewY = skewY;
 		if(mTexture != null)
 			mTexture.setSkew(skewX, skewY);
 	}
 
+	private float mAnchorX, mAnchorY;
 	@Override
 	public void setAnchor(float x, float y) {
+		this.mAnchorX = x;
+		this.mAnchorY = y;
 		if(mTexture != null)
 			mTexture.setAnchor(x, y);
 	}
 
+	private float mSx, mSy;
 	@Override
 	public void setScale(float sx, float sy) {
+		this.mSx = sx;
+		this.mSy = sy;
 		if(mTexture != null)
 			mTexture.setScale(sx * mRawScaleX, sy * mRawScaleY);
 	}
 
+	private int mAlpha = 255;
 	@Override
 	public void setAlpha(int alpha) {
+		this.mAlpha = alpha;
 		if(mTexture != null)
 			mTexture.setAlpha(alpha);
+	}
+
+	private void updateAttr() {
+		rotate(mDegree);
+		setScale(mSx, mSy);
+		setAlpha(mAlpha);
+		setAnchor(mAnchorX, mAnchorY);
+		setSkew(mSkewX, mSkewY);
 	}
 }
