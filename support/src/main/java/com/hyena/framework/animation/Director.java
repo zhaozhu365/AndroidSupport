@@ -29,6 +29,8 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
     private Handler mLooperHandler;
     private Context mContext;
 
+    private int mTargetDensity = 320;
+
     public Director(Context context) {
         this.mContext = context;
         mScenes = new Stack<CScene>();
@@ -49,6 +51,14 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
 
     public Context getContext(){
         return mContext;
+    }
+
+    /**
+     * 设置目标尺寸
+     * @param density
+     */
+    public void setDensity(int density){
+        this.mTargetDensity = density;
     }
 
     /**
@@ -210,11 +220,9 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
      * @param dpValue
      * @return
      */
-    public int dp2px(float dpValue) {
-        if (mRenderView == null) {
-            return 0;
-        }
-        return UIUtils.dp2px(mRenderView.getContext(), dpValue);
+    public int getPxValue(float dpValue) {
+        int screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+        return (int) (dpValue * screenWidth / mTargetDensity);
     }
 
     /**
