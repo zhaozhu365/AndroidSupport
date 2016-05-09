@@ -6,6 +6,7 @@ package com.hyena.framework.app.fragment;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.app.Activity;
@@ -311,6 +312,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     	super.onDestroyViewImpl();
     	//解注册数据监听器
     	unRegistReceiver();
+        releaseTask();
     	mInited = false;
     }
 
@@ -798,7 +800,13 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 
     //============================ 网络数据加载部分 ==================================================
 
-    private static Executor mExecutor = Executors.newFixedThreadPool(8);
+    private void releaseTask(){
+        if (mExecutor != null) {
+            mExecutor.shutdown();
+        }
+    }
+
+    private ExecutorService mExecutor = Executors.newFixedThreadPool(8);
 
     protected Executor getExecutor(){
         return mExecutor;
