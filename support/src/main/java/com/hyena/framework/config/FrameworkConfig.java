@@ -56,7 +56,6 @@ public class FrameworkConfig {
 	
 	/**
 	 * 获取user agent
-	 * @param userAgent
 	 */
 	public String getUserAgent(){
 		return mUserAgent;

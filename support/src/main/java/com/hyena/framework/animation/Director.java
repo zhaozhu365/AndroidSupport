@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
+import com.hyena.framework.animation.texture.BitmapManager;
 import com.hyena.framework.animation.utils.UIUtils;
 import com.hyena.framework.clientlog.LogUtil;
 
@@ -26,6 +27,8 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
     private Rect mRect = new Rect();
     private Stack<CScene> mScenes;
 
+    private BitmapManager mBitmapManager;
+
     private Handler mLooperHandler;
     private Context mContext;
 
@@ -34,6 +37,7 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
     public Director(Context context) {
         this.mContext = context;
         mScenes = new Stack<CScene>();
+        mBitmapManager = BitmapManager.create();
 
         HandlerThread thread = new HandlerThread("io_framework_handler_anim");
         thread.start();
@@ -307,5 +311,9 @@ public class Director implements RenderView.SizeChangeListener, OnTouchListener 
             delay = mRefreshSpan;
         }
         return delay;
+    }
+
+    public BitmapManager getBitmapManager() {
+        return mBitmapManager;
     }
 }
