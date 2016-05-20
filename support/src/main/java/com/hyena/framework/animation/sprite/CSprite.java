@@ -148,7 +148,7 @@ public class CSprite extends CActionNode {
 			mTexture.setAnchor(x, y);
 	}
 
-	private float mSx, mSy;
+	private float mSx = 1, mSy = 1;
 	@Override
 	public void setScale(float sx, float sy) {
 		this.mSx = sx;

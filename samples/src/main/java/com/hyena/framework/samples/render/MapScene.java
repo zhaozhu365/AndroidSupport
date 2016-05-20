@@ -333,7 +333,7 @@ public class MapScene extends CScene {
             try {
                 InputStream is = getDirector().getContext().getAssets()
                         .open(url.replace("res:", ""));
-                Bitmap bitmap = BitmapManager.getInstance().getBitmap(url, is);
+                Bitmap bitmap = getDirector().getBitmapManager().getBitmap(url, is);
                 return bitmap;
             } catch (FileNotFoundException e) {
             } catch (Exception e) {
