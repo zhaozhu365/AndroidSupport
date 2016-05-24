@@ -179,6 +179,26 @@ public abstract class Task implements DownloaderListener, Runnable {
         }
     }
 
+    private boolean mValid = true;
+
+    /**
+     * 删除不合法的任务
+     */
+    public void setInvalid() {
+        this.mValid = false;
+        if (mDownload != null) {
+            mDownload.cancel();
+        }
+    }
+
+    /**
+     * 是否合法
+     * @return
+     */
+    public boolean isValid() {
+        return mValid;
+    }
+
     /**
      * 开始下载任务
      */
