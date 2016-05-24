@@ -753,17 +753,15 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         if (pageNo > PAGE_FIRST) {
         	if(!NetworkProvider.getNetworkProvider().getNetworkSensor().isNetworkAvailable()){
                 ToastUtils.showToast(getActivity(), "暂无网络请稍后再试!");
-        		return;
-        	}
-        	
-            if (result != null && !TextUtils.isEmpty(result.getRawResult())) {
+        	} else if (result != null && !TextUtils.isEmpty(result.getRawResult())) {
                 String hint = ErrorManager.getErrorManager().getErrorHint(
                         result.getRawResult(), result.getErrorDescription());
                 ToastUtils.showToast(getActivity(), hint);
             } else {
                 ToastUtils.showToast(getActivity(), "获取数据失败!");
             }
-            showContent();
+            getLoadingView().setVisibility(View.GONE);
+//            showContent();
         } else {
             if(!NetworkProvider.getNetworkProvider().getNetworkSensor().isNetworkAvailable()){
                 getEmptyView().showNoNetwork();
