@@ -99,7 +99,14 @@ public class DownloadManager {
                 finishedList.add(task);
             }
         }
-        
+
+        //正在下载
+        if (downloadTaskList != null && !downloadTaskList.isEmpty()) {
+            for (int i = 0; i < downloadTaskList.size(); i++) {
+                Task task = downloadTaskList.get(i);
+                task.pause();
+            }
+        }
         downloadTaskList.clear();
     }
     
@@ -127,6 +134,15 @@ public class DownloadManager {
                     	task.setStatus(Task.STATUS_PAUSE);
                     	table.updateStatus(task.getTaskId(), task.getStatus());
 					}
+
+                    //check file exists
+                    File file = new File(task.getDestFilePath());
+                    if (!file.exists()) {
+                        task.setStartPos(0);
+                        task.setStatus(Task.STATUS_UNINITED);
+                        table.updateProgress(task.getTaskId(), 0, item.mTotalLen);
+                    }
+
                     if(DEBUG) {
                 		LogUtil.v(TAG, "start Download resume, taskId:" + taskId);
                 	}
@@ -245,7 +261,16 @@ public class DownloadManager {
      * @param task
      */
     private void removeTask(Task task) {
-    	DownloadTable table = DataBaseManager.getDataBaseManager()
+        if (task != null)
+            task.setInvalid();
+    }
+
+    /**
+     * 删除任务
+     * @param task
+     */
+    private void clearTask(Task task){
+        DownloadTable table = DataBaseManager.getDataBaseManager()
         		.getTable(DownloadTable.class);
     	if (table != null && task != null) {
     		table.removeDownload(task.getTaskId());
@@ -292,7 +317,7 @@ public class DownloadManager {
         @Override
         public void onComplete(Task task, int reason) {
             //check done
-            if (mIsRunning) {
+            if (task.isValid()) {
                 List<Task> delTasks = new ArrayList<Task>();
                 for (int i = 0; i < unFinishedTaskList.size(); i++) {
                     Task taskItem = unFinishedTaskList.get(i);
@@ -306,8 +331,10 @@ public class DownloadManager {
                 //加入到完成队列
                 finishedList.add(task);
                 finishedList.addAll(delTasks);
+                notifyTaskComplete(task, reason);
+            } else {
+                clearTask(task);
             }
-            notifyTaskComplete(task, reason);
             mIsRunning = false;
 
             if (mCanceled)
@@ -333,9 +360,9 @@ public class DownloadManager {
     };
     
     private void notifyTaskComplete(Task task, int reason){
-//    	if (DEBUG) {
-//			LogUtil.v(TAG, "Task complete, taskId: " + task.getTaskId() + " , complete reason: " + reason);
-//		}
+    	if (DEBUG) {
+			LogUtil.v(TAG, "Task complete, taskId: " + task.getTaskId() + " , complete reason: " + reason);
+		}
     	if (mListeners != null) {
             for (int i = 0; i < mListeners.size(); i++) {
                 TaskListener listener = mListeners.get(i);
@@ -361,9 +388,9 @@ public class DownloadManager {
     }
     
     private void notifyTaskStart(Task task, long startPos, long totalLen){
-//    	if (DEBUG) {
-//			LogUtil.v(TAG, "Task started, taskId: " + task.getTaskId() + " , startPos: " + startPos + ", totalLen: " + totalLen);
-//		}
+    	if (DEBUG) {
+			LogUtil.v(TAG, "Task started, taskId: " + task.getTaskId() + " , startPos: " + startPos + ", totalLen: " + totalLen);
+		}
     	if (mListeners != null) {
             for (int i = 0; i < mListeners.size(); i++) {
                 TaskListener listener = mListeners.get(i);
@@ -375,9 +402,9 @@ public class DownloadManager {
     }
     
     private void notifyTaskReady(Task task) {
-//    	if (DEBUG) {
-//			LogUtil.v(TAG, "Task ready, taskId: " + task.getTaskId());
-//		}
+    	if (DEBUG) {
+			LogUtil.v(TAG, "Task ready, taskId: " + task.getTaskId());
+		}
     	if (mListeners != null) {
             for (int i = 0; i < mListeners.size(); i++) {
                 TaskListener listener = mListeners.get(i);
