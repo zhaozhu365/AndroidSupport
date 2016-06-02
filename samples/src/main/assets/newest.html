@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="作业结果"/>
+    <meta name="msapplication-tap-highlight" content="no"/>
+    <meta name="screen-orientation" content="portrait"/>
+    <meta name="browsermode" content="application"/>
+    <meta name="full-screen" content="yes"/>
+    <meta name="x5-orientation" content="portrait"/>
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="x5-page-mode" content="app"/>
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="MobileOptimized" content="320"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+    <title>速算盒子-做题</title>
+    <link rel="stylesheet" href="static/css/llkt.css"/>
+    <link rel="stylesheet" href="static/css/mathquill.css"/>
+    <script>
+	//设置移动端rem
+	(function(doc, win) {
+	    var docEl = doc.documentElement,
+	        resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+	        recalc = function() {
+	            var clientWidth = docEl.clientWidth;
+	            var clientHeight = docEl.clientHeight;
+	            if (!clientWidth) return;
+	            docEl.style.fontSize = 100 * (clientWidth / 640) + 'px';
+
+	            if (window.navigator.userAgent.indexOf('Pad') > -1) {
+	                docEl.style.fontSize = parseFloat(docEl.style.fontSize) / 1.5 + 'px';
+	            }
+	        };
+	    if (!doc.addEventListener) return;
+	    win.addEventListener(resizeEvt, recalc, false);
+	    doc.addEventListener('DOMContentLoaded', recalc, false);
+	    // document.body.addEventListener('touchstart', function() {/* do nothing */ });
+	})(document, window);
+
+    </script>
+    <style>
+        html, body {
+        font-size: 16px;
+        margin: 0;
+        color: #787878;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+        -moz-user-select: -moz-none;
+        -moz-user-select: none;
+        -o-user-select:none;
+        -khtml-user-select:none;
+        -webkit-user-select:none;
+        -ms-user-select:none;
+        user-select:none;
+        font-family:"微软雅黑", "Trebuchet MS", Helvetica, sans-serif;
+        height: 100%;
+        width: 100%;
+        }
+        #mount {
+        width: 100%;
+        height: 100%;
+        }
+        button {
+        border: none;
+        outline: none;
+        margin: 0;
+        }
+        p {
+        margin: 0;
+        }
+        .hide {
+        display: none;
+        }
+        .questionBox {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0.96rem;
+        /*bottom: 20%;*/
+        /*max-height: 62%;*/
+        }
+        .questionContent {
+        background-color: #fff;
+        text-align: left;
+        box-sizing: border-box;
+        padding: 0 0.3rem 0 0.3rem;
+        word-wrap: break-word;
+        position: absolute;
+        top: 0.2rem;
+        width: 100%;
+        bottom: 0;
+        overflow: auto;
+        font-size: 0.35rem;
+        }
+        .uc_q_caption .uc_q_object {
+        /*display: inline-block;*/
+        }
+        .questionItem.checked .code {
+        background-color: #48c2ff;
+        color: #fff;
+        border-color: #48c2ff;
+        }
+        .questionItem .code {
+        display: block;
+        }
+        .questionItem .uc_q_object {
+        padding: 0.3rem 0;
+        display: inline-block;
+        word-wrap: break-word;
+        word-break: break-word;
+
+        }
+        .questionItem{
+        padding-left: 1rem;
+        /*margin-left: 0;*/
+        }
+        .questionItem .code {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        margin-top: -0.4rem;
+        width: 0.8rem;
+        height: 0.8rem;
+        line-height: 0.75rem;
+        text-align: center;
+        box-sizing: border-box;
+        border: solid 1px #c1c1c1;
+        border-radius: 0.5rem;
+        font-size: 0.4rem;
+        }
+        .questionItem {
+        text-align: left;
+        position: relative;
+        }
+        .question span.edu_fillin.focus {
+        /*background: #82d0ef;*/
+        border: dotted 1px #82d0ef;
+        ;
+        }
+        .question span.edu_fillin {
+        position: relative;
+        /* top: -1px;*/
+        box-sizing: border-box;
+        height: 0.4rem;
+        line-height: 0.4rem;
+        padding: 0 0.1rem;
+        max-height: 0.5rem;
+        background: #f9f7ea;
+        /*display: inline-block;*/
+        min-width: 0.4rem;
+        vertical-align: middle;
+        outline: none;
+        border: 1px solid #f9f7ea;
+        /*border-bottom: 1px solid #787878;*/
+        }
+        .uc_q_fraction .uc_q_object {
+        padding: 0;
+        }
+        .mathquill-rendered-math{
+        font-size: 112%;
+        }
+        .mathquill-rendered-math .numerator, .mathquill-rendered-math .denominator {
+        border-width: 1px;
+        }
+        .mathquill-rendered-math .numerator {
+        border-bottom-style: solid;
+        border-bottom: 1px solid #787878 !important;
+        }
+        .mathquill-rendered-math .denominator {
+        border-top-style: solid;
+        }
+        .textCenter {
+        text-align: center;
+        }
+
+    </style>
+
+</head>
+<body>
+<div id="mount">
+    <div class="questionBox">
+        <div class="question">
+            <div id="J_questionContent" class="questionContent">
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="static/js/jquery-1.12.1.min.js"></script>
+<script src="static/js/mathquill.min.js"></script>
+<script>
+
+// 0 无键盘 1 大于小于等于 2加减乘除 3数字键盘  4 xyz 5对错
+	function build() {
+		$('.wait-render').each(function() {
+			$(this).css('width', 'auto').mathquill();
+		});
+
+		$('.question').each(function() {
+			var $emptys = $(this).find('.empty').addClass('edu_fillin');
+			// 设置tabindex
+				if ($('.fraction', this).length > 0 && $emptys.length % 2 == 0) {
+					$emptys.each(function(index) {
+						if (index % 2 == 0)
+							$(this).attr('tabindex', index + 1);
+						else 
+							$(this).attr('tabindex', index - 1);
+					});
+				} else if ($('.fraction', this).length > 0 && $emptys.length === 3) {
+					$emptys.each(function(index) {
+						if (index == 1)
+							$(this).attr('tabindex', 2);
+						else if (index == 2)
+							$(this).attr('tabindex', 1);
+						else
+							$(this).attr('tabindex', 0);
+					});
+				} else {
+					$emptys.each(function(index) {
+						$(this).attr('tabindex', index);
+					});
+				}
+
+				$('[tabindex=0]', this).addClass('focus');
+				//设置正确顺序	
+				$emptys.each(function(index) {
+						$(this).attr('answerIndex', index);
+					});
+
+		});
+	}
+	//监听用户主动改变tabIndex值
+	function setUpListenEvent() {
+		$('.questionContent').on('touchstart', '.questionItem', function() {
+			this.isTouched = true;
+		});
+		$('.questionContent').on('touchmove', '.questionItem', function() {
+			this.isTouched = false;
+		});
+		$('.questionContent').on('touchend', '.questionItem', function() {
+			if (!this.isTouched) {
+				return false;
+			}
+			var $questionContent = $(this).closest('.questionContent');
+			$('.checked', $questionContent).removeClass('checked');
+			$(this).addClass('checked');
+			var $currentIndex = $(this).find('.code').text();
+			var $allEmptys = 1;
+			clearTimeout(hybirdId);
+			hybirdId = setTimeout(function(){
+				var url =  'hybird://method/onChoiceSelected?answer=' + $currentIndex;
+				window.location.href = url;
+			}, 0);
+			return false;
+		});
+		$('.questionContent').on('touchend', '.edu_fillin', function() {
+			var answerIndex = parseInt($(this).attr('answerIndex'));
+			$(this).addClass('focus');
+			$('.focus', '.questionContent').not(this).removeClass('focus');
+			var $currentIndex = $(this).find('.code').text();
+			var $allEmptys = 1;
+			clearTimeout(hybirdId);
+			hybirdId = setTimeout(function(){
+				onIndexChange(questionIndex,questionID);
+			}, 0);		
+			return false;
+		});
+	}
+	// 输入当前input的内容
+	function setValue(answerIndex,value) {
+		console.log('setValue:' + value);
+		var $questionElem = $('.questionContent').eq(0);
+		if (isMultipleChoice) {
+			// 选择题
+			$('.questionItem', $questionElem).removeClass('checked');
+		} else {
+			// 非选择题
+			var $empty = $('span.edu_fillin[answerIndex="' + answerIndex + '"]', $questionElem);
+			if (value) {
+				$empty.text(value);
+			}else{
+				$empty.text(' ');
+			}
+			
+		}
+	}
+	//获取当前索引值
+	function getIndex(){
+		if(isMultipleChoice){
+			var $questionElem = $('.questionContent').eq(0);
+			if($questionElem.find('.checked').size>0){
+				return  $questionElem.find('.checked').find('.code').text();;
+			}
+			//否则为选择题无选项
+		}else{
+			return parseInt($('span.edu_fillin.focus').attr('answerIndex'));
+		}
+	}
+	// 指定索引
+	function setIndex(answerIndex) {
+			var $questionElem = $('.questionContent').eq(0);
+			var $allEmptys = $('span.edu_fillin', $questionElem);
+			var $nextEmpty = $('span.edu_fillin[answerIndex=' + answerIndex + ']', $questionElem);
+
+			if ($nextEmpty.length == 0) {
+				answerIndex = 0;
+			}
+			$nextEmpty.addClass('focus');
+			$allEmptys.not($nextEmpty).removeClass('focus');
+			//return false;
+			clearTimeout(hybirdId);
+			hybirdId = setTimeout(function(){
+				onIndexChange(questionIndex,questionID);
+			}, 0);
+	}
+	function onIndexChange(questionIndex,questionID) {
+		var $questionElem = $('.questionContent').eq(0);
+		var $allEmptys = 0;
+
+		$allEmptys = $('span.edu_fillin', $questionElem).size();
+		var $currentIndex = getIndex();
+
+		if(isMultipleChoice){
+			$allEmptys = 1;
+			$currentIndex = 0;
+		}
+		console.log($currentIndex+"==")
+		var url =  'hybird://method/onIndexChange?questionIndex=' + questionIndex
+				+"&questionID="+ questionID + "&count=" + $allEmptys + "&currentIndex=" + $currentIndex;
+		window.location.href = url;
+	}
+
+
+</script>
+<script>
+	var isMultipleChoice = true;
+	var questionIndex = 0;
+	var questionID = 1;
+	var hybirdId = 0;
+	//var data = ${question};
+
+	var data = {"question":"<div class=\"uc_q_caption clearfix\"><span class=\"uc_q_object\">下面图中，怎样从图形A得到图形B？<\/span><span class=\"uc_q_object ucqo_g_blank\">&nbsp;&nbsp;&nbsp;&nbsp;<\/span><br\/><span class=\"uc_q_object\"><img src=\"http:\/\/7xlbxm.com2.z0.glb.qiniucdn.com\/question\/pic\/12923\/jpp00013121.png\" style=\"vertical-align:middle;\"\/><\/span><\/div><div class=\"uc_q_answer\"><\/div><div class=\"questionItem\"><span class=\"code\">A<\/span><span class=\"uc_q_object\">先顺时针旋转90°，再向右平移10格<\/span><\/div><div class=\"questionItem\"><span class=\"code\">B<\/span><span class=\"uc_q_object\">先逆时针旋转90°，再向右平移10格<\/span><\/div><div class=\"questionItem\"><span class=\"code\">C<\/span><span class=\"uc_q_object\">先顺时针旋转90°，再向右平移8格<\/span><\/div><div class=\"questionItem\"><span class=\"code\">D<\/span><span class=\"uc_q_object\">先逆时针旋转90°，再向右平移8格<\/span><\/div>"}
+	//替换对应格式
+	data.question = data.question.replace(/mathquill-embedded-latex/g, 'wait-render').replace(/\<img.*?edu_fillin.*?\>|\<div[^\>]*?edu_fillin.*?\>(\<\/div\>)?/g, '<span class="empty edu_fillin"></span>');
+	
+	$("#J_questionContent").html(data.question)
+	build();
+	var modle = $("#J_questionContent")
+	setUpListenEvent();
+	if(!isMultipleChoice){
+		$(modle).addClass('textCenter')
+	}
+	window.onload = function() {
+		clearTimeout(hybirdId);
+		hybirdId = setTimeout(function(){
+			onIndexChange(questionIndex,questionID);
+		}, 0);
+	}
+
+</script>
+</html>

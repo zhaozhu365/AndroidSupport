@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.hyena.framework.samples.fragment.GameSampleFragment;
+import com.hyena.framework.samples.webview.WebViewFragment;
 
 public class MainActivity extends FragmentActivity {
 
@@ -27,7 +27,7 @@ public class MainActivity extends FragmentActivity {
 
         setContentView(R.layout.activity_main);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.main_container, new GameSampleFragment());
+        transaction.replace(R.id.main_container, new WebViewFragment());
         transaction.commitAllowingStateLoss();
     }
 
