@@ -8,6 +8,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.hyena.framework.samples.webview.WebViewFragment;
+import com.hyena.framework.samples.widgets.ChartFragment;
 
 public class MainActivity extends FragmentActivity {
 
@@ -27,7 +28,7 @@ public class MainActivity extends FragmentActivity {
 
         setContentView(R.layout.activity_main);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.main_container, new WebViewFragment());
+        transaction.replace(R.id.main_container, new ChartFragment());
         transaction.commitAllowingStateLoss();
     }
 
