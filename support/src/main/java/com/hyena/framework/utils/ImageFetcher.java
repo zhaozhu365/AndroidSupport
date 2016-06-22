@@ -4,6 +4,8 @@
 package com.hyena.framework.utils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
@@ -227,6 +229,9 @@ public class ImageFetcher {
 		public void onLoadingComplete(String imageUri, View view,
 				Bitmap loadedImage) {
 			onLoadComplete(imageUri, loadedImage, mTag);
+			//获取成功图片则通知有新图片获取成功
+			if (loadedImage != null)
+				getImageFetcher().notifyOnLoadImage(imageUri, loadedImage, mTag);
 		}
 
 		@Override
@@ -238,5 +243,27 @@ public class ImageFetcher {
 			onLoadComplete(imageUri, null, mTag);
 		}
 		
+	}
+
+	private List<ImageFetcherListener> mImageFetcherListeners
+			= new ArrayList<ImageFetcherListener>();
+
+	public void addImageFetcherListener(ImageFetcherListener listener) {
+		if (mImageFetcherListeners.contains(listener))
+			return;
+		mImageFetcherListeners.add(listener);
+	}
+
+	public void removeImageFetcherListener(ImageFetcherListener listener){
+		mImageFetcherListeners.remove(listener);
+	}
+
+	public void notifyOnLoadImage(String imageUrl, Bitmap bitmap,
+								   Object object) {
+		if (mImageFetcherListeners != null && !mImageFetcherListeners.isEmpty()) {
+			for (int i = 0; i < mImageFetcherListeners.size(); i++) {
+				mImageFetcherListeners.get(i).onLoadComplete(imageUrl, bitmap, object);
+			}
+		}
 	}
 }
