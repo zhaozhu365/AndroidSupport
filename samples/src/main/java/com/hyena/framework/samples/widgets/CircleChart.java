@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Xfermode;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,6 +30,9 @@ public class CircleChart extends View {
     private int mInnerRadius;
     private int mOutterRadius;
     private int mSelectScaleDistance;
+    private int mBorderColor = 0xfff0f0f0;
+    private int mInnerBorderDistance = 0;
+    private int mOutterBorderDistance = 0;
 
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private RectF mRectF = new RectF();
@@ -48,10 +52,13 @@ public class CircleChart extends View {
 
     private void init() {
         //初始化内径和外径
-        mInnerRadius = UIUtils.dip2px(60);
-        mOutterRadius = UIUtils.dip2px(80);
+        mInnerRadius = UIUtils.dip2px(67.5f);
+        mOutterRadius = UIUtils.dip2px(117.5f);
         //初始化选中时的内径和外径
-        mSelectScaleDistance = UIUtils.dip2px(5);
+        mSelectScaleDistance = UIUtils.dip2px(10);
+        mBorderColor = 0xfff0f0f0;
+        mInnerBorderDistance = UIUtils.dip2px(2.5f);
+        mOutterBorderDistance = UIUtils.dip2px(5f);
 
         initData();
     }
@@ -61,18 +68,45 @@ public class CircleChart extends View {
         super.onDraw(canvas);
         if (mChartItems == null)
             return;
+        canvas.drawColor(Color.WHITE);
+
+        mRectF.set((getWidth() - (mInnerRadius << 1)) / 2, (getHeight() - (mInnerRadius << 1)) / 2,
+                (getWidth() + (mInnerRadius << 1)) / 2, (getHeight() + (mInnerRadius << 1)) / 2);
+
+        drawBorder(canvas, mRectF.centerX(), mRectF.centerY(),
+                mInnerRadius - UIUtils.dip2px(5), mInnerRadius, mBorderColor);
+
+        drawBorder(canvas, mRectF.centerX(), mRectF.centerY(),
+                mOutterRadius, mOutterRadius + UIUtils.dip2px(5), mBorderColor);
 
         for (int i = 0; i < mChartItems.size(); i++) {
             CircleChartItem item = mChartItems.get(i);
             if (item == mSelectChartItem) {
-                drawArc(canvas, item.mFromAngle + mAnimatedAngle, item.mToAngle + mAnimatedAngle,
-                        item.mColor, item.mInnerRadius + mAnimatedScale,
-                        item.mOutterRadius + mAnimatedScale);
+                drawArc(canvas, item.mFromAngle + mAnimatedAngle + 1, item.mToAngle + mAnimatedAngle - 1,
+                        item.mColor, item.mInnerRadius,
+                        item.mOutterRadius + mAnimatedScale, item.mText);
             } else {
                 drawArc(canvas, item.mFromAngle + mAnimatedAngle, item.mToAngle + mAnimatedAngle,
-                        item.mColor, item.mInnerRadius, item.mOutterRadius);
+                        item.mColor, item.mInnerRadius, item.mOutterRadius, item.mText);
             }
         }
+    }
+
+    private void drawBorder(Canvas canvas, float centerX, float centerY,
+                            int fromRadius, int toRadius, int color) {
+        mPaint.reset();
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setAntiAlias(true);
+
+        int sc = canvas.saveLayer(0, 0, getWidth(), getHeight(), null, Canvas.ALL_SAVE_FLAG);
+        //添加外径
+        mPaint.setColor(color);
+        canvas.drawCircle(centerX, centerY, toRadius, mPaint);
+        //添加内径
+        mPaint.setXfermode(mXfermode);
+        canvas.drawCircle(centerX, centerY, fromRadius, mPaint);
+
+        canvas.restoreToCount(sc);
     }
 
     /**
@@ -84,9 +118,10 @@ public class CircleChart extends View {
      * @param color        颜色
      * @param innerRadius  内径
      * @param outterRadius 外径
+     * @param text         文本
      */
     private void drawArc(Canvas canvas, float fromAngle, float toAngle, int color,
-                         int innerRadius, int outterRadius) {
+                         int innerRadius, int outterRadius, String text) {
         mPaint.reset();
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setAntiAlias(true);
@@ -103,6 +138,16 @@ public class CircleChart extends View {
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, innerRadius, mPaint);
 
         canvas.restoreToCount(sc);
+
+        if (!TextUtils.isEmpty(text)) {
+            double angle = (fromAngle + (toAngle - fromAngle) / 2) *  Math.PI / 180;
+            int x = (int) (Math.cos(angle) * (innerRadius + outterRadius) / 2 + mRectF.centerX());
+            int y = (int) (Math.sin(angle) * (innerRadius + outterRadius) / 2 + mRectF.centerY());
+            mPaint.reset();
+            mPaint.setColor(Color.BLACK);
+            mPaint.setTextSize(UIUtils.dip2px(20));
+            canvas.drawText(text, x - UIUtils.dip2px(10), y + UIUtils.dip2px(10), mPaint);
+        }
     }
 
     @Override
@@ -143,9 +188,10 @@ public class CircleChart extends View {
     private void initData() {
         float percent[] = new float[]{0.2f, 0.2f, 0.2f, 0.2f, 0.2f};
         int color[] = new int[]{Color.BLUE, Color.RED, Color.YELLOW, Color.CYAN, Color.GREEN};
+        String text[] = new String[]{"A", "B", "C", "D", "E"};
 //        float percent[] = new float[]{0.5f, 0.5f};
 //        int color[] = new int[]{Color.BLUE, Color.RED};
-        setChartItem(percent, color);
+        setChartItem(percent, color, text);
     }
 
     private CircleChartItem mSelectChartItem;
@@ -313,7 +359,7 @@ public class CircleChart extends View {
         return centerChartItem;
     }
 
-    public void setChartItem(float items[], int colors[]) {
+    public void setChartItem(float items[], int colors[], String text[]) {
         if (items == null || colors == null
                 || items.length != colors.length)
             return;
@@ -325,7 +371,7 @@ public class CircleChart extends View {
             float angleRange = items[i] * 360;
             int color = colors[i];
             CircleChartItem chartItem = addChartItem(angle,
-                    (int) (angle + angleRange + 0.5f), color);
+                    (int) (angle + angleRange + 0.5f), color, text[i]);
             angle = (int) (angle + angleRange + 0.5f);
 
             if (items[i] > mMaxPercent) {
@@ -346,13 +392,14 @@ public class CircleChart extends View {
         postInvalidate();
     }
 
-    public CircleChartItem addChartItem(int fromAngle, int toAngle, int color) {
+    public CircleChartItem addChartItem(int fromAngle, int toAngle, int color, String text) {
         CircleChartItem item = new CircleChartItem();
         item.mColor = color;
         item.mFromAngle = fromAngle;
         item.mToAngle = toAngle;
         item.mInnerRadius = mInnerRadius;
         item.mOutterRadius = mOutterRadius;
+        item.mText = text;
         if (mChartItems == null) {
             mChartItems = new ArrayList<CircleChartItem>();
         }
@@ -365,6 +412,7 @@ public class CircleChart extends View {
         int mInnerRadius = 10, mOutterRadius = 10;
         int mColor = Color.RED;
         int mFromAngle = 0, mToAngle = 90;
+        String mText = "A";
     }
 
     class AnimatedListener implements AnimationUtils.ValueAnimatorListener {
