@@ -186,15 +186,17 @@ public class CircleChart extends View {
     }
 
     private void initData() {
+        String tags[] = new String[]{"A", "B", "C", "D", "E"};
         float percent[] = new float[]{0.2f, 0.2f, 0.2f, 0.2f, 0.2f};
         int color[] = new int[]{Color.BLUE, Color.RED, Color.YELLOW, Color.CYAN, Color.GREEN};
         String text[] = new String[]{"A", "B", "C", "D", "E"};
 //        float percent[] = new float[]{0.5f, 0.5f};
 //        int color[] = new int[]{Color.BLUE, Color.RED};
-        setChartItem(percent, color, text);
+        setChartItem(tags, percent, color, text);
     }
 
     private CircleChartItem mSelectChartItem;
+    private boolean mIsReset = true;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -213,10 +215,17 @@ public class CircleChart extends View {
             case MotionEvent.ACTION_UP: {
                 CircleChartItem item = getSelectedChartItem(x, y);
                 if (mSelectChartItem != null && item == mSelectChartItem) {
-                    selectChartItem(item);
+                    mIsReset = false;
+                    //load data
+                    notifyPreItemSelected(mSelectChartItem.mTag);
+//                    selectChartItem(item);
                 } else {
                     mSelectChartItem = null;
-                    doRotate(mSelectChartItem, true);
+                    mIsReset = true;
+
+                    CircleChartItem centerChartItem = getMaxChartItem();
+                    notifyPreItemSelected(centerChartItem.mTag);
+//                    doRotate(mSelectChartItem, true);
                 }
                 break;
             }
@@ -230,8 +239,16 @@ public class CircleChart extends View {
         doRotate(selectChartItem, false);
     }
 
-    private void doScale(CircleChartItem selectChartItem, boolean isReset) {
+    public void syncData() {
+        if (!mIsReset && mSelectChartItem == null)
+            return;
+
+        doRotate(mSelectChartItem, mIsReset);
+    }
+
+    private void doScale(final CircleChartItem selectChartItem, boolean isReset) {
         if (isReset) {
+            notifyItemSelected(selectChartItem.mTag);
             return;
         }
         ValueAnimator animator = ValueAnimator.ofInt(0, mSelectScaleDistance);
@@ -251,6 +268,7 @@ public class CircleChart extends View {
             public void onAnimationEnd(Animator animator) {
                 mAnimatedScale = mSelectScaleDistance;
                 postInvalidate();
+                notifyItemSelected(selectChartItem.mTag);
             }
             @Override
             public void onAnimationCancel(Animator animator) {
@@ -267,7 +285,8 @@ public class CircleChart extends View {
     }
 
     private void doRotate(final CircleChartItem selectChartItem, final boolean isReset) {
-        int startAngle = 0, toAngle = 0;
+        int startAngle, toAngle;
+        final CircleChartItem chartItem;
         if (isReset) {
             CircleChartItem centerChartItem = getMaxChartItem();
             int angleOffset = centerChartItem.mFromAngle + 90
@@ -276,9 +295,11 @@ public class CircleChart extends View {
             toAngle = centerChartItem.mFromAngle - angleOffset;
 
             mAnimatedScale = 0;
+            chartItem = centerChartItem;
         } else {
             startAngle = getAngle(selectChartItem.mFromAngle);
             toAngle = 90 - (selectChartItem.mToAngle - selectChartItem.mFromAngle) / 2;
+            chartItem = selectChartItem;
         }
         int angleRange = toAngle - startAngle;
         if (Math.abs(angleRange) > Math.abs(360 - Math.abs(angleRange))) {
@@ -291,13 +312,13 @@ public class CircleChart extends View {
             @Override
             public void onAnimationEnd(Animator animator) {
                 super.onAnimationEnd(animator);
-                doScale(selectChartItem, isReset);
+                doScale(chartItem, isReset);
             }
 
             @Override
             public void onAnimationCancel(Animator animator) {
                 super.onAnimationCancel(animator);
-                doScale(selectChartItem, isReset);
+                doScale(chartItem, isReset);
             }
         };
         animator.addUpdateListener(listener);
@@ -312,13 +333,11 @@ public class CircleChart extends View {
                 + (y - centerY) * (y - centerY));
 
         double angle = (Math.atan2(y - centerY, x - centerX) * 180 / Math.PI + 360) % 360;
-        LogUtil.v("yangzc", "angle: " + angle);
         for (int i = 0; i < mChartItems.size(); i++) {
             CircleChartItem item = mChartItems.get(i);
             if (distance >= item.mInnerRadius && distance <= item.mOutterRadius) {
                 int from = getAngle(item.mFromAngle);
                 int to = getAngle(item.mToAngle);
-                LogUtil.v("yangzc", "item, from: " + from + ", to: " + to);
                 if (from < to) {
                     if (angle >= from && angle <= to) {
                         return item;
@@ -359,7 +378,7 @@ public class CircleChart extends View {
         return centerChartItem;
     }
 
-    public void setChartItem(float items[], int colors[], String text[]) {
+    public void setChartItem(final String tags[], float items[], int colors[], String text[]) {
         if (items == null || colors == null
                 || items.length != colors.length)
             return;
@@ -370,8 +389,12 @@ public class CircleChart extends View {
         for (int i = 0; i < items.length; i++) {
             float angleRange = items[i] * 360;
             int color = colors[i];
-            CircleChartItem chartItem = addChartItem(angle,
-                    (int) (angle + angleRange + 0.5f), color, text[i]);
+            String label = "";
+            if (text != null && i < text.length) {
+                label = text[i];
+            }
+            CircleChartItem chartItem = addChartItem(tags[i], angle,
+                    (int) (angle + angleRange + 0.5f), color, label);
             angle = (int) (angle + angleRange + 0.5f);
 
             if (items[i] > mMaxPercent) {
@@ -392,8 +415,9 @@ public class CircleChart extends View {
         postInvalidate();
     }
 
-    public CircleChartItem addChartItem(int fromAngle, int toAngle, int color, String text) {
+    public CircleChartItem addChartItem(String tag, int fromAngle, int toAngle, int color, String text) {
         CircleChartItem item = new CircleChartItem();
+        item.mTag = tag;
         item.mColor = color;
         item.mFromAngle = fromAngle;
         item.mToAngle = toAngle;
@@ -408,11 +432,11 @@ public class CircleChart extends View {
     }
 
     public class CircleChartItem {
-
+        String mTag;
         int mInnerRadius = 10, mOutterRadius = 10;
         int mColor = Color.RED;
         int mFromAngle = 0, mToAngle = 90;
-        String mText = "A";
+        String mText;
     }
 
     class AnimatedListener implements AnimationUtils.ValueAnimatorListener {
@@ -461,5 +485,28 @@ public class CircleChart extends View {
             mAnimatedAngle = (Integer)valueAnimator.getAnimatedValue();
             postInvalidate();
         }
+    }
+
+    private void notifyItemSelected(String tag) {
+        LogUtil.v("yangzc", "notifyItemSelected tag : " + tag);
+        if (mItemSelectListener != null) {
+            mItemSelectListener.onItemSelected(tag, mIsReset);
+        }
+    }
+
+    private void notifyPreItemSelected(String tag){
+        LogUtil.v("yangzc", "notifyPreItemSelected tag : " + tag);
+        if (mItemSelectListener != null) {
+            mItemSelectListener.onPreItemSelected(tag, mIsReset);
+        }
+    }
+
+    private OnItemSelectListener mItemSelectListener = null;
+    public void setItemSelectListener(OnItemSelectListener listener){
+        this.mItemSelectListener = listener;
+    }
+    public static interface OnItemSelectListener {
+        void onPreItemSelected(String tag, boolean isReset);
+        void onItemSelected(String tag, boolean isReset);
     }
 }
