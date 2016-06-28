@@ -220,12 +220,16 @@ public class CircleChart extends View {
                     notifyPreItemSelected(mSelectChartItem.mTag);
 //                    selectChartItem(item);
                 } else {
-                    mSelectChartItem = null;
-                    mIsReset = true;
+                    float centerX = getWidth() / 2;
+                    float centerY = getHeight() / 2;
+                    if ((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY) < mInnerRadius * mInnerRadius) {
+                        mSelectChartItem = null;
+                        mIsReset = true;
 
-                    CircleChartItem centerChartItem = getMaxChartItem();
-                    notifyPreItemSelected(centerChartItem.mTag);
+                        CircleChartItem centerChartItem = getMaxChartItem();
+                        notifyPreItemSelected(centerChartItem.mTag);
 //                    doRotate(mSelectChartItem, true);
+                    }
                 }
                 break;
             }
