@@ -1,7 +1,5 @@
 package com.hyena.framework.samples;
 
-import android.app.Activity;
-import android.app.Instrumentation;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -11,13 +9,10 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.hyena.framework.clientlog.LogUtil;
+import com.hyena.framework.debug.InvokeHelper;
 import com.hyena.framework.samples.plugin.InstrumentationHook;
-import com.hyena.framework.samples.plugin.PluginActivity;
-import com.hyena.framework.samples.plugin.StubActivity;
-import com.hyena.framework.samples.webview.WebViewFragment;
+import com.hyena.framework.samples.plugin.PluginService;
 import com.hyena.framework.samples.widgets.ChartFragment;
-
-import java.lang.reflect.Field;
 
 public class MainActivity extends FragmentActivity {
 
@@ -39,6 +34,12 @@ public class MainActivity extends FragmentActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.main_container, new ChartFragment());
         transaction.commitAllowingStateLoss();
+
+        Object result = InvokeHelper.getFieldValue(this, "mBase");
+        LogUtil.v("yangzc", result.getClass().getName());
+
+        Intent intent = new Intent(this, PluginService.class);
+        startService(intent);
 
 //        try {
 //            Field instrumentationField = Activity.class.getDeclaredField("mInstrumentation");

@@ -212,6 +212,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 								| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED
 								| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mTitleBarId = ResourceUtils.getId("common_title_bar");
+        resetTask();
         autoAttachAllService();
 	}
 	
@@ -312,8 +313,13 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     	super.onDestroyViewImpl();
     	//解注册数据监听器
     	unRegistReceiver();
-        releaseTask();
     	mInited = false;
+    }
+
+    @Override
+    public void onDestroyImpl() {
+        super.onDestroyImpl();
+        releaseTask();
     }
 
     @Override
@@ -802,6 +808,10 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         if (mExecutor != null) {
             mExecutor.shutdown();
         }
+    }
+
+    private void resetTask(){
+        mExecutor = Executors.newFixedThreadPool(8);
     }
 
     private ExecutorService mExecutor = Executors.newFixedThreadPool(8);

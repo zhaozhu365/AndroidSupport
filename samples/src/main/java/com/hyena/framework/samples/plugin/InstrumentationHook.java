@@ -1,6 +1,7 @@
 package com.hyena.framework.samples.plugin;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
@@ -66,6 +67,12 @@ public class InstrumentationHook {
                 }
             }
             return super.newActivity(cl, clzName, intent);
+        }
+
+        @Override
+        public Application newApplication(ClassLoader cl, String className, Context context)
+                throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+            return super.newApplication(cl, className, context);
         }
 
         /**
