@@ -3,13 +3,12 @@
  */
 package com.hyena.framework.network;
 
-import java.util.List;
-
-import org.apache.http.HttpHost;
-import org.apache.http.NameValuePair;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
+
+import com.hyena.framework.bean.KeyValuePair;
+
+import java.util.List;
 
 /**
  * 网络感应器
@@ -30,7 +29,7 @@ public interface NetworkSensor {
 	 * 获取通用头信息
 	 * @return
 	 */
-	public List<NameValuePair> getCommonHeaders(String url, boolean isProxy);
+	public List<KeyValuePair> getCommonHeaders(String url, boolean isProxy);
 	
 	/**
 	 * 代理服务器地址
@@ -38,7 +37,7 @@ public interface NetworkSensor {
 	 * @param isProxy 是否走代理
 	 * @return
 	 */
-	public HttpHost getProxyHost(String url, boolean isProxy);
+	public HttpExecutor.ProxyHost getProxyHost(String url, boolean isProxy);
 	
 	/**
 	 * 发生流量

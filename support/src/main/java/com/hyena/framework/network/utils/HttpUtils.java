@@ -1,13 +1,16 @@
 package com.hyena.framework.network.utils;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Locale;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import com.hyena.framework.bean.KeyValuePair;
+import com.hyena.framework.network.HttpProvider;
+import com.hyena.framework.network.HttpResult;
+import com.hyena.framework.network.executor.SSLHttpClient;
+import com.hyena.framework.network.listener.FileHttpListener;
 
 import org.apache.http.HttpHost;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -18,14 +21,11 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
-import com.hyena.framework.network.HttpProvider;
-import com.hyena.framework.network.HttpResult;
-import com.hyena.framework.network.executor.SSLHttpClient;
-import com.hyena.framework.network.listener.FileHttpListener;
-
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Locale;
 
 public class HttpUtils {
 
@@ -151,18 +151,18 @@ public class HttpUtils {
 		return null;
 	}
 	
-	public static String encodeUrl(String url, List<? extends NameValuePair> params) {
+	public static String encodeUrl(String url, List<KeyValuePair> params) {
         if (params==null||params.size()==0) {
             return url;
         }
         StringBuilder sb = new StringBuilder();
         sb.append(url).append("?");
         for (int i = 0; i < params.size(); i++) {
-            NameValuePair p = params.get(i);
+            KeyValuePair p = params.get(i);
             if (i > 0) {
                 sb.append("&");
             }
-            sb.append(encodeUrl(p.getName())).append("=")
+            sb.append(encodeUrl(p.getKey())).append("=")
                     .append(encodeUrl(p.getValue()));
         }
         return sb.toString();

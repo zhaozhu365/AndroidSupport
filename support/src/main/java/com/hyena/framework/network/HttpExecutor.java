@@ -3,12 +3,12 @@
  */
 package com.hyena.framework.network;
 
+import com.hyena.framework.bean.KeyValuePair;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.apache.http.NameValuePair;
 
 /**
  * Http请求执行器
@@ -29,7 +29,7 @@ public interface HttpExecutor {
 		//请求头
 		public HashMap<String, String> mHeader;
 		//请求参数
-		public ArrayList<? extends NameValuePair> mParams;
+		public ArrayList<KeyValuePair> mParams;
 		//Post请求时的上传的字节数组
 		public HashMap<String, ByteFile> mByteFileMap;
 		//Post请求时直接上传的流
@@ -59,6 +59,21 @@ public interface HttpExecutor {
 	public static interface OutputStreamHandler {
 		public void writeTo(OutputStream os) throws IOException;
 		public long getLength();
+	}
+
+	/**
+	 * 代理地址
+	 */
+	public static class ProxyHost {
+		public String mHost;
+		public int mPort;
+
+		public ProxyHost() {}
+
+		public ProxyHost(String host, int port) {
+			this.mHost = host;
+			this.mPort = port;
+		}
 	}
 
 	/**

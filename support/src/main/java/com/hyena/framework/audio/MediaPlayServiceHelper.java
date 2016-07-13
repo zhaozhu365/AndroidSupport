@@ -3,14 +3,13 @@
  */
 package com.hyena.framework.audio;
 
-import java.util.List;
-
-import org.apache.http.NameValuePair;
+import android.content.Intent;
 
 import com.hyena.framework.audio.bean.Song;
+import com.hyena.framework.bean.KeyValuePair;
 import com.hyena.framework.utils.MsgCenter;
 
-import android.content.Intent;
+import java.util.List;
 
 /**
  * @author yangzc
@@ -63,11 +62,11 @@ class MediaServiceHelper {
 	 * @param type 数据类型
 	 * @param values
 	 */
-	public void notifyEvt(Song song, int type, List<NameValuePair> values){
+	public void notifyEvt(Song song, int type, List<KeyValuePair> values){
 		Intent intent = buildCommonMsgIntent(song, type);
 		for(int i=0; i< values.size(); i++){
-			NameValuePair pair = values.get(i);
-			intent.putExtra(pair.getName(), pair.getValue());
+			KeyValuePair pair = values.get(i);
+			intent.putExtra(pair.getKey(), pair.getValue());
 		}
 		MsgCenter.sendGlobalBroadcast(intent);	
 	}

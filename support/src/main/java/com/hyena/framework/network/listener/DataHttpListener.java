@@ -5,6 +5,8 @@ package com.hyena.framework.network.listener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.http.HttpResponse;
 
@@ -61,6 +63,13 @@ public class DataHttpListener implements HttpListener {
 	}
 
 	@Override
+	public boolean onResponse(InputStream is, OutputStream os
+			, int statusCode, String mimeType, String encoding, long contentLength
+			, boolean repeatable, boolean isTrunk) {
+		return false;
+	}
+
+	@Override
 	public boolean onRelease() {
 		return true;
 	}
@@ -87,8 +96,4 @@ public class DataHttpListener implements HttpListener {
 //		return writer.toString();
 //	}
 
-	@Override
-	public boolean onResponse(HttpResponse response) {
-		return false;
-	}
 }

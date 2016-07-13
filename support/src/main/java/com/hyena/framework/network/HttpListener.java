@@ -5,6 +5,9 @@ package com.hyena.framework.network;
 
 import org.apache.http.HttpResponse;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * HttpProvider下载监听器
  * 
@@ -21,13 +24,22 @@ public interface HttpListener {
 	 * 整个下载任务开始
 	 */
 	public boolean onReady(String url);
-	
+
 	/**
 	 * 网络响应
-	 * @param response
-	 * @return
-	 */
-	public boolean onResponse(HttpResponse response);
+	 * @param is
+	 * @param os
+	 * @param statusCode
+	 * @param mimeType
+	 * @param encoding
+	 * @param contentLength
+	 * @param repeatable
+     * @param isTrunk
+     * @return
+     */
+	public boolean onResponse(InputStream is, OutputStream os, int statusCode,
+							  String mimeType, String encoding, long contentLength,
+							  boolean repeatable, boolean isTrunk);
 	
 	/**
 	 * 开始下载

@@ -1,16 +1,15 @@
 package com.hyena.framework.network.utils;
 
+import com.hyena.framework.bean.KeyValuePair;
+import com.hyena.framework.network.HttpExecutor.OutputStreamHandler;
+import com.hyena.framework.network.HttpProvider;
+import com.hyena.framework.network.HttpResult;
+import com.hyena.framework.network.listener.DataHttpListener;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import org.apache.http.message.BasicNameValuePair;
-
-import com.hyena.framework.network.HttpProvider;
-import com.hyena.framework.network.HttpResult;
-import com.hyena.framework.network.HttpExecutor.OutputStreamHandler;
-import com.hyena.framework.network.listener.DataHttpListener;
 
 /**
  * 文件上传
@@ -102,11 +101,11 @@ public class SimpleFileUploader {
 				return result;
 			}
 		}, 
-		new BasicNameValuePair("connection", "Keep-Alive"), 
-		new BasicNameValuePair("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)"), 
-		new BasicNameValuePair("connection", "Keep-Alive"), 
-		new BasicNameValuePair("Charsert", "UTF-8"), 
-		new BasicNameValuePair("Content-Type", "multipart/form-data; boundary=" + BOUNDARY)
+		new KeyValuePair("connection", "Keep-Alive"),
+		new KeyValuePair("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)"),
+		new KeyValuePair("connection", "Keep-Alive"),
+		new KeyValuePair("Charsert", "UTF-8"),
+		new KeyValuePair("Content-Type", "multipart/form-data; boundary=" + BOUNDARY)
 		);
 		
 		if(result != null && result.isSuccess()){

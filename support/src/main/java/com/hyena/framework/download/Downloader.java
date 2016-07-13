@@ -3,8 +3,7 @@
  */
 package com.hyena.framework.download;
 
-import org.apache.http.message.BasicNameValuePair;
-
+import com.hyena.framework.bean.KeyValuePair;
 import com.hyena.framework.network.HttpProvider;
 import com.hyena.framework.network.HttpResult;
 import com.hyena.framework.network.listener.RandomFileHttpListener;
@@ -108,7 +107,7 @@ public class Downloader {
                 }
                 return super.onRelease();
             }
-        }, new BasicNameValuePair("Connection", "close"));
+        }, new KeyValuePair("Connection", "close"));
         //通知任务完成
         if (result.isSuccess()) {
             notifyDownloadSuccess();
@@ -201,7 +200,6 @@ public class Downloader {
         /**
          * 下载成功
          * @param downloader 下载任务
-         * @param result http返回数据
          */
         void onDownloadSuccess(Downloader downloader);
         

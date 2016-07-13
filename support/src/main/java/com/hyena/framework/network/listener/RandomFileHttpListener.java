@@ -6,6 +6,8 @@ package com.hyena.framework.network.listener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
 import org.apache.http.HttpResponse;
@@ -84,6 +86,13 @@ public class RandomFileHttpListener implements HttpListener {
 	}
 
 	@Override
+	public boolean onResponse(InputStream is, OutputStream os, int statusCode
+			, String mimeType, String encoding, long contentLength
+			, boolean repeatable, boolean isTrunk) {
+		return false;
+	}
+
+	@Override
 	public boolean onRelease() {
 		try {
 			if(mRandomAccessFile != null)
@@ -93,11 +102,6 @@ public class RandomFileHttpListener implements HttpListener {
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public boolean onResponse(HttpResponse response) {
-		return false;
 	}
 
 }

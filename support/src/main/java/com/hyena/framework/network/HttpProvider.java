@@ -3,15 +3,14 @@
  */
 package com.hyena.framework.network;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.apache.http.NameValuePair;
-
+import com.hyena.framework.bean.KeyValuePair;
 import com.hyena.framework.network.HttpExecutor.HttpRequestParams;
 import com.hyena.framework.network.HttpExecutor.OutputStreamHandler;
 import com.hyena.framework.network.executor.DefaultHttpExecutor;
 import com.hyena.framework.network.listener.DataHttpListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * HTTP 数据提供器
@@ -36,11 +35,11 @@ public class HttpProvider {
 		return doGet(url, timeout, -1, listener);
 	}
 	
-	public HttpResult doGet(String url, int timeout, long startPos, HttpListener listener, NameValuePair ...header){
+	public HttpResult doGet(String url, int timeout, long startPos, HttpListener listener, KeyValuePair ...header){
 		return doGet(url, null, timeout, startPos, listener, header);
 	}
 	
-	public HttpResult doGet(String url, ArrayList<NameValuePair> params, int timeout, HttpListener listener){
+	public HttpResult doGet(String url, ArrayList<KeyValuePair> params, int timeout, HttpListener listener){
 		return doGet(url, params, -1, -1, listener);
 	}
 	
@@ -51,16 +50,16 @@ public class HttpProvider {
 	 * @param listener
 	 * @return
 	 */
-	public HttpResult doPost(String url, ArrayList<? extends NameValuePair> params, HttpListener listener, NameValuePair ...header){
+	public HttpResult doPost(String url, ArrayList<KeyValuePair> params, HttpListener listener, KeyValuePair ...header){
 		return doPost(url, null, params, null, listener, header);
 	}
 	
-	public HttpResult doPost(String url, OutputStreamHandler osHandler, HttpListener listener, NameValuePair ...header){
+	public HttpResult doPost(String url, OutputStreamHandler osHandler, HttpListener listener, KeyValuePair ...header){
 		return doPost(url, osHandler, null, null, listener, header);
 	}
 	
-	public HttpResult doPost(String url, ArrayList<? extends NameValuePair> params, 
-			HashMap<String, HttpExecutor.ByteFile> byteFileMap, HttpListener listener, NameValuePair ...header){
+	public HttpResult doPost(String url, ArrayList<KeyValuePair> params,
+			HashMap<String, HttpExecutor.ByteFile> byteFileMap, HttpListener listener, KeyValuePair ...header){
 		return doPost(url, null, params, byteFileMap, listener, header);
 	}
 	
@@ -74,16 +73,16 @@ public class HttpProvider {
 	 * @param header 请求头
 	 * @return 返回结果
 	 */
-	private HttpResult doGet(String url, ArrayList<NameValuePair> params, int timeout, 
-			long startPos, HttpListener listener, NameValuePair ...header){
+	private HttpResult doGet(String url, ArrayList<KeyValuePair> params, int timeout,
+							 long startPos, HttpListener listener, KeyValuePair...header){
 		HttpRequestParams httpParams = new HttpRequestParams();
 		httpParams.mParams = params;
 		httpParams.mTimeout = timeout;
 		httpParams.mStartPos = startPos;
 		if(header != null && header.length > 0){
 			HashMap<String, String> headerMap = new HashMap<String, String>();
-			for(NameValuePair pair : header){
-				headerMap.put(pair.getName(), pair.getValue());
+			for(KeyValuePair pair : header){
+				headerMap.put(pair.getKey(), pair.getValue());
 			}
 			httpParams.mHeader = headerMap;
 		}
@@ -105,21 +104,22 @@ public class HttpProvider {
 	 * @param header 请求头
 	 * @return 返回结果
 	 */
-	private HttpResult doPost(String url, OutputStreamHandler osHandler, ArrayList<? extends NameValuePair> params, 
-			HashMap<String, HttpExecutor.ByteFile> byteFileMap, HttpListener listener, NameValuePair ...header){
+	private HttpResult doPost(String url, OutputStreamHandler osHandler, ArrayList<KeyValuePair> params,
+			HashMap<String, HttpExecutor.ByteFile> byteFileMap, HttpListener listener, KeyValuePair ...header){
 		HttpRequestParams httpParams = new HttpRequestParams();
 		httpParams.mOsHandler = osHandler;
 		httpParams.mParams = params;
 		if(header != null && header.length > 0){
 			HashMap<String, String> headerMap = new HashMap<String, String>();
-			for(NameValuePair pair : header){
-				headerMap.put(pair.getName(), pair.getValue());
+			for(KeyValuePair pair : header){
+				headerMap.put(pair.getKey(), pair.getValue());
 			}
 			httpParams.mHeader = headerMap;
 		}
 		if(byteFileMap != null && byteFileMap.size() > 0){
 			httpParams.mByteFileMap = byteFileMap;
 		}
+		httpParams.isProxy = isProxy;
 
 		if(listener == null)
 			listener = new DataHttpListener();

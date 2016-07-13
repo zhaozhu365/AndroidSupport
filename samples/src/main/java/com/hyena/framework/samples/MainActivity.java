@@ -10,6 +10,10 @@ import android.view.WindowManager;
 
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.debug.InvokeHelper;
+import com.hyena.framework.network.HttpListener;
+import com.hyena.framework.network.HttpProvider;
+import com.hyena.framework.network.HttpResult;
+import com.hyena.framework.network.listener.DataHttpListener;
 import com.hyena.framework.samples.plugin.InstrumentationHook;
 import com.hyena.framework.samples.plugin.PluginService;
 import com.hyena.framework.samples.widgets.ChartFragment;
@@ -40,6 +44,11 @@ public class MainActivity extends FragmentActivity {
 
         Intent intent = new Intent(this, PluginService.class);
         startService(intent);
+
+        //test network
+        HttpProvider provider = new HttpProvider();
+        HttpResult ret = provider.doGet("http://www.baidu.com", 30, new DataHttpListener());
+        LogUtil.v("yangzc", ret.getResult());
 
 //        try {
 //            Field instrumentationField = Activity.class.getDeclaredField("mInstrumentation");

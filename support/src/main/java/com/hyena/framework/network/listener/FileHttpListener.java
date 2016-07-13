@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.http.HttpResponse;
 
@@ -78,6 +80,13 @@ public class FileHttpListener implements HttpListener {
 	}
 
 	@Override
+	public boolean onResponse(InputStream is, OutputStream os, int statusCode
+			, String mimeType, String encoding, long contentLength
+			, boolean repeatable, boolean isTrunk) {
+		return false;
+	}
+
+	@Override
 	public boolean onRelease() {
 		try {
 			if(mFileOutputStream != null)
@@ -87,11 +96,6 @@ public class FileHttpListener implements HttpListener {
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public boolean onResponse(HttpResponse response) {
-		return false;
 	}
 
 }

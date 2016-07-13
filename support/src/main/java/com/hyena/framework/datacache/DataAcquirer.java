@@ -1,21 +1,9 @@
 package com.hyena.framework.datacache;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.apache.http.HttpStatus;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
+import com.hyena.framework.bean.KeyValuePair;
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.config.FrameworkConfig;
 import com.hyena.framework.datacache.cache.CacheEntry;
@@ -31,6 +19,18 @@ import com.hyena.framework.network.listener.DataHttpListener;
 import com.hyena.framework.security.MD5Util;
 import com.hyena.framework.utils.BaseApp;
 import com.hyena.framework.utils.HttpHelper;
+
+import org.apache.http.HttpStatus;
+import org.apache.http.protocol.HTTP;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * 数据获取器
@@ -154,7 +154,7 @@ public class DataAcquirer<T extends BaseObject> {
 		try {
 			HttpProvider httpProvider = new HttpProvider();
 			DataHttpListener httpListener = new DataHttpListener();
-			HttpResult result = httpProvider.doGet(url, HttpHelper.TIMEOUT, -1, httpListener, new BasicNameValuePair("Accept-Encoding", "gzip"));
+			HttpResult result = httpProvider.doGet(url, HttpHelper.TIMEOUT, -1, httpListener, new KeyValuePair("Accept-Encoding", "gzip"));
 			read(result, httpListener, t);
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -172,7 +172,7 @@ public class DataAcquirer<T extends BaseObject> {
 	 * @return
 	 */
 	public T post(String url, HashMap<String, HttpExecutor.ByteFile> byteFileMap,
-			final ArrayList<BasicNameValuePair> params, final T t) {
+				  final ArrayList<KeyValuePair> params, final T t) {
 		if (t == null)
 			return t;
 		if (!NetworkProvider.getNetworkProvider().getNetworkSensor().isNetworkAvailable()) {
@@ -183,7 +183,7 @@ public class DataAcquirer<T extends BaseObject> {
 		try {
 			HttpProvider httpProvider = new HttpProvider();
 			DataHttpListener httpListener = new DataHttpListener();
-			HttpResult result = httpProvider.doPost(addMd5Url(url, params), params, byteFileMap, httpListener, new BasicNameValuePair("Accept-Encoding", "gzip"));
+			HttpResult result = httpProvider.doPost(addMd5Url(url, params), params, byteFileMap, httpListener, new KeyValuePair("Accept-Encoding", "gzip"));
 			read(result, httpListener, t);
 
 		} catch (Throwable e) {
@@ -200,7 +200,7 @@ public class DataAcquirer<T extends BaseObject> {
 	 * @return 获取数据并解析后的数据对象
 	 */
 	public T post(final String url,
-			final ArrayList<BasicNameValuePair> params, final T t) {
+			final ArrayList<KeyValuePair> params, final T t) {
 		return post(url, null, params, t);
 	}
 
@@ -223,7 +223,7 @@ public class DataAcquirer<T extends BaseObject> {
 			HttpProvider httpProvider = new HttpProvider();
 			DataHttpListener httpListener = new DataHttpListener();
 			HttpResult result = httpProvider.doPost(addMD5KeyUrl(url), osHandler,
-					httpListener, new BasicNameValuePair("Accept-Encoding",
+					httpListener, new KeyValuePair("Accept-Encoding",
 							"gzip"));
 			read(result, httpListener, t);
 		} catch (Throwable e) {
@@ -270,8 +270,8 @@ public class DataAcquirer<T extends BaseObject> {
 						public long getLength() {
 							return data.getBytes().length;
 						}
-					}, httpListener, new BasicNameValuePair("Accept-Encoding",
-							"gzip"), new BasicNameValuePair("Content-Type",
+					}, httpListener, new KeyValuePair("Accept-Encoding",
+							"gzip"), new KeyValuePair("Content-Type",
 							"application/json"));
 			read(result, httpListener, t);
 		} catch (Throwable e) {
@@ -320,11 +320,7 @@ public class DataAcquirer<T extends BaseObject> {
 
 	/**
 	 * 根据URL及参数构造网络请求缓存key
-	 * 
-	 * @param url
-	 *            URL
-	 * @param params
-	 *            请求参数
+	 * @param url URL
 	 * @return 缓存key
 	 */
 	private String createCacheKey(String url) {
@@ -356,11 +352,11 @@ public class DataAcquirer<T extends BaseObject> {
 	}
 
 	@SuppressLint("DefaultLocale")
-	private String addMd5Url(String url, ArrayList<BasicNameValuePair> params){
+	private String addMd5Url(String url, ArrayList<KeyValuePair> params){
 		if(params != null){
 			String appendParams = "";
 			for (int i = 0; i < params.size(); i++) {
-				String name = params.get(i).getName();
+				String name = params.get(i).getKey();
 				if("data".equals(name)){
 					appendParams = MD5Util.encode("data=" + params.get(i).getValue()
 							+ FrameworkConfig.getConfig().getGetEncodeKey()).toUpperCase();
