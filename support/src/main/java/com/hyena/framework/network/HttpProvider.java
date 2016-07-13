@@ -4,9 +4,9 @@
 package com.hyena.framework.network;
 
 import com.hyena.framework.bean.KeyValuePair;
+import com.hyena.framework.config.FrameworkConfig;
 import com.hyena.framework.network.HttpExecutor.HttpRequestParams;
 import com.hyena.framework.network.HttpExecutor.OutputStreamHandler;
-import com.hyena.framework.network.executor.DefaultHttpExecutor;
 import com.hyena.framework.network.listener.DataHttpListener;
 
 import java.util.ArrayList;
@@ -19,16 +19,16 @@ import java.util.HashMap;
  */
 public class HttpProvider {
 
-	private HttpExecutor mHttpExecutor;
-	
 	private boolean isProxy = true;
 	
 	public void setFlowProxt(boolean isProxy){
 		this.isProxy = isProxy;
 	}
 	
-	public HttpProvider() {
-		mHttpExecutor = new DefaultHttpExecutor();
+	public HttpProvider() {}
+
+	private HttpExecutor getHttpExecutor(){
+		return FrameworkConfig.getConfig().getHttpExecutor();
 	}
 	
 	public HttpResult doGet(String url, int timeout, HttpListener listener){
@@ -91,7 +91,7 @@ public class HttpProvider {
 		if(listener == null)
 			listener = new DataHttpListener();
 //		((DefaultHttpExecutor) mHttpExecutor).setFlowProxt(isProxy);
-		return mHttpExecutor.doGet(url, httpParams, listener);
+		return getHttpExecutor().doGet(url, httpParams, listener);
 	}
 	
 	/**
@@ -124,7 +124,7 @@ public class HttpProvider {
 		if(listener == null)
 			listener = new DataHttpListener();
 		
-		return mHttpExecutor.doPost(url, httpParams, listener);
+		return getHttpExecutor().doPost(url, httpParams, listener);
 	}
 	
 }

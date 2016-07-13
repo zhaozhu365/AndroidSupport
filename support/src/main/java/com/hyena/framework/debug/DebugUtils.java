@@ -249,7 +249,7 @@ public class DebugUtils {
 	 * Debug调试时间
 	 * 
 	 * @param init
-	 * @param tag
+	 * @param init
 	 */
 	public static void debugCost(boolean init, String tagPrefix) {
 		long current = System.currentTimeMillis();
@@ -289,5 +289,11 @@ public class DebugUtils {
 		DataCacheTable table = DataBaseManager.getDataBaseManager()
 				.getTable(DataCacheTable.class);
 		table.deleteByCase(null, null);
+	}
+
+	public static boolean isDebug() {
+		if (LogUtil.isDebug())
+			return true;
+		return false;
 	}
 }

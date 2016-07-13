@@ -5,6 +5,9 @@ import java.io.File;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.hyena.framework.network.HttpExecutor;
+import com.hyena.framework.network.executor.DefaultHttpExecutor;
+
 /**
  * Framework配置
  * @author yangzc
@@ -27,7 +30,7 @@ public class FrameworkConfig {
 	private String mGetEncodeKey;
 	private String mPostEncodeKey;
 	private int mAppType = APP_SUSUAN;
-	
+
 	private FrameworkConfig(){}
 	
 	public static FrameworkConfig getConfig(){
@@ -135,5 +138,17 @@ public class FrameworkConfig {
 	
 	public int getAppType(){
 		return mAppType;
+	}
+
+	private HttpExecutor mHttpExecutor = new DefaultHttpExecutor();
+	public HttpExecutor getHttpExecutor() {
+		if (mHttpExecutor == null)
+			mHttpExecutor = new DefaultHttpExecutor();
+		return mHttpExecutor;
+	}
+
+	public FrameworkConfig setHttpExecutor(HttpExecutor executor){
+		this.mHttpExecutor = executor;
+		return this;
 	}
 }

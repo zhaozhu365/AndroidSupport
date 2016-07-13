@@ -10,7 +10,6 @@ import android.view.WindowManager;
 
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.debug.InvokeHelper;
-import com.hyena.framework.network.HttpListener;
 import com.hyena.framework.network.HttpProvider;
 import com.hyena.framework.network.HttpResult;
 import com.hyena.framework.network.listener.DataHttpListener;
@@ -46,9 +45,14 @@ public class MainActivity extends FragmentActivity {
         startService(intent);
 
         //test network
-        HttpProvider provider = new HttpProvider();
-        HttpResult ret = provider.doGet("http://www.baidu.com", 30, new DataHttpListener());
-        LogUtil.v("yangzc", ret.getResult());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpProvider provider = new HttpProvider();
+                HttpResult ret = provider.doGet("http://knowapp.b0.upaiyun.com/ss/cityList/cityList16.json", 30, new DataHttpListener());
+                LogUtil.v("yangzc", ret.getResult());
+            }
+        }).start();
 
 //        try {
 //            Field instrumentationField = Activity.class.getDeclaredField("mInstrumentation");

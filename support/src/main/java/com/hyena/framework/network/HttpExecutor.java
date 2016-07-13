@@ -43,7 +43,7 @@ public interface HttpExecutor {
 	 */
 	public static class ByteFile {
 		public String mFileName;
-		public String mMimeType;
+		public String mMimeType = "application/octet-stream";
 		public byte[] mBytes;
 		
 		public ByteFile(String fileName, String mimeType, byte[] bytes){

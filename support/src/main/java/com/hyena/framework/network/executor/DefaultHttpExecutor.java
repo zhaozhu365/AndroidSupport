@@ -224,16 +224,20 @@ public class DefaultHttpExecutor implements HttpExecutor {
 			final HttpResponse response = client.execute(request);
 
 			int statusCode = response.getStatusLine().getStatusCode();
-			if(listener != null && listener.onResponse(response.getEntity().getContent(),
-					null,
-					statusCode,
-					response.getEntity().getContentType().getValue(),
-					response.getEntity().getContentEncoding().getValue(),
-					response.getEntity().getContentLength(),
-					response.getEntity().isRepeatable(),
-					response.getEntity().isChunked())) {
-				result.mErrorCode = HttpError.ERROR_CANCEL_RESPONSE;
-				return result;
+			HttpEntity httpEntity = response.getEntity();
+			is = httpEntity.getContent();
+			if (httpEntity != null) {
+				if (listener != null && listener.onResponse(is,
+						null,
+						statusCode,
+						httpEntity.getContentType() == null ? "" : httpEntity.getContentType().getValue(),
+						httpEntity.getContentEncoding() == null ? "" : httpEntity.getContentEncoding().getValue(),
+						httpEntity.getContentLength(),
+						httpEntity.isRepeatable(),
+						httpEntity.isChunked())) {
+					result.mErrorCode = HttpError.ERROR_CANCEL_RESPONSE;
+					return result;
+				}
 			}
 
 			result.mReqTs = System.currentTimeMillis() - start;//请求响应时间
@@ -277,8 +281,6 @@ public class DefaultHttpExecutor implements HttpExecutor {
 
 				if(isGzip){
 					is = new GZIPInputStream(response.getEntity().getContent());
-				}else{
-					is = response.getEntity().getContent();
 				}
 
 				int len = -1;
