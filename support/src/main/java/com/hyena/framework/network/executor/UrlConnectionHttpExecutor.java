@@ -41,7 +41,7 @@ import javax.net.ssl.TrustManager;
 public class UrlConnectionHttpExecutor implements HttpExecutor {
 
     private static final String TAG = "UrlConnectionHttpExecutor";
-    private static final String BOUNDARY = "";
+    private static final String BOUNDARY = "---------------------------7d4a6d158c9";
 
     private static final int DEFAULT_TIMEOUT = 30;
 
@@ -128,12 +128,14 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
                         }
                         urlObj = new URL(url);
                         conn = openConnection(isGet, urlObj, proxy);
+                        conn.setRequestProperty("Content-Type", "application/json");
 
                         baos = new ByteArrayOutputStream((int) params.mOsHandler.getLength());
                         params.mOsHandler.writeTo(baos);
                     } else if (params.mByteFileMap != null) {
                         urlObj = new URL(url);
                         conn = openConnection(isGet, urlObj, proxy);
+                        conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
                         //write data
                         baos = new ByteArrayOutputStream();
                         if (params.mParams != null) {
@@ -159,17 +161,19 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
                             baos.write(file.mBytes);
                             baos.write("\r\n".getBytes());
                         }
-
                     } else if (params.mParams != null){
                         urlObj = new URL(url);
+                        byte data[] = HttpUtils.encodeUrl(params.mParams).getBytes();
                         conn = openConnection(isGet, urlObj, proxy);
+                        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                         //write data
                         baos = new ByteArrayOutputStream();
-                        baos.write(HttpUtils.encodeUrl(params.mParams).getBytes());
+                        baos.write(data);
                     }
                 } else {
                     urlObj = new URL(url);
                     conn = openConnection(isGet, urlObj, proxy);
+                    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 }
             }
 
@@ -205,8 +209,8 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
             start = System.currentTimeMillis();
             conn.connect();
 
-            debug(url);
             if (baos != null) {
+                conn.setRequestProperty("Content-Length", baos.toByteArray().length + "");
                 os = conn.getOutputStream();
                 os.write(baos.toByteArray());
                 os.close();

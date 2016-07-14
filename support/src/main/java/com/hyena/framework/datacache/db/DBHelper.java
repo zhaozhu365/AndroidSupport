@@ -41,8 +41,16 @@ public class DBHelper {
 	 */
 	public void insert(CacheEntry cacheEntry) {
 		DataCacheTable table = DataBaseManager.getDataBaseManager().getTable(DataCacheTable.class);
-		table.deleteByKey(cacheEntry.getKey());
-		table.insert(cacheEntry.toDataCacheItem());
+		table.getDatabase().beginTransaction();
+		try {
+			table.deleteByKey(cacheEntry.getKey());
+			table.insert(cacheEntry.toDataCacheItem());
+			table.getDatabase().setTransactionSuccessful();
+		} catch (Exception e) {
+			LogUtil.e("", e);
+		} finally {
+			table.getDatabase().endTransaction();
+		}
 //		insert(cacheEntry.getKey(), cacheEntry.getData(),
 //				cacheEntry.getValidTime());
         //无网络状态不进行删除
