@@ -207,7 +207,6 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
             conn.setReadTimeout(timeout * 1000);
 
             start = System.currentTimeMillis();
-            conn.connect();
 
             if (baos != null) {
                 conn.setRequestProperty("Content-Length", baos.toByteArray().length + "");
