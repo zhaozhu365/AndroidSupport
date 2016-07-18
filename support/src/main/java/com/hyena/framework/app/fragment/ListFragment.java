@@ -47,7 +47,8 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
         mLvListView.setEnableLoadMore(mEnableLoadMore);
         setLoadMoreText("正在加载中...");
 
-        mSrlPanel.addView(mLvListView);
+        if (mLvListView.getParent() == null)
+            mSrlPanel.addView(mLvListView);
 
         mSrlPanel.setOnRefreshListener(mRefreshListener);
 
