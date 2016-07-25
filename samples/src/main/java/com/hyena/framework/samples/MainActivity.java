@@ -35,24 +35,24 @@ public class MainActivity extends FragmentActivity {
 
         setContentView(R.layout.activity_main);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.main_container, new ChartFragment());
+        transaction.replace(R.id.main_container, new TestFragment());
         transaction.commitAllowingStateLoss();
 
-        Object result = InvokeHelper.getFieldValue(this, "mBase");
-        LogUtil.v("yangzc", result.getClass().getName());
+//        Object result = InvokeHelper.getFieldValue(this, "mBase");
+//        LogUtil.v("yangzc", result.getClass().getName());
 
-        Intent intent = new Intent(this, PluginService.class);
-        startService(intent);
+//        Intent intent = new Intent(this, PluginService.class);
+//        startService(intent);
 
         //test network
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpProvider provider = new HttpProvider();
-                HttpResult ret = provider.doGet("http://knowapp.b0.upaiyun.com/ss/cityList/cityList16.json", 30, new DataHttpListener());
-                LogUtil.v("yangzc", ret.getResult());
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                HttpProvider provider = new HttpProvider();
+//                HttpResult ret = provider.doGet("http://knowapp.b0.upaiyun.com/ss/cityList/cityList16.json", 30, new DataHttpListener());
+//                LogUtil.v("yangzc", ret.getResult());
+//            }
+//        }).start();
 
 //        try {
 //            Field instrumentationField = Activity.class.getDeclaredField("mInstrumentation");

@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
+import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -27,6 +28,8 @@ public class CircleHintView extends View {
 	private Paint mBgPaint;
 	private Paint mTxtPaint;
 	private String mTipStr;
+
+	private RectF mRectF = new RectF();
 
 	public CircleHintView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
@@ -93,9 +96,8 @@ public class CircleHintView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		int cx = getWidth() / 2;
-		int cy = getHeight() / 2;
-		canvas.drawCircle(cx, cy, cx, mBgPaint);
+		mRectF.set(0, 0, getWidth(), getHeight());
+		canvas.drawRoundRect(mRectF, mRectF.height()/2, mRectF.height()/2, mBgPaint);
 
 		if (!TextUtils.isEmpty(mTipStr)) {
 			int x = getWidth() / 2;
@@ -107,4 +109,29 @@ public class CircleHintView extends View {
 			canvas.drawText(mTipStr, x, textBaseY, mTxtPaint);
 		}
 	}
+
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		float textWidth = mTxtPaint.measureText(mTipStr) + getHeight()/2;
+		int width = (int) Math.max(textWidth, getSuggestedMinimumWidth());
+		setMeasuredDimension(getSize(width, widthMeasureSpec),
+				getSize(getSuggestedMinimumHeight(), heightMeasureSpec));
+	}
+
+	private int getSize(int size, int measureSpec) {
+		int result = size;
+		int specMode = MeasureSpec.getMode(measureSpec);
+		int specSize = MeasureSpec.getSize(measureSpec);
+		switch (specMode) {
+			case MeasureSpec.UNSPECIFIED:
+			case MeasureSpec.AT_MOST://wrap_content
+				result = size;
+				break;
+			case MeasureSpec.EXACTLY://fill_parent or exactly
+				result = specSize;
+				break;
+		}
+		return result;
+	}
+
 }
