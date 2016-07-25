@@ -20,7 +20,7 @@ import com.hyena.framework.datacache.BaseObject;
 import com.hyena.framework.network.NetworkProvider;
 
 /**
- * 具有listview功能的Fragment
+ * 具有listView功能的Fragment
  * Created by yangzc on 16/2/15.
  */
 public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends BaseUIFragment<T> {
@@ -37,13 +37,16 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
 
     @Override
     public View onCreateViewImpl(Bundle savedInstanceState) {
+        mListAdapter = getListAdapter();
+        if (!isValid())
+            return null;
         mSrlPanel = newSwipeRefreshLayout();
 
         mLvListView = newLoadMoreListView();
         if (mEnableLoadMore)
             mLvListView.initFooter(mLvFooter = newFooterView());
 
-        mLvListView.setAdapter(mListAdapter = getListAdapter());
+        mLvListView.setAdapter(mListAdapter);
         mLvListView.setEnableLoadMore(mEnableLoadMore);
         setLoadMoreText("正在加载中...");
 
@@ -103,6 +106,8 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
     @Override
     public void onPreAction(int action, int pageNo) {
         super.onPreAction(action, pageNo);
+        if (!isValid())
+            return;
         if (pageNo == PAGE_FIRST) {
             if (mListAdapter.isEmpty()) {
                 //first load
@@ -132,6 +137,8 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
     @Override
     public void onGet(int action, int pageNo, BaseObject result, Object... params) {
         super.onGet(action, pageNo, result, params);
+        if (!isValid())
+            return;
         //close refresh status
         mSrlPanel.setRefreshing(false);
         mLvListView.setLoadStatus(false);
@@ -156,6 +163,8 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
 
     @Override
     public void onGetCache(int action, int pageNo, BaseObject result) {
+        if (!isValid())
+            return;
         if (pageNo == PAGE_FIRST) {
             List<K> dataList = getList(result);
             if (dataList != null && !dataList.isEmpty()) {
@@ -163,11 +172,6 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
                 super.onGetCache(action, pageNo, result);
             }
         }
-    }
-
-    @Override
-    public void onFail(int action, int pageNo, BaseObject result, Object... params) {
-        super.onFail(action, pageNo, result, params);
     }
 
     protected void showEmpty() {
@@ -233,6 +237,14 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
         listView.setHorizontalScrollBarEnabled(false);
         listView.setVerticalScrollBarEnabled(false);
         return listView;
+    }
+
+    /**
+     * 是否是合法的listView
+     * @return
+     */
+    protected boolean isValid() {
+        return mListAdapter != null;
     }
 
     protected abstract SingleTypeAdapter<K> getListAdapter();
