@@ -67,6 +67,19 @@ public class CircleHintView extends View {
 		postInvalidate();
 	}
 
+	public void setTextSize(int dip) {
+		mTxtPaint.setTextSize(UIUtils.dip2px(dip));
+		postInvalidate();
+	}
+
+	public Paint getTxtPaint() {
+		return mTxtPaint;
+	}
+
+	public Paint getBgPaint() {
+		return mBgPaint;
+	}
+
 	/**
 	 * 设置文本
 	 * 
