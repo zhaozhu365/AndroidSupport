@@ -112,7 +112,10 @@ public class CircleHintView extends View {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		float textWidth = mTxtPaint.measureText(mTipStr) + getHeight()/2;
+		float textWidth = 0;
+		if (!TextUtils.isEmpty(mTipStr)) {
+			textWidth = mTxtPaint.measureText(mTipStr) + getHeight()/2;
+		}
 		int width = (int) Math.max(textWidth, getSuggestedMinimumWidth());
 		setMeasuredDimension(getSize(width, widthMeasureSpec),
 				getSize(getSuggestedMinimumHeight(), heightMeasureSpec));
