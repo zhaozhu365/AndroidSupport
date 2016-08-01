@@ -776,9 +776,9 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
             if (result != null && !TextUtils.isEmpty(result.getRawResult())) {
                 String hint = ErrorManager.getErrorManager().getErrorHint(result
                         .getRawResult(), result.getErrorDescription());
-                getEmptyView().showEmpty(hint);
+                getEmptyView().showEmpty(result.getRawResult(), hint);
             } else {
-                getEmptyView().showEmpty("获取数据失败");
+                getEmptyView().showEmpty("", "获取数据失败");
             }
         }
     }

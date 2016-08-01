@@ -55,27 +55,7 @@ public abstract class EmptyView extends RelativeLayout {
 
 	/**
 	 * 显示带提示的空页面
-	 * @param hint
 	 */
-	public abstract void showEmpty(String hint);
+	public abstract void showEmpty(String errorCode, String hint);
 
-    /**
-     * 根据类型显示不同的Empty
-     * @param hint
-     * @param type
-     */
-    public void showEmptyByType(int type, String hint){
-        showEmpty(hint);
-    }
-
-	/**
-	 * 自定义空页面
-	 * @param resId
-	 * @param hint
-	 * @param desc
-	 * @param btnTxt
-	 * @param btnClickListener
-	 */
-	public abstract void showEmpty(final int resId, final String hint, final String desc,
-						  final String btnTxt, final OnClickListener btnClickListener);
 }
