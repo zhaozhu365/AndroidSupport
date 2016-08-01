@@ -15,6 +15,7 @@ import com.hyena.framework.network.NetworkSensor;
 import com.hyena.framework.network.utils.HttpUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -311,6 +312,15 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
                 if(listener != null)
                     listener.onError(statusCode);
             }
+        } catch (FileNotFoundException e) {
+            if(listener != null)
+                try {
+                    listener.onError(HttpError.ERROR_UNKNOWN);
+                } catch (Throwable e1) {
+                    e1.printStackTrace();
+                }
+            result.mErrorCode = HttpError.ERROR_UNKNOWN;
+            LogUtil.e("", e);
         } catch (IOException e) {
             if(listener != null)
                 try {
@@ -319,7 +329,7 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
                     e1.printStackTrace();
                 }
             result.mErrorCode = HttpError.ERROR_UNKNOWN;
-            e.printStackTrace();
+            LogUtil.e("", e);
         } catch (Throwable e){
             if(listener != null)
                 try {
@@ -328,21 +338,21 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
                     e1.printStackTrace();
                 }
             result.mErrorCode = HttpError.ERROR_UNKNOWN;
-            e.printStackTrace();
+            LogUtil.e("", e);
         } finally {
             //关闭流
             if(is != null && result.mErrorCode != HttpError.ERROR_CANCEL_RESPONSE){
                 try {
                     is.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e("", e);
                 }
             }
             if(os != null && result.mErrorCode != HttpError.ERROR_CANCEL_RESPONSE){
                 try {
                     os.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e("", e);
                 }
             }
             //关闭请求
@@ -354,7 +364,7 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
                         ((HttpsURLConnection)conn).disconnect();
                     }
                 }catch(Exception e){
-                    e.printStackTrace();
+                    LogUtil.e("", e);
                 }
             }
             //通知结束,开始销毁
@@ -362,7 +372,7 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
                 try {
                     listener.onRelease();
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    LogUtil.e("", e);
                 }
             }
         }
