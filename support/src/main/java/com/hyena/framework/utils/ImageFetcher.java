@@ -78,7 +78,6 @@ public class ImageFetcher {
 				.tasksProcessingOrder(QueueProcessingType.LIFO)
 				.diskCache(mDiscCacheAware)
 				.memoryCache(mMemoryCache)
-				.writeDebugLogs()
 				.build();
 		ImageLoader.getInstance().init(config);
 	}
