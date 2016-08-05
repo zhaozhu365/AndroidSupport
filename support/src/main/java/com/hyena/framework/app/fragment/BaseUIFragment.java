@@ -112,14 +112,6 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         ;
     }
 
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mStatusBarEnable = true;
-        } else {
-            mStatusBarEnable = false;
-        }
-    }
-
     /**
      * 设置标题样式
      * @param style
@@ -306,6 +298,8 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         LayoutParams loadingParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         if(mTitleStyle == STYLE_WITH_TITLE) {
         	loadingParams.addRule(RelativeLayout.BELOW, mTitleBarId);
+        } else {
+            loadingParams.addRule(RelativeLayout.BELOW, mStatusBarId);
         }
         mLoadingView = UIViewFactory.getViewFactory().buildLoadingView(this);
         mRootView.addView(mLoadingView, loadingParams);
@@ -337,9 +331,10 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
             
             if(mTitleStyle == STYLE_WITH_TITLE){
                 contentParams.addRule(RelativeLayout.BELOW, mTitleBarId);
-                mRootView.addView(contentView, 1, contentParams);
+                mRootView.addView(contentView, 2, contentParams);
             }else{
-                mRootView.addView(contentView, 0, contentParams);
+                contentParams.addRule(RelativeLayout.BELOW, mStatusBarId);
+                mRootView.addView(contentView, 1, contentParams);
             }
         }
         mInited = true;
@@ -586,6 +581,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     public void showFragment(BaseUIFragment<?> fragment, int ancherX, int ancherY) {
         this.mAncherX = ancherX;
         this.mAncherY = ancherY;
+        fragment.setStatusTintBarEnable(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
         super.showFragment(fragment);
     }
 
