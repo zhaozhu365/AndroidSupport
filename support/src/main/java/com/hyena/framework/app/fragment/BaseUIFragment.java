@@ -3,12 +3,6 @@
  */
 package com.hyena.framework.app.fragment;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,6 +26,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.hyena.framework.annotation.AttachViewId;
 import com.hyena.framework.annotation.LayoutAnimation;
@@ -58,6 +53,12 @@ import com.hyena.framework.utils.UiThreadHandler;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * UIFragment基础类
@@ -96,6 +97,11 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     private int mAncherX, mAncherY;
 
     private int mTitleBarId;
+    private int mStatusBarId;
+    private boolean mStatusBarEnable = false;
+    private int mStatusBarColor = Color.TRANSPARENT;
+    private TextView mTvStatusBar;
+
     //入场动画类型
     private AnimType mAnimType = AnimType.RIGHT_TO_LEFT;
     //入场动画
@@ -104,6 +110,14 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         , RIGHT_TO_LEFT//右到左
         , BOTTOM_TO_TOP//下到上
         ;
+    }
+
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mStatusBarEnable = true;
+        } else {
+            mStatusBarEnable = false;
+        }
     }
 
     /**
@@ -136,6 +150,26 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
      */
     public void setAnimationType(AnimType type){
         this.mAnimType = type;
+    }
+
+    public void setStatusTintBarEnable(boolean enable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            this.mStatusBarEnable = enable;
+            if (mTvStatusBar != null) {
+                mTvStatusBar.setVisibility(enable? View.VISIBLE : View.GONE);
+            }
+        }
+    }
+
+    public boolean isStatusBarTintEnabled(){
+        return mStatusBarEnable;
+    }
+
+    public void setStatusTintBarColor(int color) {
+        this.mStatusBarColor = color;
+        if (mTvStatusBar != null) {
+            mTvStatusBar.setBackgroundColor(color);
+        }
     }
 
     /**
@@ -211,7 +245,9 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 						WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
 								| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED
 								| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mStatusBarId = ResourceUtils.getId("common_status_bar");
         mTitleBarId = ResourceUtils.getId("common_title_bar");
+
         resetTask();
         autoAttachAllService();
 	}
@@ -230,11 +266,22 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         mRootView = new BaseUIRootLayout(getActivity());
         mRootView.setClickable(true);
 
+        //生成状态栏
+        mTvStatusBar = new TextView(getActivity());
+        mTvStatusBar.setId(mStatusBarId);
+        mTvStatusBar.setBackgroundColor(mStatusBarColor);
+        RelativeLayout.LayoutParams statusBarParams = new LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ResourceUtils.getInternalDimensionSize("status_bar_height"));
+        mRootView.addView(mTvStatusBar, statusBarParams);
+        mTvStatusBar.setVisibility(mStatusBarEnable ? View.VISIBLE : View.GONE);
+
 		if(mTitleStyle == STYLE_WITH_TITLE){
             //添加TitleBar
 			mTitleBar = UIViewFactory.getViewFactory().buildTitleBar(this);
 			mTitleBar.setId(mTitleBarId);
 			LayoutParams titleParams = new LayoutParams(LayoutParams.MATCH_PARENT, UIUtils.dip2px(50));
+            titleParams.addRule(RelativeLayout.BELOW, mStatusBarId);
             mRootView.addView(mTitleBar, titleParams);
             mTitleBar.setVisibility(View.GONE);
 
@@ -247,7 +294,10 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         LayoutParams emptyParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         if(mTitleStyle == STYLE_WITH_TITLE) {
             emptyParams.addRule(RelativeLayout.BELOW, mTitleBarId);
+        } else {
+            emptyParams.addRule(RelativeLayout.BELOW, mStatusBarId);
         }
+
 		mEmptyView = UIViewFactory.getViewFactory().buildEmptyView(this);
         mRootView.addView(mEmptyView, emptyParams);
         mEmptyView.setVisibility(View.GONE);

@@ -17,12 +17,7 @@ public class CommonEmptyView extends EmptyView {
 	}
 
 	@Override
-	public void showEmpty(String hint) {
-
-	}
-
-	@Override
-	public void showEmpty(int resId, String hint, String desc, String btnTxt, OnClickListener btnClickListener) {
+	public void showEmpty(String errorCode, String hint) {
 
 	}
 

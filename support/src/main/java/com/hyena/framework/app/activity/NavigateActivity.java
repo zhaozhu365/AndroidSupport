@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Stack;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.hyena.framework.BuildConfig;
 import com.hyena.framework.app.NavigateController;
@@ -49,7 +53,9 @@ public abstract class NavigateActivity extends BaseActivity implements NavigateC
 		mLayoutId = ResourceUtils.getLayoutId("activity_main");
 		mMainPanelId = ResourceUtils.getId("main_container");
 		mSubPagePanelId = ResourceUtils.getId("main_subpage_container");
-
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			setTranslucentStatus(true);
+		}
 		setContentView(mLayoutId);
 		mSubViewContainer = findViewById(mSubPagePanelId);
 		reInitBackStack();
@@ -301,5 +307,18 @@ public abstract class NavigateActivity extends BaseActivity implements NavigateC
 		} catch (Exception e) {
 			LogUtil.e("NavigateActivity", e);
 		}
+	}
+
+	@TargetApi(19)
+	private void setTranslucentStatus(boolean on) {
+		Window win = getWindow();
+		WindowManager.LayoutParams winParams = win.getAttributes();
+		final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+		if (on) {
+			winParams.flags |= bits;
+		} else {
+			winParams.flags &= ~bits;
+		}
+		win.setAttributes(winParams);
 	}
 }

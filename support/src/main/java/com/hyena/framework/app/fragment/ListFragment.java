@@ -175,7 +175,7 @@ public abstract class ListFragment<T extends BaseUIFragmentHelper, K> extends Ba
     }
 
     protected void showEmpty() {
-        getEmptyView().showEmpty("暂无数据");
+        getEmptyView().showEmpty("", "暂无数据");
     }
 
     public void setHasMore(boolean hasMore){

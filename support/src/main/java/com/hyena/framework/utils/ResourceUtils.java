@@ -3,6 +3,8 @@
  */
 package com.hyena.framework.utils;
 
+import android.content.res.Resources;
+
 /**
  * 资源获取通用类
  * @author yangzc on 15/8/25.
@@ -87,5 +89,17 @@ public class ResourceUtils {
     public static int getAnimId(String paramString) {
         return BaseApp.getAppContext().getResources()
                 .getIdentifier(paramString, "anim", BaseApp.getAppContext().getPackageName());
+    }
+
+    /**
+     * 获取系统内置参数
+     */
+    public static int getInternalDimensionSize(String paramString) {
+        int result = 0;
+        int resourceId = BaseApp.getAppContext().getResources().getIdentifier(paramString, "dimen", "android");
+        if (resourceId > 0) {
+            result = BaseApp.getAppContext().getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }

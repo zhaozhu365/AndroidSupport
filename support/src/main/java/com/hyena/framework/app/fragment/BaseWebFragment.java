@@ -216,7 +216,7 @@ public abstract class BaseWebFragment<T extends BaseUIFragmentHelper> extends Ba
         } else if("showLoading".equals(methodName)) {
             getLoadingView().showLoading();
         } else if("showEmpty".equals(methodName)) {
-            getEmptyView().showEmpty(paramsMap.get("hint"));
+            getEmptyView().showEmpty("", paramsMap.get("hint"));
         } else if("showContent".equals(methodName)) {
             showContent();
         } else if("showLoadingWhenLoadPage".equals(methodName)){//加载页面时是否需要显示loading

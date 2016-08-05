@@ -10,4 +10,5 @@
     
     <!-- UIFragment使用 -->
     <item type="id" name="common_title_bar"/>
+    <item type="id" name="common_status_bar"/>
 </resources>
