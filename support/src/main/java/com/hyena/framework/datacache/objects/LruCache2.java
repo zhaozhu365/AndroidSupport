@@ -3,17 +3,11 @@ package com.hyena.framework.datacache.objects;
 import java.util.Map;
 import java.util.Set;
 
-import com.hyena.framework.clientlog.LogUtil;
-
 /**
  * 以LRU算法为基础实现的强引用缓存；LruCache2从Android 3.1中新加的LruCache改造而来；
- * 
- * @author wangzengyang 2012-6-10
- * @see android.util.LruCache
- * @see com.baidu.music.common.utils.java.LinkedHashMap
  */
 abstract public class LruCache2<K, V> {
-	private static final String TAG = "LruCache2";
+//	private static final String TAG = "LruCache2";
 	public static final int DEFAULT_CACHE_MAX_SIZE = 60;
 	public static final int DEFAULT_CACHE_MIN_SIZE = 10;
 
@@ -149,7 +143,7 @@ abstract public class LruCache2<K, V> {
 	public void trimToSize(int maxSize) {
 		this.maxSize = maxSize;
 		checkHitRate();
-		LogUtil.d(TAG, "trimToSize : " + maxSize + ", original size : " + size);
+//		LogUtil.d(TAG, "trimToSize : " + maxSize + ", original size : " + size);
 		while (true) {
 			K key;
 			V value;
@@ -178,14 +172,14 @@ abstract public class LruCache2<K, V> {
 
 			entryRemoved(true, key, value, null);
 		}
-		LogUtil.d(TAG, "trimToSize : " + maxSize + ", final size : " + size);
+//		LogUtil.d(TAG, "trimToSize : " + maxSize + ", final size : " + size);
 	}
 
 	/**
 	 * Check whether the current cache size is enough by the hit rate.
 	 */
 	private void checkHitRate() {
-		LogUtil.d(TAG, "hit rate : " + getHitRate());
+//		LogUtil.d(TAG, "hit rate : " + getHitRate());
 		if (this.maxSize < (this.initSize / 2) && getHitRate() < 0.4) {
 			this.maxSize += this.initSize / 12;
 			this.maxSize = Math.min(this.maxSize, this.initSize);

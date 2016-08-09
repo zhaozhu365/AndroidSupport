@@ -46,7 +46,7 @@ public class BaseActivity extends FragmentActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		debug(getClass().getSimpleName() + "|" + "msg:onPauseclea");
+		debug(getClass().getSimpleName() + "|" + "msg:onPause");
 	}
 
 	@Override

@@ -56,10 +56,13 @@ public abstract class NavigateActivity extends BaseActivity implements NavigateC
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			setTranslucentStatus(true);
 		}
+		onPreCreate();
 		setContentView(mLayoutId);
 		mSubViewContainer = findViewById(mSubPagePanelId);
 		reInitBackStack();
 	}
+
+	public void onPreCreate() {}
 
 	/**
 	 * 获得当前的Fragment
