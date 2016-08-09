@@ -205,6 +205,9 @@ public class DialogFragment<T extends BaseUIFragmentHelper> extends
 		this.mConfirmTxt = confirmTxt;
 		this.mCancelTxt = cancelTxt;
 
+		if (!isInited())
+			return;
+
 		UiThreadHandler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -273,7 +276,7 @@ public class DialogFragment<T extends BaseUIFragmentHelper> extends
 	
 	/**
 	 * 是否有动画
-	 * @param animation
+	 * @param animStyle
 	 */
 	public void setAnimStyle(AnimStyle animStyle) {
 		this.mAnimStyle = animStyle;
