@@ -30,6 +30,7 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 /**
@@ -105,9 +106,6 @@ public class ImageFetcher {
 	
 	/**
 	 * 显示图片
-	 * @param url
-	 * @param imageView
-	 * @param defaultRes
 	 */
 	public void loadImage(String url, ImageView imageView, int defaultRes){
 		loadImage(url, imageView, defaultRes, null);
@@ -116,16 +114,17 @@ public class ImageFetcher {
 	public void loadImage(final String url, final ImageView imageView, final int defaultRes, BitmapDisplayer displayer){
 		loadImage(url, imageView, defaultRes, displayer, null);
 	}
+
+	public void loadImage(final String url, final ImageView imageView, final int defaultRes,
+						  BitmapDisplayer displayer, final ImageFetcherListener listener) {
+		loadImage(url, imageView, defaultRes, displayer, listener, null);
+	}
 	
 	/**
 	 * 显示图片
-	 * @param url
-	 * @param imageView
-	 * @param defaultRes
-	 * @param displayer
 	 */
 	public void loadImage(final String url, final ImageView imageView, final int defaultRes, 
-			BitmapDisplayer displayer, final ImageFetcherListener listener){
+			BitmapDisplayer displayer, final ImageFetcherListener listener, ImageLoadingProgressListener progressListener){
 		if(displayer == null)
 			displayer = new SimpleBitmapDisplayer();
 		ImageLoader.getInstance().cancelDisplayTask(imageView);
@@ -141,7 +140,7 @@ public class ImageFetcher {
 			.build();
 
 		try {
-			ImageLoader.getInstance().displayImage(url == null ? "": url, imageView, options, listener);
+			ImageLoader.getInstance().displayImage(url == null ? "": url, imageView, options, listener, progressListener);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,14 +149,17 @@ public class ImageFetcher {
 	public void loadImage(final String url, final Object tag, final ImageFetcherListener listener){
 		loadImage(url, null, tag, listener);
 	}
+
+	public void loadImage(final String url, final ImageSize imageSize, final Object tag,
+						  final ImageFetcherListener listener) {
+		loadImage(url, imageSize, tag, listener, null);
+	}
 	
 	/**
 	 * 加载图片
-	 * @param url
-	 * @param tag
-	 * @param listener
 	 */
-	public void loadImage(final String url, final ImageSize imageSize, final Object tag, final ImageFetcherListener listener){
+	public void loadImage(final String url, final ImageSize imageSize, final Object tag,
+						  final ImageFetcherListener listener, final ImageLoadingProgressListener progressListener){
 		UiThreadHandler.post(new Runnable() {
 			
 			@Override
@@ -179,7 +181,7 @@ public class ImageFetcher {
 				if(imageUrl == null)
 					imageUrl= "";
 				try{
-					ImageLoader.getInstance().loadImage(imageUrl, imageSize, options, listener);
+					ImageLoader.getInstance().loadImage(imageUrl, imageSize, options, listener, progressListener);
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
