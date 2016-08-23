@@ -17,7 +17,7 @@ public class MainActivity extends NavigateActivity {
         super.onCreate(savedInstanceState);
         InstrumentationHook.hook();
         UIViewFactory.getViewFactory().registViewBuilder(new ViewFactoryImpl());
-        showFragment(BaseUIFragment.newFragment(this, TestFragment.class, null));
+        showFragment(BaseUIFragment.newFragment(this, UIFragment.class, null));
 //        Object result = InvokeHelper.getFieldValue(this, "mBase");
 //        LogUtil.v("yangzc", result.getClass().getName());
 
@@ -51,7 +51,10 @@ public class MainActivity extends NavigateActivity {
     }
 
     @Override
-    public <T extends BaseUIFragmentHelper> T getUIFragmentHelper(BaseFragment fragment) {
+    public BaseUIFragmentHelper getUIFragmentHelper(BaseFragment fragment) {
+        if (fragment instanceof BaseUIFragment) {
+            return new BaseUIFragmentHelper((BaseUIFragment)fragment);
+        }
         return null;
     }
 

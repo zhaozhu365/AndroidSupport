@@ -56,7 +56,7 @@ public class ImageFetcher {
 		if (!cacheFile.exists()) {
 			cacheFile.mkdirs();
 		}
-		mDiscCacheAware = new UnlimitedDiskCache(cacheFile);
+		mDiscCacheAware = new UnlimitedDiskCache(cacheFile, null, new Md5FileNameGenerator());
 		
 		if (mMemoryCache == null) {
 			mMemoryCache = DefaultConfigurationFactory.createMemoryCache(BaseApp.getAppContext(), 0);

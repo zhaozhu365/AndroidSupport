@@ -1,7 +1,10 @@
 package com.hyena.framework.samples;
 
+import android.os.Environment;
+
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.clientlog.Logger;
+import com.hyena.framework.config.FrameworkConfig;
 import com.hyena.framework.utils.BaseApp;
 
 /**
@@ -14,5 +17,6 @@ public class App extends BaseApp {
         super.initApp();
         LogUtil.setDebug(true);
         LogUtil.setLevel(Logger.DO_NOT_WRITE_LOG);
+        FrameworkConfig.getConfig().setAppRootDir(Environment.getExternalStorageDirectory());
     }
 }
