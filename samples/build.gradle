@@ -28,3 +28,5 @@ dependencies {
     compile project(':support')
     compile project(':gridlayout-v7-21.0.0')
 }
+
+apply plugin: com.hyena.gradle.plugin.HelloPlugin

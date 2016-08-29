@@ -1,1 +1,1 @@
-include ':support', ':samples', ':gridlayout-v7-21.0.0'
+include ':support', ':samples', ':gridlayout-v7-21.0.0', ':BuildSrc'
