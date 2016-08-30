@@ -21,6 +21,31 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
     }
+
+//    registerTransform(new com.hyena.gradle.plugin.PreDexTransform())
+
+//    applicationVariants.all { variant->
+//        def dexTask = project.tasks.findByName("transformClassesWithDexForDebug")
+//        def preDexTask = project.tasks.findByName("transformClassesWithPreDexForDebug")
+//        if(dexTask) {
+//            project.logger.error "======dexTask======"
+//            dexTask.inputs.files.files.each {file ->
+//                project.logger.error "inputs =$file.absolutePath"
+//            }
+//            dexTask.outputs.files.files.each {file ->
+//                project.logger.error "outputs =$file.absolutePath"
+//            }
+//        }
+//        if(preDexTask) {
+//            project.logger.error "======preDexTask======"
+//            preDexTask.inputs.files.files.each {file ->
+//                project.logger.error "inputs =$file.absolutePath"
+//            }
+//            preDexTask.outputs.files.files.each {file ->
+//                project.logger.error "outputs =$file.absolutePath"
+//            }
+//        }
+//    }
 }
 
 dependencies {
@@ -29,4 +54,5 @@ dependencies {
     compile project(':gridlayout-v7-21.0.0')
 }
 
-apply plugin: com.hyena.gradle.plugin.HelloPlugin
+
+//apply plugin: com.hyena.gradle.plugin.HelloPlugin
