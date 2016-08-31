@@ -3,12 +3,8 @@
  */
 package com.hyena.framework.app.activity;
 
-import java.util.List;
-import java.util.Stack;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +22,9 @@ import com.hyena.framework.app.NavigateController;
 import com.hyena.framework.app.fragment.BaseFragment;
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.utils.ResourceUtils;
+
+import java.util.List;
+import java.util.Stack;
 
 /**
  * 导航控制器
@@ -53,16 +52,17 @@ public abstract class NavigateActivity extends BaseActivity implements NavigateC
 		mLayoutId = ResourceUtils.getLayoutId("activity_main");
 		mMainPanelId = ResourceUtils.getId("main_container");
 		mSubPagePanelId = ResourceUtils.getId("main_subpage_container");
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			setTranslucentStatus(true);
-		}
 		onPreCreate();
 		setContentView(mLayoutId);
 		mSubViewContainer = findViewById(mSubPagePanelId);
 		reInitBackStack();
 	}
 
-	public void onPreCreate() {}
+	public void onPreCreate() {
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//			setTranslucentStatus(true);
+//		}
+	}
 
 	/**
 	 * 获得当前的Fragment
@@ -313,7 +313,7 @@ public abstract class NavigateActivity extends BaseActivity implements NavigateC
 	}
 
 	@TargetApi(19)
-	private void setTranslucentStatus(boolean on) {
+	public void setTranslucentStatus(boolean on) {
 		Window win = getWindow();
 		WindowManager.LayoutParams winParams = win.getAttributes();
 		final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;

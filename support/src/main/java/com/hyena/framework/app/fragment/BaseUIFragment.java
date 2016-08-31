@@ -266,7 +266,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ResourceUtils.getInternalDimensionSize("status_bar_height"));
         mRootView.addView(mTvStatusBar, statusBarParams);
-        mTvStatusBar.setVisibility(mStatusBarEnable ? View.VISIBLE : View.GONE);
+        mTvStatusBar.setVisibility(isStatusBarTintEnabled() ? View.VISIBLE : View.GONE);
 
 		if(mTitleStyle == STYLE_WITH_TITLE){
             //添加TitleBar
