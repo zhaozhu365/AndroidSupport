@@ -102,12 +102,13 @@ public class LocalPlayer extends BasePlayer {
 	}
 
 	@Override
-	public void seekTo(int position) {
+	public void seekTo(int position) throws Exception {
 		if (mMediaPlayer != null) {
 			try {
 				mMediaPlayer.seekTo(position);
 			} catch (IllegalStateException e) {
 				LogUtil.e(TAG, e);
+				throw e;
 			}
 		}
 	}

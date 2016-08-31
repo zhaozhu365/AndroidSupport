@@ -121,6 +121,12 @@ public class HybirdWebView extends WebView {
 				}
 				return super.onJsPrompt(view, url, message, defaultValue, result);
 			}
+
+			@Override
+			public void onReceivedTitle(WebView view, String title) {
+				super.onReceivedTitle(view, title);
+				onGetTitle(title);
+			}
 		};
 		
 		mWebViewClientWrapper = new WebViewClientWrapper() {
@@ -144,6 +150,7 @@ public class HybirdWebView extends WebView {
 			    }
 				getWebViewSize();
 			}
+
 		};
 
 		super.setWebChromeClient(mWebChromeClientWrapper);
@@ -190,6 +197,10 @@ public class HybirdWebView extends WebView {
 		if (mWebViewClientWrapper != null) {
 			mWebViewClientWrapper.setWebViewClient(client);
 		}
+	}
+
+	public void onGetTitle(String title){
+
 	}
 	
 	/**

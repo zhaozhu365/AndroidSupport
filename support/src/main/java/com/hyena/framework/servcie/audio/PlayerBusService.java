@@ -28,6 +28,18 @@ public interface PlayerBusService extends IBusServiceStatusListener, BaseService
 	 * @throws Exception
 	 */
 	public void pause() throws Exception;
+
+	/**
+	 * 重新播放
+	 * @throws Exception
+     */
+	public void resume() throws Exception;
+
+	/**
+	 * seekTo
+	 * @throws Exception
+     */
+	public void seekTo(long position) throws Exception;
 	
 	/**
 	 * 获得播放Bus观察者

@@ -98,6 +98,14 @@ public class MusicPlayer {
 	public void resume(){
 		mPlayer.play();
 	}
+
+	/**
+	 * seekTo
+	 * @param position
+	 */
+	public void seekTo(int position) throws Exception{
+		mPlayer.seekTo(position);
+	}
 	
 	/**
 	 * 获得当前正在播放的歌曲
@@ -233,6 +241,7 @@ public class MusicPlayer {
 	
 	//播放状态改变回调
 	private OnPlayStateChangeListener mPlayStateChangeListener;
+	private OnPlayPositionChangeListener mPlayPositionChangeListener;
 	
 	/**
 	 * 设置播放状态改变监听器
@@ -240,6 +249,10 @@ public class MusicPlayer {
 	 */
 	public void setOnPlayStateChangeListener(OnPlayStateChangeListener listener){
 		this.mPlayStateChangeListener = listener;
+	}
+
+	public void setOnPlayPositionChangeListener(OnPlayPositionChangeListener listener) {
+		this.mPlayPositionChangeListener = listener;
 	}
 	
 	private long mPlayPosition;
@@ -289,6 +302,10 @@ public class MusicPlayer {
 		public void onPositionChange(long position, long duration) {
 			mPlayPosition = position;
 			mDuration = duration;
+
+			if (mPlayPositionChangeListener != null) {
+				mPlayPositionChangeListener.onPositionChange(position, duration);
+			}
 			
 			if(mBufferingThread == null)
 				return;

@@ -43,14 +43,29 @@ public class PlayerBusServiceImpl implements PlayerBusService, IBusServiceStatus
 		msg.setData(bundle);
 		mServiceMessenger.send(msg);
 	}
-	
+
+	@Override
+	public void resume() throws Exception {
+		Message msg = new Message();
+		msg.what = MediaService.CMD_RESUME;
+		mServiceMessenger.send(msg);
+	}
+
 	@Override
 	public void pause() throws RemoteException {
 		Message msg = new Message();
 		msg.what = MediaService.CMD_PAUSE;
 		mServiceMessenger.send(msg);
 	}
-	
+
+	@Override
+	public void seekTo(long position) throws Exception {
+		Message msg = new Message();
+		msg.what = MediaService.CMD_SEEK;
+		msg.obj = position;
+		mServiceMessenger.send(msg);
+	}
+
 	@Override
 	public PlayerBusServiceObserver getPlayerBusServiceObserver() {
 		return mPlayerBusServiceObserver;

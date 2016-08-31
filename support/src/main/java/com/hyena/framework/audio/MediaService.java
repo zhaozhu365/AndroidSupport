@@ -4,6 +4,7 @@
 package com.hyena.framework.audio;
 
 import com.hyena.framework.audio.bean.Song;
+import com.hyena.framework.audio.player.BasePlayer;
 import com.hyena.framework.audio.player.BasePlayer.OnPlayStateChangeListener;
 import com.hyena.framework.clientlog.LogUtil;
 
@@ -27,6 +28,7 @@ public class MediaService extends Service {
 	public static final int CMD_PLAY = 0;//播放歌曲
 	public static final int CMD_RESUME = 1;//还原播放
 	public static final int CMD_PAUSE = 2;//暂停
+	public static final int CMD_SEEK = 3;//seekTo
 	
 	//回调消息
 	private static final int MSG_REFRESH_START_CODE = 100;
@@ -69,6 +71,7 @@ public class MediaService extends Service {
 		//初始化音乐播放器
 		mMusicPlayer = new MusicPlayer(mIoHandlerThread.getLooper());
 		mMusicPlayer.setOnPlayStateChangeListener(mPlayStateChangeListener);
+		mMusicPlayer.setOnPlayPositionChangeListener(mPlayPositionChangeListener);
 	}
 	
 	private OnPlayStateChangeListener mPlayStateChangeListener = new OnPlayStateChangeListener() {
@@ -81,6 +84,15 @@ public class MediaService extends Service {
 			//通知播放信息改变
 			if(mPlayServiceHelper != null)
 				mPlayServiceHelper.notifyPlayStatusChange(mMusicPlayer.getCurrentSong(), state);
+		}
+	};
+
+	private BasePlayer.OnPlayPositionChangeListener mPlayPositionChangeListener = new BasePlayer.OnPlayPositionChangeListener() {
+		@Override
+		public void onPositionChange(long position, long duration) {
+			//通知播放进度
+			if(mPlayServiceHelper != null)
+				mPlayServiceHelper.notifyPlayProgressChange(mMusicPlayer.getCurrentSong(), position, duration);
 		}
 	};
 	
@@ -109,6 +121,17 @@ public class MediaService extends Service {
 		case CMD_PAUSE://暂停
 		{
 			pauseImpl();
+			break;
+		}
+		case CMD_SEEK://seekTo
+		{
+			if (mMusicPlayer != null) {
+				try {
+					mMusicPlayer.seekTo((Integer)msg.obj);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			break;
 		}
 		default:

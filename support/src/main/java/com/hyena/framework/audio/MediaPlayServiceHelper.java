@@ -25,7 +25,7 @@ class MediaServiceHelper {
 	 * @param progress
 	 * @param duration
 	 */
-	public void notifyPlayProgressChange(Song song, int progress, long duration){
+	public void notifyPlayProgressChange(Song song, long progress, long duration){
 		Intent intent = buildCommonMsgIntent(song, MediaService.MSG_REFRESH_PLAY_PROGRESS);
 		intent.putExtra("play_progress", progress);
 		intent.putExtra("duration", duration);

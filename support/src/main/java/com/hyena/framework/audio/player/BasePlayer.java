@@ -3,12 +3,12 @@
  */
 package com.hyena.framework.audio.player;
 
-import com.hyena.framework.audio.StatusCode;
-import com.hyena.framework.audio.bean.Song;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+
+import com.hyena.framework.audio.StatusCode;
+import com.hyena.framework.audio.bean.Song;
 
 /**
  * 媒体播放器
@@ -77,7 +77,7 @@ public abstract class BasePlayer {
 	 * seekto
 	 * @param position
 	 */
-	public abstract void seekTo(int position);
+	public abstract void seekTo(int position) throws Exception;
 	
 	//当前播放器状态
 	private int mState = StatusCode.STATUS_UNINITED;
