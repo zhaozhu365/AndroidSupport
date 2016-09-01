@@ -257,6 +257,15 @@ public class MusicPlayer {
 	
 	private long mPlayPosition;
 	private long mDuration;
+
+	public long getPosition(){
+		return mPlayPosition;
+	}
+
+	public long getDuration(){
+		return mDuration;
+	}
+
 	private boolean mIsFirst = true;
 	/**
 	 * 检查是否需要resume

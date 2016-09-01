@@ -57,7 +57,7 @@ public class PlayerBusServiceObserver {
 		mProgressChangeListeners.remove(listener);
 	}
 	
-	public void notifyPlayProgressChange(int progress, long duration){
+	public void notifyPlayProgressChange(long progress, long duration){
 		if(mProgressChangeListeners == null)
 			return;
 		for(ProgressChangeListener listener : mProgressChangeListeners){

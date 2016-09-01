@@ -25,12 +25,12 @@ class MediaServiceHelper {
 	 * @param progress
 	 * @param duration
 	 */
-	public void notifyPlayProgressChange(Song song, long progress, long duration){
-		Intent intent = buildCommonMsgIntent(song, MediaService.MSG_REFRESH_PLAY_PROGRESS);
-		intent.putExtra("play_progress", progress);
-		intent.putExtra("duration", duration);
-		MsgCenter.sendGlobalBroadcast(intent);
-	}
+//	public void notifyPlayProgressChange(Song song, long progress, long duration){
+//		Intent intent = buildCommonMsgIntent(song, MediaService.MSG_REFRESH_PLAY_PROGRESS);
+//		intent.putExtra("play_progress", progress);
+//		intent.putExtra("duration", duration);
+//		MsgCenter.sendGlobalBroadcast(intent);
+//	}
 	
 	/**
 	 * 通知加载进度改变
@@ -38,12 +38,12 @@ class MediaServiceHelper {
 	 * @param progress
 	 * @param duration
 	 */
-	public void notifyDownloadProgressChange(Song song, int progress, long duration){
-		Intent intent = buildCommonMsgIntent(song, MediaService.MSG_REFRESH_DOWNLOAD_PROGRESS);
-		intent.putExtra("load_progress", progress);
-		intent.putExtra("duration", duration);
-		MsgCenter.sendGlobalBroadcast(intent);
-	}
+//	public void notifyDownloadProgressChange(Song song, int progress, long duration){
+//		Intent intent = buildCommonMsgIntent(song, MediaService.MSG_REFRESH_DOWNLOAD_PROGRESS);
+//		intent.putExtra("load_progress", progress);
+//		intent.putExtra("duration", duration);
+//		MsgCenter.sendGlobalBroadcast(intent);
+//	}
 	
 	/**
 	 * 播放状态改变

@@ -40,6 +40,12 @@ public interface PlayerBusService extends IBusServiceStatusListener, BaseService
 	 * @throws Exception
      */
 	public void seekTo(long position) throws Exception;
+
+	/**
+	 * get position
+	 * @throws Exception
+     */
+	public void getPosition() throws Exception;
 	
 	/**
 	 * 获得播放Bus观察者

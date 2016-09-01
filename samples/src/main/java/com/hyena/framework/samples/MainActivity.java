@@ -8,6 +8,7 @@ import com.hyena.framework.app.fragment.BaseUIFragment;
 import com.hyena.framework.app.fragment.BaseUIFragmentHelper;
 import com.hyena.framework.app.fragment.UIViewFactory;
 import com.hyena.framework.samples.evn.ViewFactoryImpl;
+import com.hyena.framework.samples.music.MusicPlayFragment;
 import com.hyena.framework.samples.plugin.InstrumentationHook;
 
 public class MainActivity extends NavigateActivity {
@@ -17,7 +18,7 @@ public class MainActivity extends NavigateActivity {
         super.onCreate(savedInstanceState);
         InstrumentationHook.hook();
         UIViewFactory.getViewFactory().registViewBuilder(new ViewFactoryImpl());
-        showFragment(BaseUIFragment.newFragment(this, UIFragment.class, null));
+        showFragment(BaseUIFragment.newFragment(this, MusicPlayFragment.class, null));
 //        Object result = InvokeHelper.getFieldValue(this, "mBase");
 //        LogUtil.v("yangzc", result.getClass().getName());
 

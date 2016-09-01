@@ -52,6 +52,7 @@
         </activity>
 
         <activity android:name=".plugin.StubActivity$StubStandActivity" android:launchMode="standard"/>
+        <service android:name="com.hyena.framework.audio.MediaService"/>
     </application>
 
 </manifest>

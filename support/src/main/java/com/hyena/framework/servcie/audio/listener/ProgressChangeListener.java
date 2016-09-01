@@ -17,7 +17,7 @@ public interface ProgressChangeListener {
 	 * @param progress
 	 * @param duration
 	 */
-	public void onPlayProgressChange(int progress, long duration);
+	public void onPlayProgressChange(long progress, long duration);
 	
 	/**
 	 * 加载进度改变

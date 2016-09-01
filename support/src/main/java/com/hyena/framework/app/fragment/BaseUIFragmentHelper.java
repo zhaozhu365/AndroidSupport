@@ -22,6 +22,7 @@ import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewHelper;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -60,7 +61,7 @@ public class BaseUIFragmentHelper {
         if (imageView == null || getBaseUIFragment() == null
                 || getBaseUIFragment().getRootView() == null)
             return;
-        ImageFetcher.getImageFetcher().loadImage(url, url, new ImageFetcher.ImageFetcherListener() {
+        ImageFetcher.getImageFetcher().loadImage(url, null, url, new ImageFetcher.ImageFetcherListener() {
             @Override
             public void onLoadComplete(final String imageUrl, final Bitmap bitmap, Object object) {
                 if (bitmap != null && !bitmap.isRecycled()) {
@@ -82,9 +83,16 @@ public class BaseUIFragmentHelper {
                     startGhostInAnimator(imageView, ghostImageView, bitmap, photoPanel);
                 }
             }
+        }, new ImageLoadingProgressListener() {
+            @Override
+            public void onProgressUpdate(String imageUri, View view, int current, int total) {
+            }
         });
     }
 
+    /**
+     *c create
+     */
     public RelativeLayout createPhotoPanel() {
         RelativeLayout photoPanel = new RelativeLayout(getBaseUIFragment().getActivity());
         return photoPanel;

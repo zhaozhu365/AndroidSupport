@@ -581,16 +581,11 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     @Override
     public void showFragment(BaseSubFragment fragment) {
         super.showFragment(fragment);
-        if (fragment instanceof BaseUIFragment) {
-            ((BaseUIFragment)fragment).setStatusTintBarEnable(
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
-        }
     }
 
     public void showFragment(BaseUIFragment<?> fragment, int ancherX, int ancherY) {
         this.mAncherX = ancherX;
         this.mAncherY = ancherY;
-        fragment.setStatusTintBarEnable(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
         super.showFragment(fragment);
     }
 

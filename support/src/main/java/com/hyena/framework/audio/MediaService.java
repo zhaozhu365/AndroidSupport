@@ -3,11 +3,6 @@
  */
 package com.hyena.framework.audio;
 
-import com.hyena.framework.audio.bean.Song;
-import com.hyena.framework.audio.player.BasePlayer;
-import com.hyena.framework.audio.player.BasePlayer.OnPlayStateChangeListener;
-import com.hyena.framework.clientlog.LogUtil;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -15,6 +10,11 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
+
+import com.hyena.framework.audio.bean.Song;
+import com.hyena.framework.audio.player.BasePlayer.OnPlayStateChangeListener;
+import com.hyena.framework.clientlog.LogUtil;
 
 /**
  * 媒体播放服务
@@ -29,11 +29,12 @@ public class MediaService extends Service {
 	public static final int CMD_RESUME = 1;//还原播放
 	public static final int CMD_PAUSE = 2;//暂停
 	public static final int CMD_SEEK = 3;//seekTo
+	public static final int CMD_REQUEST_POSITION = 4;//获得播放位置
 	
 	//回调消息
 	private static final int MSG_REFRESH_START_CODE = 100;
-	public static final int MSG_REFRESH_PLAY_PROGRESS = MSG_REFRESH_START_CODE +1;//刷新播放进度
-	public static final int MSG_REFRESH_DOWNLOAD_PROGRESS = MSG_REFRESH_START_CODE +2;//刷新加载进度
+//	public static final int MSG_REFRESH_PLAY_PROGRESS = MSG_REFRESH_START_CODE +1;//刷新播放进度
+//	public static final int MSG_REFRESH_DOWNLOAD_PROGRESS = MSG_REFRESH_START_CODE +2;//刷新加载进度
 	public static final int MSG_REFRESH_PLAYSTATUS_CHANGE = MSG_REFRESH_START_CODE + 3;//播放状态改变
 	
 	//播放服务事件
@@ -71,7 +72,7 @@ public class MediaService extends Service {
 		//初始化音乐播放器
 		mMusicPlayer = new MusicPlayer(mIoHandlerThread.getLooper());
 		mMusicPlayer.setOnPlayStateChangeListener(mPlayStateChangeListener);
-		mMusicPlayer.setOnPlayPositionChangeListener(mPlayPositionChangeListener);
+//		mMusicPlayer.setOnPlayPositionChangeListener(mPlayPositionChangeListener);
 	}
 	
 	private OnPlayStateChangeListener mPlayStateChangeListener = new OnPlayStateChangeListener() {
@@ -87,14 +88,15 @@ public class MediaService extends Service {
 		}
 	};
 
-	private BasePlayer.OnPlayPositionChangeListener mPlayPositionChangeListener = new BasePlayer.OnPlayPositionChangeListener() {
-		@Override
-		public void onPositionChange(long position, long duration) {
+//	private BasePlayer.OnPlayPositionChangeListener mPlayPositionChangeListener = new BasePlayer.OnPlayPositionChangeListener() {
+//		@Override
+//		public void onPositionChange(long position, long duration) {
 			//通知播放进度
-			if(mPlayServiceHelper != null)
-				mPlayServiceHelper.notifyPlayProgressChange(mMusicPlayer.getCurrentSong(), position, duration);
-		}
-	};
+//			if(mPlayServiceHelper != null) {
+//				mPlayServiceHelper.notifyPlayProgressChange(mMusicPlayer.getCurrentSong(), position, duration);
+//			}
+//		}
+//	};
 	
 	/**
 	 * 处理客户端请求
@@ -127,10 +129,22 @@ public class MediaService extends Service {
 		{
 			if (mMusicPlayer != null) {
 				try {
-					mMusicPlayer.seekTo((Integer)msg.obj);
+					mMusicPlayer.seekTo(msg.arg1);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			}
+			break;
+		}
+		case CMD_REQUEST_POSITION:
+		{
+			try {
+				Message response = new Message();
+				response.arg1 = (int) mMusicPlayer.getPosition();
+				response.arg2 = (int) mMusicPlayer.getDuration();
+				msg.replyTo.send(response);
+			} catch (RemoteException e) {
+				e.printStackTrace();
 			}
 			break;
 		}
