@@ -24,6 +24,10 @@ public class WebChromeClientWrapper extends WebChromeClient {
 
 	public WebChromeClientWrapper() {
 	}
+
+	public WebChromeClientWrapper(WebChromeClient wrapper) {
+		setWebChromeClient(wrapper);
+	}
 	
 	public void setWebChromeClient(WebChromeClient wrapper){
 		this.mWrapper = wrapper;

@@ -3,11 +3,6 @@
  */
 package com.hyena.framework.app.widget;
 
-import java.net.URLDecoder;
-import java.util.Hashtable;
-
-import org.apache.http.protocol.HTTP;
-
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
@@ -15,11 +10,17 @@ import android.util.AttributeSet;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsPromptResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.utils.MathUtils;
+
+import org.apache.http.protocol.HTTP;
+
+import java.net.URLDecoder;
+import java.util.Hashtable;
 
 /**
  * HybirdWebView </p>
@@ -127,6 +128,7 @@ public class HybirdWebView extends WebView {
 				super.onReceivedTitle(view, title);
 				onGetTitle(title);
 			}
+
 		};
 		
 		mWebViewClientWrapper = new WebViewClientWrapper() {
@@ -151,7 +153,11 @@ public class HybirdWebView extends WebView {
 				getWebViewSize();
 			}
 
-		};
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                return super.shouldInterceptRequest(view, url);
+            }
+        };
 
 		super.setWebChromeClient(mWebChromeClientWrapper);
 		super.setWebViewClient(mWebViewClientWrapper);

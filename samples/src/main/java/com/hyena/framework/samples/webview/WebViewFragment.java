@@ -1,20 +1,20 @@
 package com.hyena.framework.samples.webview;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
+import android.webkit.WebView;
 
 import com.hyena.framework.app.fragment.BaseWebFragment;
 import com.hyena.framework.app.widget.HybirdWebView;
+import com.hyena.framework.app.widget.WebViewClientWrapper;
 import com.hyena.framework.clientlog.LogUtil;
-import com.hyena.framework.utils.BaseApp;
-import com.hyena.framework.utils.FileUtils;
-import com.hyena.framework.utils.MsgCenter;
+import com.hyena.framework.utils.ImageFetcher;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Hashtable;
 
 /**
  * Created by yangzc on 16/5/30.
@@ -32,62 +32,49 @@ public class WebViewFragment extends BaseWebFragment {
     @Override
     public void onViewCreatedImpl(View view, Bundle savedInstanceState) {
         super.onViewCreatedImpl(view, savedInstanceState);
-//        loadWebView();
-//        setWebView(mWebView);
-
-        MsgCenter.registerLocalReceiver(mReceiver, new IntentFilter("ssssssssssssss"));
-        MsgCenter.registerLocalReceiver(mReceiver, new IntentFilter("ssssssssssssss"));
-        MsgCenter.registerLocalReceiver(mReceiver, new IntentFilter("ssssssssssssss"));
-        MsgCenter.registerLocalReceiver(mReceiver, new IntentFilter("ssssssssssssss"));
-        MsgCenter.registerLocalReceiver(mReceiver, new IntentFilter("ssssssssssssss"));
-        MsgCenter.registerLocalReceiver(mReceiver, new IntentFilter("ssssssssssssss"));
-        MsgCenter.registerLocalReceiver(mReceiver, new IntentFilter("ssssssssssssss"));
-        MsgCenter.sendLocalBroadcast(new Intent("ssssssssssssss"));
+        loadWebView();
+        setWebView(mWebView);
+        mWebView.setWebViewClient(new WebViewClientWrapper(mWebViewClient) {
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+                mWebView.handleUrlLoading(url);
+            }
+        });
     }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            LogUtil.v("yangzc", "onReceive: " + intent.getAction());
+    @Override
+    protected boolean onCallMethodImpl(String methodName, Hashtable paramsMap) {
+        if ("image_load".equalsIgnoreCase(methodName)) {
+            try {
+                String url = URLDecoder.decode((String)paramsMap.get("url"), "utf-8");
+                LogUtil.v("yangzc", "resource: " + url);
+                ImageFetcher.getImageFetcher().loadImage(url, url, new ImageFetcher.ImageFetcherListener() {
+                    @Override
+                    public void onLoadComplete(String imageUrl, Bitmap bitmap, Object object) {
+                        if (bitmap != null) {
+                            File file = ImageFetcher.getImageFetcher().getCacheFilePath(imageUrl);
+                            runJs("showImage", imageUrl, file.toURI().getPath());
+                        }
+                    }
+                });
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            return true;
         }
-    };
+        return super.onCallMethodImpl(methodName, paramsMap);
+    }
 
     @Override
     public void onDestroyViewImpl() {
         super.onDestroyViewImpl();
     }
 
-    private static String mTemplate = "";
     private void loadWebView() {
         try {
-            //重用模板
-            if(TextUtils.isEmpty(mTemplate)) {
-//                File remoteFile = DirContext.getTemplateFile();
-                byte data[];
-//                if (remoteFile != null && remoteFile.exists()) {
-//                    data = FileUtils.getBytes(remoteFile);
-//                    mTemplate = new String(data);
-//                }
-                if (TextUtils.isEmpty(mTemplate)) {
-                    AssetManager manager = BaseApp.getAppContext().getResources().getAssets();
-                    data = FileUtils.getBytes(manager.open("newest.html"));
-                    mTemplate = new String(data);
-                }
-            }
-
-//            if (mQuestionIf != null) {
-//                JSONObject question = new JSONObject();
-//                question.put("question", mQuestionIf.mQuestion.replaceAll("\n", "").replaceAll("\r", ""));
-//
-                String html = mTemplate;
-//                html = html.replace("${isChoice}", mPlayHelper.isChoice(mQuestionIf) + "");
-//                html = html.replace("${questionIndex}", mQuestionIndex + "");
-//                html = html.replace("${questionId}", mQuestionIf.mQuestionId);
-//                html = html.replace("${question}", question.toString());
-
-                mWebView.loadDataWithBaseURL("file:///android_asset/", html,
-                        "text/html", "UTF-8", "newest.html");
-//            }
+            mWebView.loadUrl("file:///android_asset/newest.html");
+//            mWebView.loadUrl("http://www.baidu.com");
         } catch (Exception e) {
             e.printStackTrace();
         }

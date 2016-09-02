@@ -16,6 +16,7 @@ import android.text.ClipboardManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -91,6 +92,7 @@ public abstract class BaseWebFragment<T extends BaseUIFragmentHelper> extends Ba
         
         mWebView.setActionListener(mActionListener);
         mWebView.setWebViewClient(mWebViewClient);
+        mWebView.setWebChromeClient(mWebChromeClient);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setUseWideViewPort(true);
         mWebView.getSettings().setAppCacheEnabled(true);
@@ -136,7 +138,11 @@ public abstract class BaseWebFragment<T extends BaseUIFragmentHelper> extends Ba
         this.mShowLoadingWhenLoadPage = showLoading;
     }
 
-    private WebViewClient mWebViewClient = new WebViewClient() {
+    public WebChromeClient mWebChromeClient = new WebChromeClient() {
+
+    };
+
+    public WebViewClient mWebViewClient = new WebViewClient() {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -157,7 +163,6 @@ public abstract class BaseWebFragment<T extends BaseUIFragmentHelper> extends Ba
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
-            LogUtil.v("yangzc", "onReceivedError");
             onError(errorCode, description, failingUrl);
         }
 
@@ -167,7 +172,11 @@ public abstract class BaseWebFragment<T extends BaseUIFragmentHelper> extends Ba
 			super.onReceivedSslError(view, handler, error);
 			handler.proceed();
 		}
-		
+
+        @Override
+        public void onLoadResource(WebView view, String url) {
+            super.onLoadResource(view, url);
+        }
     };
 
     /**
@@ -176,7 +185,7 @@ public abstract class BaseWebFragment<T extends BaseUIFragmentHelper> extends Ba
      * @param paramsMap
      * @return
      */
-    public boolean onCallMethodImpl(String methodName, Hashtable<String, String> paramsMap){
+    protected boolean onCallMethodImpl(String methodName, Hashtable<String, String> paramsMap){
         return false;
     }
     

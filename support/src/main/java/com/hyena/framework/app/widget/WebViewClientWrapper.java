@@ -27,6 +27,10 @@ public class WebViewClientWrapper extends WebViewClient {
 	public WebViewClientWrapper(){
 		super();
 	}
+
+	public WebViewClientWrapper(WebViewClient wrapper) {
+		setWebViewClient(wrapper);
+	}
 	
 	public void setWebViewClient(WebViewClient wrapper){
 		this.mWrapper = wrapper;
