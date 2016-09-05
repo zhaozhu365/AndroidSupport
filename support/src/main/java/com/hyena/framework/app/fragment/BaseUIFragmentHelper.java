@@ -5,21 +5,21 @@ package com.hyena.framework.app.fragment;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.servcie.BaseService;
 import com.hyena.framework.utils.AnimationUtils;
 import com.hyena.framework.utils.ImageFetcher;
 import com.hyena.framework.utils.UIUtils;
+import com.hyena.framework.utils.UiThreadHandler;
 import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorSet;
-import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewHelper;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
@@ -54,6 +54,42 @@ public class BaseUIFragmentHelper {
     	return 0xfff6f6f6;
     }
 
+
+    private ImageView mIvCopyImageView;
+
+    /**
+     * 显示预览图片
+     */
+    public void showPicture(Rect rect, String url) {
+        mIvCopyImageView = new ImageView(getBaseUIFragment().getActivity());
+        mIvCopyImageView.setVisibility(View.INVISIBLE);
+        mIvCopyImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout
+                .LayoutParams(rect.width(), rect.height());
+        params.leftMargin = rect.left;
+        params.topMargin = rect.top;
+        getBaseUIFragment().getRootView().addView(mIvCopyImageView, params);
+
+        showPicture(mIvCopyImageView, url);
+    }
+
+    /**
+     * 表示图片预览是否对用户可见
+     */
+    public void setPreviewVisible2User(boolean visible){
+        LogUtil.v("yangzc", "setPreviewVisible2User --> " + visible);
+        if (mIvCopyImageView != null && !visible) {
+            UiThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    getBaseUIFragment().getRootView().removeView(mIvCopyImageView);
+                    mIvCopyImageView = null;
+                }
+            });
+        }
+    }
+
     /**
      * 显示预览图片
      */
@@ -61,10 +97,12 @@ public class BaseUIFragmentHelper {
         if (imageView == null || getBaseUIFragment() == null
                 || getBaseUIFragment().getRootView() == null)
             return;
+
         ImageFetcher.getImageFetcher().loadImage(url, null, url, new ImageFetcher.ImageFetcherListener() {
             @Override
             public void onLoadComplete(final String imageUrl, final Bitmap bitmap, Object object) {
                 if (bitmap != null && !bitmap.isRecycled()) {
+                    setPreviewVisible2User(true);
                     //create photo panel
                     RelativeLayout photoPanel = createPhotoPanel();
                     RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
@@ -146,6 +184,7 @@ public class BaseUIFragmentHelper {
             @Override
             public void onAnimationCancel(Animator animator) {
                 getBaseUIFragment().getRootView().removeView(photoPanel);
+                setPreviewVisible2User(false);
             }
 
             @Override
@@ -198,11 +237,13 @@ public class BaseUIFragmentHelper {
                 @Override
                 public void onAnimationEnd(Animator animator) {
                     getBaseUIFragment().getRootView().removeView(photoPanel);
+                    setPreviewVisible2User(false);
                 }
 
                 @Override
                 public void onAnimationCancel(Animator animator) {
                     getBaseUIFragment().getRootView().removeView(photoPanel);
+                    setPreviewVisible2User(false);
                 }
                 @Override
                 public void onAnimationRepeat(Animator animator) {}

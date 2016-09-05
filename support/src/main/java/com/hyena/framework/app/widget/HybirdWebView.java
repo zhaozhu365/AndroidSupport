@@ -137,6 +137,7 @@ public class HybirdWebView extends WebView {
 				boolean result = super.shouldOverrideUrlLoading(view, url);
 				if (!result) {
 					if (url != null && url.startsWith(ACTION_PREX)) {
+                        LogUtil.v("yangzc", "handle --> " + url);
 						handleUrlLoading(url);
 						return true;
 					}

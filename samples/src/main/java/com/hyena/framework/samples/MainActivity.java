@@ -19,7 +19,7 @@ public class MainActivity extends NavigateActivity {
         InstrumentationHook.hook();
         UIViewFactory.getViewFactory().registViewBuilder(new ViewFactoryImpl());
 
-        showFragment(BaseUIFragment.newFragment(this, WebViewFragment.class, null));
+        showFragment(BaseUIFragment.newFragment(this, UIFragment.class, null));
     }
 
     @Override
