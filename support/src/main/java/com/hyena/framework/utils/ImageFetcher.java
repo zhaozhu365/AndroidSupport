@@ -103,6 +103,17 @@ public class ImageFetcher {
 		}
 		return null;
 	}
+
+	/**
+	 * 同步获取图片
+     */
+	public Bitmap loadImageSync(String url){
+		return ImageLoader.getInstance().loadImageSync(url);
+	}
+
+	public Bitmap loadImageSync(String url, int width, int height, int rotation){
+		return ImageLoader.getInstance().loadImageSync(url, new ImageSize(width, height, rotation));
+	}
 	
 	/**
 	 * 显示图片

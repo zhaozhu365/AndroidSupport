@@ -415,6 +415,7 @@ public class UrlConnectionHttpExecutor implements HttpExecutor {
             conn.setDoOutput(true);
         }
         conn.setUseCaches(false);
+        conn.setRequestProperty("Accept-Encoding", "identity");
         return conn;
     }
 

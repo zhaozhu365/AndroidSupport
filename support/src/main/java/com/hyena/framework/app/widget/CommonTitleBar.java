@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -42,6 +43,12 @@ public class CommonTitleBar extends TitleBar {
 	
 	public CommonTitleBar(Context context) {
 		super(context);
+		//初始化View元素
+		init();
+	}
+
+	public CommonTitleBar(Context context, AttributeSet attributeSet) {
+		super(context, attributeSet);
 		//初始化View元素
 		init();
 	}

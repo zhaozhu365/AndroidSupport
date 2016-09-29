@@ -62,16 +62,17 @@ public class BaseUIFragmentHelper {
      */
     public void showPicture(Rect rect, String url) {
         mIvCopyImageView = new ImageView(getBaseUIFragment().getActivity());
-        mIvCopyImageView.setVisibility(View.INVISIBLE);
+        mIvCopyImageView.setVisibility(View.VISIBLE);
         mIvCopyImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         RelativeLayout.LayoutParams params = new RelativeLayout
                 .LayoutParams(rect.width(), rect.height());
         params.leftMargin = rect.left;
         params.topMargin = rect.top;
+        mIvCopyImageView.setBackgroundColor(Color.RED);
         getBaseUIFragment().getRootView().addView(mIvCopyImageView, params);
 
-        showPicture(mIvCopyImageView, url);
+//        showPicture(mIvCopyImageView, url);
     }
 
     /**
@@ -136,10 +137,8 @@ public class BaseUIFragmentHelper {
         return photoPanel;
     }
 
-    private void startGhostOutScaleAnimator(final ImageView rawImageView,
-                                            final Bitmap bitmap,
-                                            final ImageView ghostImageView,
-                                            final RelativeLayout photoPanel) {
+    private void startGhostOutAnimator(final ImageView rawImageView, final Bitmap bitmap
+            , final ImageView ghostImageView, final RelativeLayout photoPanel) {
         int screenWidth = UIUtils.getWindowWidth(getBaseUIFragment().getActivity());
         int screenHeight = getBaseUIFragment().getRootView().getHeight();
 
@@ -163,14 +162,13 @@ public class BaseUIFragmentHelper {
         ghostImageView.getLayoutParams().height = (int) currentHeight;
         ghostImageView.requestLayout();
 
-        final float finalScale = getFitScale(rawImageView, bitmap);
-        final float finalWidth = rawImageView.getWidth() * finalScale;
-        final float finalHeight = rawImageView.getHeight() * finalScale;
-        final float finalX = (screenWidth - finalWidth)/2;
-        final float finalY = (screenHeight - finalHeight)/2;
+        final float finalWidth = rawImageView.getWidth();
+        final float finalHeight = rawImageView.getHeight();
+        final float finalX = xy[0];
+        final float finalY = xy[1];
 
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
-        valueAnimator.setDuration(100);
+        valueAnimator.setDuration(200);
         valueAnimator.setInterpolator(new LinearInterpolator());
         AnimationUtils.ValueAnimatorListener listener = new AnimationUtils.ValueAnimatorListener() {
             @Override
@@ -178,7 +176,8 @@ public class BaseUIFragmentHelper {
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                startGhostOutAnimator(rawImageView, ghostImageView, photoPanel);
+                getBaseUIFragment().getRootView().removeView(photoPanel);
+                setPreviewVisible2User(false);
             }
 
             @Override
@@ -201,72 +200,13 @@ public class BaseUIFragmentHelper {
                 ghostImageView.getLayoutParams().width = (int) (currentWidth + (finalWidth - currentWidth) * value);
                 ghostImageView.getLayoutParams().height = (int) (currentHeight + (finalHeight - currentHeight) * value);
                 ghostImageView.requestLayout();
+
+                ViewHelper.setAlpha(photoPanel, 1.0f - value);
             }
         };
         valueAnimator.addListener(listener);
         valueAnimator.addUpdateListener(listener);
         valueAnimator.start();
-    }
-
-    /**
-     * start ghostOut animator
-     */
-    private void startGhostOutAnimator(final ImageView rawImageView, final ImageView ghostImageView
-            , final RelativeLayout photoPanel) {
-        if (photoPanel != null) {
-            final float currentX = ViewHelper.getX(ghostImageView);
-            final float currentY = ViewHelper.getY(ghostImageView);
-            final int currentWidth = ghostImageView.getLayoutParams().width;
-            final int currentHeight = ghostImageView.getLayoutParams().height;
-
-            int xy[] = new int[2];
-            rawImageView.getLocationOnScreen(xy);
-            final int finalX = xy[0];
-            final int finalY = xy[1];
-            final int finalWidth = rawImageView.getWidth();
-            final int finalHeight = rawImageView.getHeight();
-
-            ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
-            animator.setDuration(200);
-            animator.setInterpolator(new LinearInterpolator());
-            AnimationUtils.ValueAnimatorListener listener = new AnimationUtils.ValueAnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    getBaseUIFragment().getRootView().removeView(photoPanel);
-                    setPreviewVisible2User(false);
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-                    getBaseUIFragment().getRootView().removeView(photoPanel);
-                    setPreviewVisible2User(false);
-                }
-                @Override
-                public void onAnimationRepeat(Animator animator) {}
-
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    float value = (Float)valueAnimator.getAnimatedValue();
-                    int x = (int) ((finalX - currentX) * value + currentX);
-                    int y = (int) ((finalY - currentY) * value + currentY);
-                    ViewHelper.setTranslationX(ghostImageView, x);
-                    ViewHelper.setTranslationY(ghostImageView, y);
-
-                    ghostImageView.getLayoutParams().width = (int) (currentWidth + (finalWidth - currentWidth)* value);
-                    ghostImageView.getLayoutParams().height = (int) (currentHeight + (finalHeight - currentHeight) * value);
-                    ghostImageView.requestLayout();
-
-                    ViewHelper.setAlpha(photoPanel, 1.0f - value);
-                }
-            };
-            animator.addListener(listener);
-            animator.addUpdateListener(listener);
-            animator.start();
-        }
     }
 
     /**
@@ -288,12 +228,13 @@ public class BaseUIFragmentHelper {
         final int startWidth = rawImageView.getWidth();
         final int startHeight = rawImageView.getHeight();
 
-        float finalScale = getFitScale(rawImageView, bitmap);
-
-        final float finalWidth = startWidth * finalScale;
-        final float finalHeight = startHeight * finalScale;
+        float bitmapScale = Math.min((screenWidth + 0.0f) / bitmap.getWidth(),
+                (screenHeight + 0.0f) / bitmap.getHeight());
+        final float finalWidth = bitmap.getWidth() * bitmapScale;
+        final float finalHeight = bitmap.getHeight() * bitmapScale;
         final float finalX = (screenWidth - finalWidth)/2;
         final float finalY = (screenHeight - finalHeight)/2;
+
 
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1.0f);
         animator.setDuration(200);
@@ -306,11 +247,7 @@ public class BaseUIFragmentHelper {
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                if (shouldRunScaleAnimator(rawImageView, bitmap)) {
-                    startGhostInScaleAnimator(rawImageView, ghostImageView, bitmap, photoPanel);
-                } else {
-                    setAnimatorInEndAction(rawImageView, ghostImageView, bitmap, photoPanel);
-                }
+                setAnimatorInEndAction(rawImageView, ghostImageView, bitmap, photoPanel);
             }
 
             @Override
@@ -341,63 +278,6 @@ public class BaseUIFragmentHelper {
         animator.start();
     }
 
-    private void startGhostInScaleAnimator(final ImageView rawImageView, final ImageView ghostImageView
-            , final Bitmap bitmap, final RelativeLayout photoPanel) {
-        int screenWidth = UIUtils.getWindowWidth(getBaseUIFragment().getActivity());
-        int screenHeight = getBaseUIFragment().getRootView().getHeight();
-
-        final float startX = ViewHelper.getX(ghostImageView);
-        final float startY = ViewHelper.getY(ghostImageView);
-        final float startWidth = ghostImageView.getLayoutParams().width;
-        final float startHeight = ghostImageView.getLayoutParams().height;
-
-        float finalScale = Math.min((screenWidth + 0.0f) / bitmap.getWidth(),
-                (screenHeight + 0.0f) / bitmap.getHeight());
-
-        final float finalWidth = bitmap.getWidth() * finalScale;
-        final float finalHeight = bitmap.getHeight() * finalScale;
-        final float finalX = (screenWidth - finalWidth) / 2;
-        final float finalY = (screenHeight - finalHeight) / 2;
-
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
-        valueAnimator.setDuration(100);
-        valueAnimator.setInterpolator(new LinearInterpolator());
-        AnimationUtils.ValueAnimatorListener listener = new AnimationUtils.ValueAnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {}
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                setAnimatorInEndAction(rawImageView, ghostImageView, bitmap, photoPanel);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-                setAnimatorInEndAction(rawImageView, ghostImageView, bitmap, photoPanel);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {}
-
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                Float value = (Float) valueAnimator.getAnimatedValue();
-                float x = startX + (finalX - startX) * value;
-                float y = startY + (finalY - startY) * value;
-                ViewHelper.setTranslationX(ghostImageView, x);
-                ViewHelper.setTranslationY(ghostImageView, y);
-
-
-                ghostImageView.getLayoutParams().width = (int) (startWidth + (finalWidth - startWidth) * value);
-                ghostImageView.getLayoutParams().height = (int) (startHeight + (finalHeight - startHeight) * value);
-                ghostImageView.requestLayout();
-            }
-        };
-        valueAnimator.addListener(listener);
-        valueAnimator.addUpdateListener(listener);
-        valueAnimator.start();
-    }
-
     /**
      * run on animatorIn start
      */
@@ -424,41 +304,10 @@ public class BaseUIFragmentHelper {
         photoViewAttacher.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
             @Override
             public void onViewTap(View view, float v, float v1) {
-                if (shouldRunScaleAnimator(rawImageView, bitmap)) {
-                    startGhostOutScaleAnimator(rawImageView,bitmap, ghostImageView, photoPanel);
-                } else {
-                    startGhostOutAnimator(rawImageView, ghostImageView, photoPanel);
-                }
+                startGhostOutAnimator(rawImageView, bitmap, ghostImageView, photoPanel);
             }
         });
         ghostImageView.setTag(photoViewAttacher);
-    }
-
-    /**
-     * should run scale Animator
-     */
-    private boolean shouldRunScaleAnimator(ImageView rawImageView, Bitmap bitmap) {
-        return rawImageView.getWidth() * bitmap.getHeight() != bitmap.getWidth() * rawImageView.getHeight();
-    }
-
-    private float getFitScale(final ImageView rawImageView, final Bitmap bitmap) {
-        int screenWidth = UIUtils.getWindowWidth(getBaseUIFragment().getActivity());
-        int screenHeight = getBaseUIFragment().getRootView().getHeight();
-
-        float imageScale = Math.min((screenWidth + 0.0f) / rawImageView.getWidth(),
-                (screenHeight + 0.0f) / rawImageView.getHeight());
-
-        float bitmapScale = Math.min((screenWidth + 0.0f) / bitmap.getWidth(),
-                (screenHeight + 0.0f) / bitmap.getHeight());
-
-        float finalWidth = bitmap.getWidth() * bitmapScale;
-        float finalHeight = bitmap.getHeight() * bitmapScale;
-
-        float imageMaxWidth = rawImageView.getWidth();
-        float imageMaxHeight = rawImageView.getHeight();
-
-        return Math.min(finalWidth/imageMaxWidth, finalHeight/imageMaxHeight);
-//        return 1;
     }
 
     public int getStatusBarHeight() {

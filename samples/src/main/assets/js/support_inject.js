@@ -5,43 +5,42 @@ function showImage(rawurl, localpath) {
 		if (rawurl == url) {
 			elements[i].setAttribute("src", localpath)
 		}
-
 	}
 }
 
-function locationLeft(element){
-    var offsetTotal = element.offsetLeft;
-    scrollTotal = 0;
-    if (element.tagName != "BODY"){
-       if (element.offsetParent != null)
-          return offsetTotal + scrollTotal + locationLeft(element.offsetParent);
-    }
-    return offsetTotal+scrollTotal;
+function getElementLeft(element){
+	var actualLeft = element.offsetLeft;
+	var current = element.offsetParent;
+	while (current !== null){
+		actualLeft += current.offsetLeft;
+		current = current.offsetParent;
+	}
+	return actualLeft;
 }
 
-function locationTop(element){
-    offsetTotal = element.offsetTop;
-    scrollTotal = 0;
-    if (element.tagName != "BODY"){
-       if (element.offsetParent != null)
-          return offsetTotal+scrollTotal+locationTop(element.offsetParent);
-    }
-    return offsetTotal+scrollTotal;
+function getElementTop(element){
+	var actualTop = element.offsetTop;
+	var current = element.offsetParent;
+	while (current !== null){
+		actualTop += current.offsetTop;
+		current = current.offsetParent;
+	}
+	return actualTop;
 }
 
 function doInject() {
     var images = document.getElementsByTagName("img");
     for(var i=0; i< images.length; i++){
     	var src = images[i].getAttribute("src");
-    	var w = images[i].width;
-    	var h = images[i].height;
+    	var w = images[i].clientWidth;
+    	var h = images[i].clientHeight;
     	images[i].setAttribute("image-attach-src", src);
     	images[i].setAttribute("src", "hybird://method/image_load?url=" + encodeURIComponent(src) + "&w=" + w + "&h=" + h);
     	images[i].onclick = function() {
-    		var w = this.width;
-		    var h = this.height;
-		    var left = locationLeft(this);
-		    var top = locationTop(this);
+    		var w = this.clientWidth;
+		    var h = this.clientHeight;
+		    var left = getElementLeft(this);
+		    var top = getElementTop(this);
 		    var src = this.getAttribute("image-attach-src");
 		    window.location.href = "hybird://method/image_show?url=" + encodeURIComponent(src) + "&w=" + w + "&h=" + h + "&t=" + top + "&l=" + left;
     	}
