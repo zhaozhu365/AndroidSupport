@@ -174,6 +174,9 @@ public class BaseObject implements Cloneable, Cacheable {
 			if(data != null){
 				this.mErrorDescription = data.optString("msg");
 			}
+			if (TextUtils.isEmpty(mErrorDescription)) {
+				this.mErrorDescription = obj.optString("msg");
+			}
 		} else {
 			this.mErrorDescription = obj.optString("msg");
 		}
