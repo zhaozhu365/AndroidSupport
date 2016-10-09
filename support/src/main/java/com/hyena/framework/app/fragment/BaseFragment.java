@@ -4,6 +4,7 @@
 package com.hyena.framework.app.fragment;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -79,6 +80,11 @@ public class BaseFragment extends SafeFragment  {
 	public void setVisibleToUser(boolean visible) {
 		debug("Visible: " + visible + "");
 	}
+
+	/**
+	 * 窗口大小变化
+     */
+	public void onWindowVisibleSizeChange(Rect rect) {}
 
 	public void onNewIntent(Intent intent) {}
 }

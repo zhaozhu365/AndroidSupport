@@ -6,6 +6,7 @@ package com.hyena.framework.app.activity;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -14,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -55,6 +57,7 @@ public abstract class NavigateActivity extends BaseActivity implements NavigateC
 		onPreCreate();
 		setContentView(mLayoutId);
 		mSubViewContainer = findViewById(mSubPagePanelId);
+		registerWindowLayoutListener();
 		reInitBackStack();
 	}
 
@@ -62,6 +65,26 @@ public abstract class NavigateActivity extends BaseActivity implements NavigateC
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //			setTranslucentStatus(true);
 //		}
+	}
+
+	private void registerWindowLayoutListener() {
+		final View rootView = getWindow().getDecorView();
+		rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				Rect rect = new Rect();
+				rootView.getWindowVisibleDisplayFrame(rect);
+				if (mSubFragmentStack != null && !mSubFragmentStack.isEmpty()) {
+					BaseFragment topFragment = mSubFragmentStack.peek();
+					if (topFragment != null)
+						topFragment.onWindowVisibleSizeChange(rect);
+					return;
+				}
+				if (mCurrentFragment != null) {
+					mCurrentFragment.onWindowVisibleSizeChange(rect);
+				}
+			}
+		});
 	}
 
 	/**

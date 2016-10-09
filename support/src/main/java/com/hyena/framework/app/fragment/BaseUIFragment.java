@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -76,8 +77,9 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 	private LoadingView mLoadingView;
 	private EmptyView mEmptyView;
     private View mContentView;
-
+    //根布局
     private BaseUIRootLayout mRootView;
+    private ScrollView mScrollView;
 
     // 当前数据获取任务
     private DataLoaderTask mDataLoaderTask;
@@ -327,6 +329,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
                 scrollView.setHorizontalScrollBarEnabled(false);
             	scrollView.addView(mContentView, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
             	contentView = scrollView;
+                this.mScrollView = scrollView;
     		} 
             
             if(mTitleStyle == STYLE_WITH_TITLE){
@@ -679,6 +682,14 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
      */
     public BaseUIRootLayout getRootView(){
         return mRootView;
+    }
+
+    /**
+     * 获得滚动view
+     * @return
+     */
+    public ScrollView getScrollView() {
+        return mScrollView;
     }
 
     /**
@@ -1201,5 +1212,51 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 			}
 		}
     };
-    
+
+    private int mLastHeight = 0;
+    @Override
+    public void onWindowVisibleSizeChange(Rect rect) {
+        super.onWindowVisibleSizeChange(rect);
+        int height = rect.height();
+        int rawHeight = getResources().getDisplayMetrics().heightPixels - rect.top;
+        if (mTitleStyle == STYLE_WITH_TITLE) {
+            height -= mTitleBar.getMeasuredHeight();
+            rawHeight -= mTitleBar.getMeasuredHeight();
+        }
+        if (height == mLastHeight)
+            return;
+
+        onContentVisibleSizeChange(height, rawHeight);
+        mLastHeight = height;
+    }
+
+    /**
+     * 窗体高度发生变化
+     * @param height 当前可分配的内容高度
+     * @param rawHeight 原始可分配的内容高度
+     */
+    protected void onContentVisibleSizeChange(int height, int rawHeight) {
+//        int scrollY = rawHeight - height;
+//        if (mEnableScroll) {
+//            if (mScrollView != null)
+//                mScrollView.scrollTo(0, scrollY);
+//        } else {
+//            if (mContentView != null) {
+//                mContentView.scrollTo(0, scrollY);
+//            }
+//        }
+
+//        if (mEnableScroll) {
+//            if (mScrollView != null) {
+//                mScrollView.getLayoutParams().height = height;
+//                mScrollView.requestLayout();
+//            }
+//        } else {
+//            if (mContentView != null) {
+//                mContentView.getLayoutParams().height = height;
+//                mContentView.requestLayout();
+//            }
+//        }
+    }
+
 }
