@@ -130,6 +130,10 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     	this.mEnableScroll = scroll;
     }
 
+    public boolean isEnableScroll() {
+        return mEnableScroll;
+    }
+
     /**
      * 设置UI帮助类
      * @param helper
@@ -1235,28 +1239,5 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
      * @param height 当前可分配的内容高度
      * @param rawHeight 原始可分配的内容高度
      */
-    protected void onContentVisibleSizeChange(int height, int rawHeight) {
-//        int scrollY = rawHeight - height;
-//        if (mEnableScroll) {
-//            if (mScrollView != null)
-//                mScrollView.scrollTo(0, scrollY);
-//        } else {
-//            if (mContentView != null) {
-//                mContentView.scrollTo(0, scrollY);
-//            }
-//        }
-
-//        if (mEnableScroll) {
-//            if (mScrollView != null) {
-//                mScrollView.getLayoutParams().height = height;
-//                mScrollView.requestLayout();
-//            }
-//        } else {
-//            if (mContentView != null) {
-//                mContentView.getLayoutParams().height = height;
-//                mContentView.requestLayout();
-//            }
-//        }
-    }
-
+    protected void onContentVisibleSizeChange(int height, int rawHeight) {}
 }
