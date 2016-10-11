@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.hyena.framework.annotation.AttachViewId;
 import com.hyena.framework.app.adapter.SingleTypeAdapter;
 import com.hyena.framework.app.fragment.BaseUIFragment;
+import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.utils.ToastUtils;
 
 /**
@@ -29,6 +30,7 @@ public class TestFragment extends BaseUIFragment {
 
     @Override
     public View onCreateViewImpl(Bundle savedInstanceState) {
+        getTitleBar().setTitle("列表测试");
         View view = View.inflate(getActivity(), R.layout.layout_test, null);
         return view;
     }
@@ -43,6 +45,11 @@ public class TestFragment extends BaseUIFragment {
                 ToastUtils.showShortToast(getActivity(), "position: " + i);
             }
         });
+    }
+
+    @Override
+    protected void onContentVisibleSizeChange(int height, int rawHeight) {
+        super.onContentVisibleSizeChange(height, rawHeight);
     }
 
     class ListAdapter extends SingleTypeAdapter<String> {

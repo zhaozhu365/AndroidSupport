@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.hyena.framework.samples"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
@@ -51,7 +51,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':support')
-    compile project(':gridlayout-v7-21.0.0')
+    compile 'com.android.support:gridlayout-v7:24.2.1'
 }
 
 

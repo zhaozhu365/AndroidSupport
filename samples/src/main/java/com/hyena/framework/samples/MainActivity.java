@@ -1,7 +1,9 @@
 package com.hyena.framework.samples;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.WindowManager;
 
 import com.hyena.framework.app.activity.NavigateActivity;
 import com.hyena.framework.app.fragment.BaseFragment;
@@ -25,18 +27,22 @@ public class MainActivity extends NavigateActivity {
         super.onCreate(savedInstanceState);
         InstrumentationHook.hook();
         UIViewFactory.getViewFactory().registViewBuilder(new ViewFactoryImpl());
+//        showFragment(BaseUIFragment.newFragment(this, WebViewBrowser.class, null));
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                boolean result = HttpHelper.storeFile("http://knowapp.b0.upaiyun.com/ss/cityList/cityList20.json",
+//                        new File(Environment.getExternalStorageDirectory(), "ss.json").getAbsolutePath(), null);
+//                LogUtil.v("yangzc", result + "");
+//            }
+//        }).start();
+        showFragment(BaseUIFragment.newFragment(this, TestFragment.class, null));
+    }
 
-        showFragment(BaseUIFragment.newFragment(this, WebViewBrowser.class, null));
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                boolean result = HttpHelper.storeFile("http://knowapp.b0.upaiyun.com/ss/cityList/cityList20.json",
-                        new File(Environment.getExternalStorageDirectory(), "ss.json").getAbsolutePath(), null);
-                LogUtil.v("yangzc", result + "");
-            }
-        }).start();
-//        showFragment(BaseUIFragment.newFragment(this, TestFragment.class, null));
+    @Override
+    public void onPreCreate() {
+        super.onPreCreate();
+        setTranslucentStatus(true);
     }
 
     @Override
@@ -47,4 +53,12 @@ public class MainActivity extends NavigateActivity {
         return null;
     }
 
+    @Override
+    public void showFragment(BaseFragment fragment) {
+        super.showFragment(fragment);
+        if (fragment instanceof BaseUIFragment) {
+            ((BaseUIFragment) fragment).setStatusTintBarColor(Color.BLUE);
+            ((BaseUIFragment) fragment).setStatusTintBarEnable(true);
+        }
+    }
 }
