@@ -36,7 +36,7 @@ public class MainActivity extends NavigateActivity {
 //                LogUtil.v("yangzc", result + "");
 //            }
 //        }).start();
-        showFragment(BaseUIFragment.newFragment(this, TestFragment.class, null));
+        showFragment(BaseUIFragment.newFragment(this, Pull2RefreshFragment.class, null));
     }
 
     @Override

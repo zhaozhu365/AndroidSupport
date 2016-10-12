@@ -3,6 +3,7 @@ package com.hyena.framework.samples.widgets.pull;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.TextView;
 
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.samples.R;
@@ -13,6 +14,10 @@ import com.hyena.framework.utils.UIUtils;
  */
 
 public class PullRefreshHeaderPanel extends IPullRefresh {
+
+    private TextView mTvTitle;
+
+    private int mCurrentStatus;
 
     public PullRefreshHeaderPanel(Context context) {
         super(context);
@@ -30,12 +35,35 @@ public class PullRefreshHeaderPanel extends IPullRefresh {
     }
 
     private void init() {
-        View.inflate(getContext(), R.layout.layout_pull2refresh_header, this);
+        View view = View.inflate(getContext(), R.layout.layout_pull2refresh_header, this);
+        this.mTvTitle = (TextView) view.findViewById(R.id.tv_pull2refresh_title);
+        setStatus(STATUS_START_PULL);
     }
 
     @Override
     public void setStatus(int status) {
-        LogUtil.v("yangzc", "status: " + status);
+        if (status == mCurrentStatus)
+            return;
+
+        this.mCurrentStatus = status;
+        switch (status) {
+            case STATUS_START_PULL: {
+                mTvTitle.setText("下拉获取更多");
+                break;
+            }
+            case STATUS_READY_REFRESH: {
+                mTvTitle.setText("松开获取更多");
+                break;
+            }
+            case STATUS_REFRESH: {
+                mTvTitle.setText("正在加载中...");
+                break;
+            }
+            case STATUS_RESET: {
+                mTvTitle.setText("下拉获取更多");
+                break;
+            }
+        }
     }
 
     @Override

@@ -1221,6 +1221,9 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     @Override
     public void onWindowVisibleSizeChange(Rect rect) {
         super.onWindowVisibleSizeChange(rect);
+        if (getActivity() == null || getActivity().isFinishing())
+            return;
+
         int height = rect.height();
         int rawHeight = getResources().getDisplayMetrics().heightPixels - rect.top;
         if (mTitleStyle == STYLE_WITH_TITLE) {

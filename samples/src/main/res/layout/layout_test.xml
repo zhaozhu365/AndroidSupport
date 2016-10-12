@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.hyena.framework.samples.widgets.pull.Pull2Refresh xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/ed_bottom"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#82d02f"
-        android:text="sddfsdf" />
+        android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/test_listview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/ed_bottom" />
-</RelativeLayout>
+        <EditText
+            android:id="@+id/ed_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#82d02f"
+            android:text="sddfsdf" />
+
+        <com.hyena.framework.app.widget.SimpleRecycleView
+            android:id="@+id/test_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/ed_bottom" />
+    </RelativeLayout>
+</com.hyena.framework.samples.widgets.pull.Pull2Refresh>
