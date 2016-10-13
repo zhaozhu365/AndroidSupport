@@ -96,6 +96,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     private boolean mVisible = false;
     //是否初始化成功
     private boolean mInited = false;
+    private boolean mFinishing = false;
     private int mAncherX, mAncherY;
 
     private int mTitleBarId;
@@ -508,8 +509,16 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         return null;
     }
 
+    public boolean isFinishing() {
+        return mFinishing;
+    }
+
     @Override
     public void finish() {
+        if (mFinishing)
+            return;
+
+        mFinishing = true;
         UIUtils.hideInputMethod(getActivity());
 
         Animation animation = getAnimationOut();
