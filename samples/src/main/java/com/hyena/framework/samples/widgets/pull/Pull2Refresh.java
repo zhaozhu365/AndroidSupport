@@ -18,6 +18,7 @@ import android.widget.AbsListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
+import com.hyena.framework.app.widget.BaseUIRootLayout;
 import com.hyena.framework.samples.R;
 import com.hyena.framework.utils.AnimationUtils;
 import com.hyena.framework.utils.UIUtils;
@@ -28,7 +29,7 @@ import com.nineoldandroids.animation.ValueAnimator;
  * Created by yangzc on 16/9/14.
  */
 
-public class Pull2Refresh extends RelativeLayout {
+public class Pull2Refresh extends BaseUIRootLayout {
 
     private static final int MODE_PULL_FROM_NONE = 0;
     private static final int MODE_PULL_FROM_START = 1;

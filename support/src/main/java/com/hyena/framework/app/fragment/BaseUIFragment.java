@@ -250,6 +250,13 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         resetTask();
         autoAttachAllService();
 	}
+
+    /**
+     * 生成默认的跟布局
+     */
+    public BaseUIRootLayout newUIRootLayout() {
+        return new BaseUIRootLayout(getActivity());
+    }
 	
 	/**
 	 * 创建View
@@ -262,7 +269,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 
 	@Override
 	public final View onCreateViewImpl(ViewGroup container, Bundle savedInstanceState) {
-        mRootView = new BaseUIRootLayout(getActivity());
+        mRootView = newUIRootLayout();
         mRootView.setClickable(true);
 
         //生成状态栏
@@ -1125,7 +1132,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     //========================消息中心===================================
     public static final String MSG_PREFIX = "com.hyena.framework.app.fragment.";
     
-    public Class<? extends BaseUIFragment<?>>[] getFriendsTags() {
+    public Class<? extends BaseUIFragment<?>>[] getFriendsTags(Bundle bundle) {
     	return null;
     }
 
@@ -1140,7 +1147,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
      * 通知友员数据改变
      */
     public void notifyFriendsDataChange(Bundle bundle){
-    	Class<? extends BaseUIFragment<?>>[] friendsCls = getFriendsTags();
+    	Class<? extends BaseUIFragment<?>>[] friendsCls = getFriendsTags(bundle);
     	if (friendsCls != null && friendsCls.length > 0) {
     		if (bundle == null) {
 				bundle = new Bundle();

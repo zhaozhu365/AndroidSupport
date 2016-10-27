@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.hyena.framework.annotation.AttachViewId;
 import com.hyena.framework.app.adapter.SingleRecycleViewAdapter;
 import com.hyena.framework.app.fragment.BaseUIFragment;
+import com.hyena.framework.app.widget.SimpleRecycleView;
 import com.hyena.framework.datacache.BaseObject;
 import com.hyena.framework.samples.widgets.pull.Pull2Refresh;
 import com.hyena.framework.utils.ToastUtils;
@@ -31,7 +32,7 @@ public class Pull2RefreshFragment extends BaseUIFragment {
     @AttachViewId(R.id.pr_pull2refresh)
     private Pull2Refresh mPull2Refresh;
     @AttachViewId(R.id.srv_list)
-    private RecyclerView mRecycleView;
+    private SimpleRecycleView mRecycleView;
     private ListAdapter mListAdapter;
 
     @Override
@@ -49,9 +50,11 @@ public class Pull2RefreshFragment extends BaseUIFragment {
     @Override
     public void onViewCreatedImpl(View view, Bundle savedInstanceState) {
         super.onViewCreatedImpl(view, savedInstanceState);
+        mRecycleView.addHeader(View.inflate(getActivity(), R.layout.layout_header, null));
+        mRecycleView.addFooter(View.inflate(getActivity(), R.layout.layout_header, null));
+
         mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mRecycleView.setAdapter(mListAdapter = new ListAdapter(getActivity()));
-
         List<String> items = new ArrayList<String>();
         for (int i = 0; i < 15; i++) {
             items.add("init data " + i);

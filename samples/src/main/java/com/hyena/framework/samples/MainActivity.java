@@ -1,13 +1,16 @@
 package com.hyena.framework.samples;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
+import android.support.v4.content.ContextCompat;
 
 import com.hyena.framework.app.activity.NavigateActivity;
 import com.hyena.framework.app.fragment.BaseFragment;
@@ -38,17 +41,25 @@ public class MainActivity extends NavigateActivity {
         showFragment(BaseUIFragment.newFragment(this, Pull2RefreshFragment.class, null));
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onResume() {
         super.onResume();
-        AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
-        int checkOp = appOpsManager.checkOp(AppOpsManager.OPSTR_CAMERA, Process.myUid(), getPackageName());
-        if (checkOp == AppOpsManager.MODE_IGNORED) {
-            // 权限被拒绝了
-            ToastUtils.showShortToast(this, "ignored");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+            int checkOp = appOpsManager.checkOp(AppOpsManager.OPSTR_CAMERA, Process.myUid(), getPackageName());
+            if (checkOp == AppOpsManager.MODE_IGNORED) {
+                // 权限被拒绝了
+                ToastUtils.showShortToast(this, "ignored");
+            } else {
+                ToastUtils.showShortToast(this, "yes");
+            }
+        }
+
+        int permission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+            ToastUtils.showShortToast(this, "PERMISSION_GRANTED");
         } else {
-            ToastUtils.showShortToast(this, "yes");
+            ToastUtils.showShortToast(this, "PERMISSION_DENIED");
         }
     }
 
