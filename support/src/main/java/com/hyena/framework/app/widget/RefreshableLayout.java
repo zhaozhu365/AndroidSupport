@@ -1,10 +1,10 @@
-package com.hyena.framework.samples.widgets.pull;
+package com.hyena.framework.app.widget;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -18,8 +18,9 @@ import android.widget.AbsListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-import com.hyena.framework.app.widget.BaseUIRootLayout;
-import com.hyena.framework.samples.R;
+import com.hyena.framework.R;
+import com.hyena.framework.clientlog.LogUtil;
+import com.hyena.framework.debug.InvokeHelper;
 import com.hyena.framework.utils.AnimationUtils;
 import com.hyena.framework.utils.UIUtils;
 import com.nineoldandroids.animation.Animator;
@@ -29,7 +30,7 @@ import com.nineoldandroids.animation.ValueAnimator;
  * Created by yangzc on 16/9/14.
  */
 
-public class Pull2Refresh extends BaseUIRootLayout {
+public class RefreshableLayout extends RelativeLayout {
 
     private static final int MODE_PULL_FROM_NONE = 0;
     private static final int MODE_PULL_FROM_START = 1;
@@ -38,6 +39,7 @@ public class Pull2Refresh extends BaseUIRootLayout {
     private static final int MAX_MOVE_DISTANCE = UIUtils.dip2px(120);
 
     private View mTarget = null;
+    private View mScrollerView = null;
 
     private int mTouchSlop = 0;
     private float mInitialDownY = -1;
@@ -47,47 +49,88 @@ public class Pull2Refresh extends BaseUIRootLayout {
 
     private boolean mRefreshing, mLoadingMore;
 
-    private IPullRefresh mHeaderRefreshPanel = null;
-    private IPullRefresh mFooterRefreshPanel = null;
+    private boolean mEnableRefresh = true, mEnableLoadMore = true;
+    private AbsRefreshablePanel mHeaderPanel = null;
+    private AbsRefreshablePanel mFooterPanel = null;
 
-    public Pull2Refresh(Context context) {
+    public RefreshableLayout(Context context) {
         super(context);
         init();
     }
 
-    public Pull2Refresh(Context context, AttributeSet attrs) {
+    public RefreshableLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     private void init() {
-        mHeaderRefreshPanel = new PullRefreshHeaderPanel(getContext());
-        mFooterRefreshPanel = new Pull2RefreshFooterPanel(getContext());
-
         mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+        relayout();
+    }
 
+    public void setEnableRefresh(boolean enableRefresh) {
+        this.mEnableRefresh = enableRefresh;
+    }
+
+    public void setEnableLoadMore(boolean enableLoadMore) {
+        this.mEnableLoadMore = enableLoadMore;
+    }
+
+    private void relayout() {
+        relayoutHeader();
+        relayoutFooter();
+    }
+
+    private void relayoutHeader() {
         int paddingTop = 0;
-        if (mHeaderRefreshPanel != null) {
-            RelativeLayout.LayoutParams headerParams = new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, mHeaderRefreshPanel.getContentHeight());
+        if (mHeaderPanel != null) {
+            LayoutParams headerParams = new LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, mHeaderPanel.getContentHeight());
             headerParams.addRule(ALIGN_PARENT_TOP);
-            mHeaderRefreshPanel.setId(R.id.header);
-            addView(mHeaderRefreshPanel, headerParams);
-            paddingTop = -mHeaderRefreshPanel.getContentHeight();
-            mHeaderRefreshPanel.setBackgroundColor(Color.RED);
+            mHeaderPanel.setId(R.id.refresh_header);
+            addView(mHeaderPanel, headerParams);
+            paddingTop = -mHeaderPanel.getContentHeight();
         }
+        setPadding(0, paddingTop, 0, getPaddingBottom());
+    }
 
+    private void relayoutFooter() {
         int paddingBottom = 0;
-        if (mFooterRefreshPanel != null) {
-            RelativeLayout.LayoutParams footerParams = new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, mFooterRefreshPanel.getContentHeight());
+        if (mFooterPanel != null) {
+            LayoutParams footerParams = new LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, mFooterPanel.getContentHeight());
             footerParams.addRule(ALIGN_PARENT_BOTTOM);
-            mFooterRefreshPanel.setId(R.id.footer);
-            addView(mFooterRefreshPanel, footerParams);
-            paddingBottom = -mFooterRefreshPanel.getContentHeight();
-            mFooterRefreshPanel.setBackgroundColor(Color.YELLOW);
+            mFooterPanel.setId(R.id.refresh_footer);
+            addView(mFooterPanel, footerParams);
+            paddingBottom = -mFooterPanel.getContentHeight();
         }
-        setPadding(0, paddingTop, 0, paddingBottom);
+        setPadding(0, getPaddingTop(), 0, paddingBottom);
+    }
+
+    public void setHeaderPanel(AbsRefreshablePanel headerPanel) {
+        if (mHeaderPanel != null) {
+            removeView(mHeaderPanel);
+        }
+        this.mHeaderPanel = headerPanel;
+        relayoutHeader();
+    }
+
+    public void setFooterPanel(AbsRefreshablePanel footerPanel) {
+        if (mFooterPanel != null) {
+            removeView(mFooterPanel);
+        }
+        this.mFooterPanel = footerPanel;
+        relayoutFooter();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
     }
 
     @Override
@@ -97,9 +140,22 @@ public class Pull2Refresh extends BaseUIRootLayout {
             insureTarget();
 
         if (mTarget != null) {
-            RelativeLayout.LayoutParams params = (LayoutParams) mTarget.getLayoutParams();
-            params.addRule(RelativeLayout.BELOW, R.id.header);
-            params.addRule(RelativeLayout.ABOVE, R.id.footer);
+            LayoutParams params = (LayoutParams) mTarget.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, R.id.refresh_header);
+            params.addRule(RelativeLayout.ABOVE, R.id.refresh_footer);
+        }
+    }
+
+    @Override
+    public void addView(View child, ViewGroup.LayoutParams params) {
+        super.addView(child, params);
+        if (mTarget == null)
+            insureTarget();
+
+        if (mTarget != null) {
+            LayoutParams targetParams = (LayoutParams) mTarget.getLayoutParams();
+            targetParams.addRule(RelativeLayout.BELOW, R.id.refresh_header);
+            targetParams.addRule(RelativeLayout.ABOVE, R.id.refresh_footer);
         }
     }
 
@@ -107,22 +163,48 @@ public class Pull2Refresh extends BaseUIRootLayout {
         if (getChildCount() > 0) {
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
-                if (!(child instanceof IPullRefresh)) {
+                if (!(child instanceof AbsRefreshablePanel)) {
                     mTarget = child;
                     break;
                 }
             }
         }
+
+        insureScrollView();
+    }
+
+    private void insureScrollView() {
+        if (mScrollerView == null) {
+            if (mTarget != null && mTarget instanceof SwipeRefreshLayout) {
+                mScrollerView = (View) InvokeHelper.getFieldValue(mTarget, "mTarget");
+            } else {
+                mScrollerView = mTarget;
+            }
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        insureScrollView();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        insureScrollView();
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (mRefreshing || mLoadingMore)
+        if (mRefreshing || mLoadingMore || (mHeaderPanel == null && mFooterPanel == null)
+                || (!mEnableRefresh && !mEnableLoadMore))
             return false;
 
         if (mTarget == null) {
             insureTarget();
         }
+        insureScrollView();
 
         int action = MotionEventCompat.getActionMasked(ev);
         switch (action) {
@@ -135,12 +217,12 @@ public class Pull2Refresh extends BaseUIRootLayout {
                 float y = ev.getY();
                 float yDiff = y - mInitialDownY;
                 if (Math.abs(yDiff) > mTouchSlop && !mIsBeingDragged) {
-                    if (!canChildScrollUp() && yDiff > 1) {
+                    if (mHeaderPanel != null && mEnableRefresh && !canChildScrollUp() && yDiff > 1) {
                         //top
                         mCurrentMode = MODE_PULL_FROM_START;
                         mInitialMotionY = mInitialDownY + mTouchSlop;
                         mIsBeingDragged = true;
-                    } else if (!canChildScrollDown() && yDiff < -1) {
+                    } else if (mFooterPanel != null && mEnableLoadMore && !canChildScrollDown() && yDiff < -1) {
                         //bottom
                         mCurrentMode = MODE_PULL_FROM_END;
                         mInitialMotionY = mInitialDownY + mTouchSlop;
@@ -162,6 +244,10 @@ public class Pull2Refresh extends BaseUIRootLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (mRefreshing || mLoadingMore || (mHeaderPanel == null && mFooterPanel == null)
+                || (!mEnableRefresh && !mEnableLoadMore))
+            return false;
+
         int action = MotionEventCompat.getActionMasked(event);
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
@@ -174,7 +260,7 @@ public class Pull2Refresh extends BaseUIRootLayout {
                 if (mIsBeingDragged) {
                     if (mCurrentMode == MODE_PULL_FROM_START) {
                         overScroll = Math.max(Math.min(0, overScroll), -MAX_MOVE_DISTANCE);
-                    } else if (mCurrentMode == MODE_PULL_FROM_END){
+                    } else if (mCurrentMode == MODE_PULL_FROM_END) {
                         overScroll = Math.min(Math.max(0, overScroll), MAX_MOVE_DISTANCE);
                     } else {
                         overScroll = 0;
@@ -195,8 +281,8 @@ public class Pull2Refresh extends BaseUIRootLayout {
 
     @Override
     public void requestDisallowInterceptTouchEvent(boolean b) {
-        if ((android.os.Build.VERSION.SDK_INT < 21 && mTarget instanceof AbsListView)
-                || (mTarget != null && !ViewCompat.isNestedScrollingEnabled(mTarget))) {
+        if ((Build.VERSION.SDK_INT < 21 && mScrollerView instanceof AbsListView)
+                || (mScrollerView != null && !ViewCompat.isNestedScrollingEnabled(mScrollerView))) {
             // Nope.
         } else {
             super.requestDisallowInterceptTouchEvent(b);
@@ -204,29 +290,29 @@ public class Pull2Refresh extends BaseUIRootLayout {
     }
 
     public void setRefreshing(boolean isRefreshing) {
-        if (mHeaderRefreshPanel != null) {
+        if (mHeaderPanel != null) {
             this.mRefreshing = isRefreshing;
             mCurrentMode = MODE_PULL_FROM_START;
             if (isRefreshing) {
-                scroll(0, -mHeaderRefreshPanel.getContentHeight());
-                mHeaderRefreshPanel.setStatus(IPullRefresh.STATUS_REFRESH);
+                scroll(0, -mHeaderPanel.getContentHeight());
+                mHeaderPanel.setStatus(AbsRefreshablePanel.STATUS_REFRESH);
             } else {
                 scroll(getScrollY(), 0);
-                mHeaderRefreshPanel.setStatus(IPullRefresh.STATUS_RESET);
+                mHeaderPanel.setStatus(AbsRefreshablePanel.STATUS_RESET);
             }
         }
     }
 
     public void setLoadingMore(boolean isLoading) {
-        if (mFooterRefreshPanel != null) {
+        if (mFooterPanel != null) {
             this.mLoadingMore = isLoading;
             mCurrentMode = MODE_PULL_FROM_END;
             if (isLoading) {
-                scroll(0, mFooterRefreshPanel.getContentHeight());
-                mFooterRefreshPanel.setStatus(IPullRefresh.STATUS_REFRESH);
+                scroll(0, mFooterPanel.getContentHeight());
+                mFooterPanel.setStatus(AbsRefreshablePanel.STATUS_REFRESH);
             } else {
                 scroll(getScrollY(), 0);
-                mFooterRefreshPanel.setStatus(IPullRefresh.STATUS_RESET);
+                mFooterPanel.setStatus(AbsRefreshablePanel.STATUS_RESET);
             }
         }
     }
@@ -235,26 +321,26 @@ public class Pull2Refresh extends BaseUIRootLayout {
      * 手势释放
      */
     private void moveRelease() {
-        IPullRefresh pullItem = null;
+        AbsRefreshablePanel pullItem = null;
         int toScrollY = 0;
         if (mCurrentMode == MODE_PULL_FROM_START) {
-            pullItem = mHeaderRefreshPanel;
+            pullItem = mHeaderPanel;
             toScrollY = -pullItem.getContentHeight();
         } else if (mCurrentMode == MODE_PULL_FROM_END) {
-            pullItem = mFooterRefreshPanel;
+            pullItem = mFooterPanel;
             toScrollY = pullItem.getContentHeight();
         }
 
         if (pullItem != null) {
             if (Math.abs(getScrollY()) >= pullItem.getContentHeight()) {
-                pullItem.setStatus(IPullRefresh.STATUS_REFRESH);
+                pullItem.setStatus(AbsRefreshablePanel.STATUS_REFRESH);
                 scroll(getScrollY(), toScrollY);
                 if (mCurrentMode == MODE_PULL_FROM_START) {
                     mRefreshing = true;
                     if (mRefreshListener != null) {
                         mRefreshListener.onRefresh();
                     }
-                } else if(mCurrentMode == MODE_PULL_FROM_END) {
+                } else if (mCurrentMode == MODE_PULL_FROM_END) {
                     mLoadingMore = true;
                     if (mRefreshListener != null) {
                         mRefreshListener.onLoadMore();
@@ -271,27 +357,28 @@ public class Pull2Refresh extends BaseUIRootLayout {
      */
     private void moveTarget(float overScroll) {
         scrollTo(0, (int) overScroll);
-        IPullRefresh pullItem = null;
+        AbsRefreshablePanel pullItem = null;
         if (mCurrentMode == MODE_PULL_FROM_START) {
-            pullItem = mHeaderRefreshPanel;
+            pullItem = mHeaderPanel;
         } else if (mCurrentMode == MODE_PULL_FROM_END) {
-            pullItem = mFooterRefreshPanel;
+            pullItem = mFooterPanel;
         }
 
         if (pullItem != null) {
             pullItem.setScrolling(overScroll, pullItem.getContentHeight());
             if (Math.abs(overScroll) >= pullItem.getContentHeight()) {
-                pullItem.setStatus(IPullRefresh.STATUS_READY_REFRESH);
+                pullItem.setStatus(AbsRefreshablePanel.STATUS_READY_REFRESH);
             } else {
-                pullItem.setStatus(IPullRefresh.STATUS_START_PULL);
+                pullItem.setStatus(AbsRefreshablePanel.STATUS_START_PULL);
             }
         }
     }
 
     /**
      * 滚动回退
+     *
      * @param fromScroll 开始位置
-     * @param toScroll 结束位置
+     * @param toScroll   结束位置
      */
     private void scroll(final float fromScroll, final float toScroll) {
         ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
@@ -314,7 +401,8 @@ public class Pull2Refresh extends BaseUIRootLayout {
             }
 
             @Override
-            public void onAnimationRepeat(Animator animator) {}
+            public void onAnimationRepeat(Animator animator) {
+            }
 
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -333,16 +421,16 @@ public class Pull2Refresh extends BaseUIRootLayout {
      */
     private boolean canChildScrollUp() {
         if (Build.VERSION.SDK_INT < 14) {
-            if (mTarget instanceof AbsListView) {
-                AbsListView listView = (AbsListView) mTarget;
+            if (mScrollerView instanceof AbsListView) {
+                AbsListView listView = (AbsListView) mScrollerView;
                 return listView.getChildCount() > 0
                         && (listView.getFirstVisiblePosition() > 0
                         || listView.getChildAt(0).getTop() < listView.getPaddingTop());
             } else {
-                return mTarget.getScrollY() > 0;
+                return mScrollerView.getScrollY() > 0;
             }
         } else {
-            return ViewCompat.canScrollVertically(mTarget, -1);
+            return ViewCompat.canScrollVertically(mScrollerView, -1);
         }
     }
 
@@ -353,8 +441,8 @@ public class Pull2Refresh extends BaseUIRootLayout {
         if (!canChildScrollUp()) {//less data
             return true;
         }
-        if (mTarget instanceof RecyclerView) {
-            RecyclerView recyclerView = (RecyclerView) mTarget;
+        if (mScrollerView instanceof RecyclerView) {
+            RecyclerView recyclerView = (RecyclerView) mScrollerView;
             RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
             int count = recyclerView.getAdapter().getItemCount();
             if (layoutManager instanceof LinearLayoutManager && count > 0) {
@@ -372,8 +460,8 @@ public class Pull2Refresh extends BaseUIRootLayout {
                 }
             }
             return true;
-        } else if (mTarget instanceof AbsListView) {
-            final AbsListView absListView = (AbsListView) mTarget;
+        } else if (mScrollerView instanceof AbsListView) {
+            final AbsListView absListView = (AbsListView) mScrollerView;
             int count = absListView.getAdapter().getCount();
             int firstVisiblePosition = absListView.getFirstVisiblePosition();
             if (firstVisiblePosition == 0
@@ -383,8 +471,8 @@ public class Pull2Refresh extends BaseUIRootLayout {
             }
             int lastPos = absListView.getLastVisiblePosition();
             return lastPos > 0 && count > 0 && lastPos == count - 1;
-        } else if (mTarget instanceof ScrollView) {
-            ScrollView scrollView = (ScrollView) mTarget;
+        } else if (mScrollerView instanceof ScrollView) {
+            ScrollView scrollView = (ScrollView) mScrollerView;
             View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
             if (view != null) {
                 int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
@@ -392,19 +480,21 @@ public class Pull2Refresh extends BaseUIRootLayout {
                     return false;
                 }
             }
+        } else {
+            return ViewCompat.canScrollVertically(mScrollerView, 1);
         }
         return true;
     }
 
-    private int max(int[] a){
+    private int max(int[] a) {
         // 返回数组最大值
         int x;
-        int aa[]=new int[a.length];
-        System.arraycopy(a,0,aa,0,a.length);
-        x=aa[0];
-        for(int i=1;i<aa.length;i++){
-            if(aa[i]>x){
-                x=aa[i];
+        int aa[] = new int[a.length];
+        System.arraycopy(a, 0, aa, 0, a.length);
+        x = aa[0];
+        for (int i = 1; i < aa.length; i++) {
+            if (aa[i] > x) {
+                x = aa[i];
             }
         }
         return x;
@@ -413,10 +503,12 @@ public class Pull2Refresh extends BaseUIRootLayout {
     private OnRefreshListener mRefreshListener;
 
     public void setRefreshListener(OnRefreshListener listener) {
-        this.mRefreshListener =  listener;
+        this.mRefreshListener = listener;
     }
+
     public static interface OnRefreshListener {
         void onRefresh();
+
         void onLoadMore();
     }
 }

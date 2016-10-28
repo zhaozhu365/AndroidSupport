@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-import com.hyena.framework.clientlog.LogUtil;
+import com.hyena.framework.app.widget.AbsRefreshablePanel;
 import com.hyena.framework.samples.R;
 import com.hyena.framework.utils.UIUtils;
 
@@ -13,23 +13,23 @@ import com.hyena.framework.utils.UIUtils;
  * Created by yangzc on 16/9/16.
  */
 
-public class PullRefreshHeaderPanel extends IPullRefresh {
+public class RefreshablePanelHeaderPanel extends AbsRefreshablePanel {
 
     private TextView mTvTitle;
 
     private int mCurrentStatus;
 
-    public PullRefreshHeaderPanel(Context context) {
+    public RefreshablePanelHeaderPanel(Context context) {
         super(context);
         init();
     }
 
-    public PullRefreshHeaderPanel(Context context, AttributeSet attrs) {
+    public RefreshablePanelHeaderPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PullRefreshHeaderPanel(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RefreshablePanelHeaderPanel(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

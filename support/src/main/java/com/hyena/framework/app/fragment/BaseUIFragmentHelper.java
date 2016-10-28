@@ -13,6 +13,9 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.hyena.framework.app.widget.CommonRefreshableFooter;
+import com.hyena.framework.app.widget.CommonRefreshableHeader;
+import com.hyena.framework.app.widget.AbsRefreshablePanel;
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.servcie.BaseService;
 import com.hyena.framework.utils.AnimationUtils;
@@ -385,27 +388,35 @@ public class BaseUIFragmentHelper {
 
     public void keyBoardAdjustSpan(int height, int rawHeight){
         int scrollY = rawHeight - height;
-        if (mBaseUIFragment.isEnableScroll()) {
-            if (mBaseUIFragment.getScrollView() != null)
-                mBaseUIFragment.getScrollView().scrollTo(0, scrollY);
-        } else {
-            if (mBaseUIFragment.getContentView() != null) {
-                mBaseUIFragment.getContentView().scrollTo(0, scrollY);
-            }
-        }
+//        if (mBaseUIFragment.isEnableScroll()) {
+        if (mBaseUIFragment.getContentView() != null)
+            mBaseUIFragment.getContentView().scrollTo(0, scrollY);
+//        } else {
+//            if (mBaseUIFragment.getContentView() != null) {
+//                mBaseUIFragment.getContentView().scrollTo(0, scrollY);
+//            }
+//        }
     }
 
     public void keyBoardAdjustResize(int height, int rawHeight) {
-        if (mBaseUIFragment.isEnableScroll()) {
-            if (mBaseUIFragment.getScrollView() != null) {
-                mBaseUIFragment.getScrollView().getLayoutParams().height = height;
-                mBaseUIFragment.getScrollView().requestLayout();
-            }
-        } else {
-            if (mBaseUIFragment.getContentView() != null) {
-                mBaseUIFragment.getContentView().getLayoutParams().height = height;
-                mBaseUIFragment.getContentView().requestLayout();
-            }
+//        if (mBaseUIFragment.isEnableScroll()) {
+        if (mBaseUIFragment.getContentView() != null) {
+            mBaseUIFragment.getContentView().getLayoutParams().height = height;
+            mBaseUIFragment.getContentView().requestLayout();
         }
+//        } else {
+//            if (mBaseUIFragment.getContentView() != null) {
+//                mBaseUIFragment.getContentView().getLayoutParams().height = height;
+//                mBaseUIFragment.getContentView().requestLayout();
+//            }
+//        }
+    }
+
+    public AbsRefreshablePanel buildRefreshableLayoutHeader() {
+        return new CommonRefreshableHeader(getBaseUIFragment().getActivity());
+    }
+
+    public AbsRefreshablePanel buildRefreshableLayoutFooter() {
+        return new CommonRefreshableFooter(getBaseUIFragment().getActivity());
     }
 }

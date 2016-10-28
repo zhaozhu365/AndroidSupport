@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.hyena.framework.app.widget.AbsRefreshablePanel;
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.samples.R;
 import com.hyena.framework.utils.UIUtils;
@@ -11,19 +12,19 @@ import com.hyena.framework.utils.UIUtils;
 /**
  * Created by yangzc on 16/10/12.
  */
-public class Pull2RefreshFooterPanel extends IPullRefresh {
+public class RefreshablePanelFooterPanel extends AbsRefreshablePanel {
 
-    public Pull2RefreshFooterPanel(Context context) {
+    public RefreshablePanelFooterPanel(Context context) {
         super(context);
         init();
     }
 
-    public Pull2RefreshFooterPanel(Context context, AttributeSet attrs) {
+    public RefreshablePanelFooterPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public Pull2RefreshFooterPanel(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RefreshablePanelFooterPanel(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

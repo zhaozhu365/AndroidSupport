@@ -4,7 +4,10 @@
 package com.hyena.framework.app.widget;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +49,60 @@ public class SimpleRecycleView extends RecyclerView {
 
     @Override
     public boolean canScrollVertically(int direction) {
-        return super.canScrollVertically(direction);
+        if (direction > 0) {//向下
+            RecyclerView.LayoutManager layoutManager = getLayoutManager();
+            int count = getAdapter().getItemCount();
+            if (layoutManager instanceof LinearLayoutManager && count > 0) {
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+                if (linearLayoutManager.findLastCompletelyVisibleItemPosition() == count - 1) {
+                    return false;
+                }
+            } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+                StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) layoutManager;
+                int[] lastItems = new int[4];
+                staggeredGridLayoutManager.findLastCompletelyVisibleItemPositions(lastItems);
+                int lastItem = max(lastItems);
+                if (lastItem == count - 1) {
+                    return false;
+                }
+            }
+            return true;
+        } else {//向上
+            if (Build.VERSION.SDK_INT < 14) {
+                return getScaleY() > 0;
+            } else {
+                return super.canScrollVertically(direction);
+            }
+        }
+    }
+
+    private int max(int[] a) {
+        // 返回数组最大值
+        int x;
+        int aa[] = new int[a.length];
+        System.arraycopy(a, 0, aa, 0, a.length);
+        x = aa[0];
+        for (int i = 1; i < aa.length; i++) {
+            if (aa[i] > x) {
+                x = aa[i];
+            }
+        }
+        return x;
+    }
+
+    @Override
+    public void setOnScrollListener(OnScrollListener listener) {
+        super.setOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 
     @Override
@@ -147,7 +203,7 @@ public class SimpleRecycleView extends RecyclerView {
             int footerCnt = getFooterCount();
             if (position < headerCnt) {
                 return position;
-            } else if(position < headerCnt + mAdapter.getItemCount()) {
+            } else if (position < headerCnt + mAdapter.getItemCount()) {
                 return mAdapter.getItemViewType(position) + headerCnt + footerCnt;
             } else {
                 return position - mAdapter.getItemCount();

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.hyena.framework.samples.widgets.pull.Pull2Refresh xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:id="@+id/pr_pull2refresh"
+    android:id="@+id/srl_layout"
     android:layout_height="match_parent">
 
-    <com.hyena.framework.app.widget.SimpleRecycleView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.hyena.framework.app.widget.SimpleRecycleView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/srv_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-</com.hyena.framework.samples.widgets.pull.Pull2Refresh>
+</android.support.v4.widget.SwipeRefreshLayout>
