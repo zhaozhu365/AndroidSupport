@@ -198,13 +198,19 @@ public class RefreshableLayout extends RelativeLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (mRefreshing || mLoadingMore || (mHeaderPanel == null && mFooterPanel == null)
-                || (!mEnableRefresh && !mEnableLoadMore))
+                || (!mEnableRefresh && !mEnableLoadMore)) {
             return false;
+        }
 
         if (mTarget == null) {
             insureTarget();
         }
         insureScrollView();
+
+        if (mTarget != null && mTarget instanceof SwipeRefreshLayout) {
+            if (((SwipeRefreshLayout) mTarget).isRefreshing())
+                return false;
+        }
 
         int action = MotionEventCompat.getActionMasked(ev);
         switch (action) {
@@ -247,6 +253,11 @@ public class RefreshableLayout extends RelativeLayout {
         if (mRefreshing || mLoadingMore || (mHeaderPanel == null && mFooterPanel == null)
                 || (!mEnableRefresh && !mEnableLoadMore))
             return false;
+
+        if (mTarget != null && mTarget instanceof SwipeRefreshLayout) {
+            if (((SwipeRefreshLayout) mTarget).isRefreshing())
+                return false;
+        }
 
         int action = MotionEventCompat.getActionMasked(event);
         switch (action) {
