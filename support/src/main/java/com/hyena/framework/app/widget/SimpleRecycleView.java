@@ -27,14 +27,17 @@ public class SimpleRecycleView extends RecyclerView {
 
     public SimpleRecycleView(Context context, AttributeSet attrs, int arg2) {
         super(context, attrs, arg2);
+        init();
     }
 
     public SimpleRecycleView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public SimpleRecycleView(Context context) {
         super(context);
+        init();
     }
 
     @Override
@@ -76,6 +79,9 @@ public class SimpleRecycleView extends RecyclerView {
         }
     }
 
+    private void init() {
+    }
+
     private int max(int[] a) {
         // 返回数组最大值
         int x;
@@ -88,21 +94,6 @@ public class SimpleRecycleView extends RecyclerView {
             }
         }
         return x;
-    }
-
-    @Override
-    public void setOnScrollListener(OnScrollListener listener) {
-        super.setOnScrollListener(new OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
     }
 
     @Override
