@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
+    }
+}
+
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
@@ -54,5 +63,5 @@ dependencies {
     compile 'com.android.support:gridlayout-v7:24.2.1'
 }
 
-
+apply plugin: 'com.getkeepsafe.dexcount'
 //apply plugin: com.hyena.gradle.plugin.HelloPlugin

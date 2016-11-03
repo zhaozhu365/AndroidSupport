@@ -44,6 +44,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:support-v4:24.2.1'
+    provided files('extlibs/tagsoup-1.2.jar')
 }
 
 //apply plugin: com.hyena.gradle.plugin.HelloPlugin
