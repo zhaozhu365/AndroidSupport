@@ -1,2 +1,0 @@
-configurations.maybeCreate("default")
-artifacts.add("default", file('support-v4-24.2.1.aar'))

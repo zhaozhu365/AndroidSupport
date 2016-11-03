@@ -1,6 +1,7 @@
 package com.hyena.framework.utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -8,6 +9,7 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Looper;
 import android.os.Vibrator;
@@ -190,13 +192,16 @@ public class UIUtils {
 	 * @return 是否位于HOME界面
 	 */
 	public boolean isLauncherOnTop(Context context) {
+		//获得属于桌面的应用的应用包名称
 		Intent intent = new Intent(Intent.ACTION_MAIN);
 		intent.addCategory(Intent.CATEGORY_HOME);
 		ArrayList<String> launcherPackageNames = new ArrayList<String>();
-		for (ResolveInfo info : context.getPackageManager().queryIntentActivities(intent, 0)) {
+		List<ResolveInfo> resolveInfoList = context.getPackageManager()
+				.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+		for (ResolveInfo info : resolveInfoList) {
 			launcherPackageNames.add(info.activityInfo.packageName);
 		}
-
+		//当前正在运行的包名
 		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		for (RunningTaskInfo t : am.getRunningTasks(1)) {
 			if (t != null && t.numRunning > 0) {

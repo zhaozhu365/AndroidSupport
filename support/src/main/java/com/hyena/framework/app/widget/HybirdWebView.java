@@ -118,6 +118,7 @@ public class HybirdWebView extends WebView {
 					, String defaultValue, JsPromptResult result) {
 				if (message != null && message.startsWith(ACTION_PREX)) {
 					handleUrlLoading(message);
+					result.confirm();
 					return true;
 				}
 				return super.onJsPrompt(view, url, message, defaultValue, result);

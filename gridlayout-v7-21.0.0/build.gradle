@@ -1,2 +1,0 @@
-configurations.create("default")
-artifacts.add("default", file('gridlayout-v7-21.0.0.aar'))
