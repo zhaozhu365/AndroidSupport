@@ -4,27 +4,27 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.hyena.framework.app.widget.AbsRefreshablePanel;
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.samples.R;
 import com.hyena.framework.utils.UIUtils;
 
 /**
- * Created by yangzc on 16/9/16.
+ * Created by yangzc on 16/10/12.
  */
+public class RefreshablePanelFooterPanel extends AbsRefreshablePanel {
 
-public class PullRefreshHeaderPanel extends IPullRefresh {
-
-    public PullRefreshHeaderPanel(Context context) {
+    public RefreshablePanelFooterPanel(Context context) {
         super(context);
         init();
     }
 
-    public PullRefreshHeaderPanel(Context context, AttributeSet attrs) {
+    public RefreshablePanelFooterPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PullRefreshHeaderPanel(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RefreshablePanelFooterPanel(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -42,5 +42,4 @@ public class PullRefreshHeaderPanel extends IPullRefresh {
     public int getContentHeight() {
         return UIUtils.dip2px(50);
     }
-
 }

@@ -37,7 +37,9 @@ import com.hyena.framework.app.fragment.bean.MenuItem;
 import com.hyena.framework.app.fragment.bean.UrlModelPair;
 import com.hyena.framework.app.widget.BaseUIRootLayout;
 import com.hyena.framework.app.widget.EmptyView;
+import com.hyena.framework.app.widget.AbsRefreshablePanel;
 import com.hyena.framework.app.widget.LoadingView;
+import com.hyena.framework.app.widget.RefreshableLayout;
 import com.hyena.framework.app.widget.TitleBar;
 import com.hyena.framework.clientlog.LogUtil;
 import com.hyena.framework.datacache.BaseObject;
@@ -79,7 +81,6 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     private View mContentView;
     //根布局
     private BaseUIRootLayout mRootView;
-    private ScrollView mScrollView;
 
     // 当前数据获取任务
     private DataLoaderTask mDataLoaderTask;
@@ -88,14 +89,17 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 	public static final int STYLE_NO_TITLE = 1;//无标题样式
 	//标题样式
 	private int mTitleStyle = STYLE_WITH_TITLE;
-	//是否允许滚动
-	private boolean mEnableScroll = false;
-	
+	//是否内容panel添加滚动条
+	private boolean mIsAddScrollView = false;
+    //是否内容panel添加refreshableLayout
+    private boolean mIsAddRefreshableLayout = false;
+
     private T mUIFragmentHelper;
     //是否对用户可见
     private boolean mVisible = false;
     //是否初始化成功
     private boolean mInited = false;
+    private boolean mFinishing = false;
     private int mAncherX, mAncherY;
 
     private int mTitleBarId;
@@ -116,7 +120,6 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 
     /**
      * 设置标题样式
-     * @param style
      */
     public void setTitleStyle(int style){
         this.mTitleStyle = style;
@@ -124,19 +127,28 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     
     /**
      * 是否支持滚动
-     * @param scroll
      */
     public void setEnableScroll(boolean scroll){
-    	this.mEnableScroll = scroll;
+    	this.mIsAddScrollView = scroll;
     }
 
+    /**
+     * 是否支持滚动条
+     */
     public boolean isEnableScroll() {
-        return mEnableScroll;
+        return mIsAddScrollView;
+    }
+
+    public void addRefreshableLayout(boolean isAdd) {
+        this.mIsAddRefreshableLayout = isAdd;
+    }
+
+    public RefreshableLayout getRefreshLayout() {
+        return (RefreshableLayout) getContentView();
     }
 
     /**
      * 设置UI帮助类
-     * @param helper
      */
     public void setUIFragmentHelper(T helper){
         this.mUIFragmentHelper = helper;
@@ -144,7 +156,6 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 
     /**
      * 设置入场动画类型
-     * @param type
      */
     public void setAnimationType(AnimType type){
         this.mAnimType = type;
@@ -249,6 +260,13 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         resetTask();
         autoAttachAllService();
 	}
+
+    /**
+     * 生成默认的跟布局
+     */
+    public BaseUIRootLayout newUIRootLayout() {
+        return new BaseUIRootLayout(getActivity());
+    }
 	
 	/**
 	 * 创建View
@@ -261,7 +279,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
 
 	@Override
 	public final View onCreateViewImpl(ViewGroup container, Bundle savedInstanceState) {
-        mRootView = new BaseUIRootLayout(getActivity());
+        mRootView = newUIRootLayout();
         mRootView.setClickable(true);
 
         //生成状态栏
@@ -326,15 +344,25 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
             }
             mContentView.setClickable(true);
             View contentView = mContentView;
-            if (mEnableScroll) {//支持滚动条
+            if (mIsAddScrollView) {//support scrollView
                 ScrollView scrollView = new ScrollView(getActivity());
                 scrollView.setFillViewport(true);
                 scrollView.setVerticalScrollBarEnabled(false);
                 scrollView.setHorizontalScrollBarEnabled(false);
-            	scrollView.addView(mContentView, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+            	scrollView.addView(mContentView, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT,
+                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
             	contentView = scrollView;
-                this.mScrollView = scrollView;
-    		} 
+    		}
+
+            if (mIsAddRefreshableLayout) {//support refresh or load more
+                RefreshableLayout refreshableLayout = new RefreshableLayout(getActivity());
+                refreshableLayout.addView(contentView, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT,
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT));
+                refreshableLayout.setHeaderPanel(buildRefreshableLayoutHeader());
+                refreshableLayout.setFooterPanel(buildRefreshableLayoutFooter());
+                contentView = refreshableLayout;
+            }
+            this.mContentView = contentView;
             
             if(mTitleStyle == STYLE_WITH_TITLE){
                 contentParams.addRule(RelativeLayout.BELOW, mTitleBarId);
@@ -444,6 +472,25 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     }
 
     /**
+     * build refreshable header
+     */
+    public AbsRefreshablePanel buildRefreshableLayoutHeader() {
+        if (mUIFragmentHelper == null)
+            return null;
+
+        return mUIFragmentHelper.buildRefreshableLayoutHeader();
+    }
+
+    /**
+     * build refreshable footer
+     */
+    public AbsRefreshablePanel buildRefreshableLayoutFooter() {
+        if (mUIFragmentHelper == null)
+            return null;
+        return mUIFragmentHelper.buildRefreshableLayoutFooter();
+    }
+
+    /**
      * 获得系统服务
      * @param name
      * @return
@@ -508,8 +555,16 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
         return null;
     }
 
+    public boolean isFinishing() {
+        return mFinishing;
+    }
+
     @Override
     public void finish() {
+        if (mFinishing)
+            return;
+
+        mFinishing = true;
         UIUtils.hideInputMethod(getActivity());
 
         Animation animation = getAnimationOut();
@@ -686,14 +741,6 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
      */
     public BaseUIRootLayout getRootView(){
         return mRootView;
-    }
-
-    /**
-     * 获得滚动view
-     * @return
-     */
-    public ScrollView getScrollView() {
-        return mScrollView;
     }
 
     /**
@@ -1116,7 +1163,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     //========================消息中心===================================
     public static final String MSG_PREFIX = "com.hyena.framework.app.fragment.";
     
-    public Class<? extends BaseUIFragment<?>>[] getFriendsTags() {
+    public Class<? extends BaseUIFragment<?>>[] getFriendsTags(Bundle bundle) {
     	return null;
     }
 
@@ -1131,7 +1178,7 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
      * 通知友员数据改变
      */
     public void notifyFriendsDataChange(Bundle bundle){
-    	Class<? extends BaseUIFragment<?>>[] friendsCls = getFriendsTags();
+    	Class<? extends BaseUIFragment<?>>[] friendsCls = getFriendsTags(bundle);
     	if (friendsCls != null && friendsCls.length > 0) {
     		if (bundle == null) {
 				bundle = new Bundle();
@@ -1221,6 +1268,9 @@ public class BaseUIFragment<T extends BaseUIFragmentHelper> extends BaseSubFragm
     @Override
     public void onWindowVisibleSizeChange(Rect rect) {
         super.onWindowVisibleSizeChange(rect);
+        if (getActivity() == null || getActivity().isFinishing())
+            return;
+
         int height = rect.height();
         int rawHeight = getResources().getDisplayMetrics().heightPixels - rect.top;
         if (mTitleStyle == STYLE_WITH_TITLE) {
